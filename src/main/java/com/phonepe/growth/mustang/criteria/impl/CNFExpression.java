@@ -41,9 +41,8 @@ public class CNFExpression extends Criteria {
 
     @Override
     public double getScore(EvaluationContext context) {
-        // TODO
-        // TODO Auto-generated method stub
-        return 0;
+        // score of a CNF is the sum of score of all its constituent disjunctions.
+        return disjunctions.stream().mapToDouble(disjunction -> disjunction.score(context)).sum();
     }
 
     @Override

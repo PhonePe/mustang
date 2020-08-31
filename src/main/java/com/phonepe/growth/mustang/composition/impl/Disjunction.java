@@ -36,4 +36,11 @@ public class Disjunction extends Composition {
         return visitor.visit(this);
     }
 
+    @Override
+    public double score(EvaluationContext context) {
+        // TODO
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
 }

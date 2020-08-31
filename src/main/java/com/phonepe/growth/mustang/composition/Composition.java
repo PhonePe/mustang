@@ -29,5 +29,7 @@ public abstract class Composition {
 
     public abstract boolean process(EvaluationContext context);
 
+    public abstract double score(EvaluationContext context);
+
     public abstract <T> T accept(CompositionVisitor<T> visitor);
 }

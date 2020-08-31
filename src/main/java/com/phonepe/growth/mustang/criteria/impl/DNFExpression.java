@@ -41,11 +41,10 @@ public class DNFExpression extends Criteria {
 
     @Override
     public double getScore(EvaluationContext context) {
-        // TODO
-        // TODO Auto-generated method stub
-        return 0;
+        // score of a DNF is the max of scores of its constituent conjunctions.
+        return conjunctions.stream().map(conjunction -> conjunction.score(context)).max(Double::compare).get();
     }
-    
+
     @Override
     public <T> T accept(CriteriaVisitor<T> visitor) {
         return visitor.visit(this);
