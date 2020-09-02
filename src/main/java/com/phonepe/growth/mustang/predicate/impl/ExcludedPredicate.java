@@ -19,27 +19,27 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class NotInPredicate extends Predicate {
+public class ExcludedPredicate extends Predicate {
     @NotEmpty
     private Set<?> values;
 
     @Builder
     @JsonCreator
-    public NotInPredicate(@JsonProperty("lhsPath") String lhsPath, @JsonProperty("isLhsPathJson") boolean isLhsPathJson,
+    public ExcludedPredicate(@JsonProperty("lhsPath") String lhsPath,
+            @JsonProperty("isLhsPathJson") boolean isLhsPathJson, @JsonProperty("defaultResult") boolean defaultResult,
             Set<?> values) {
-        super(PredicateType.NOT_IN, lhsPath, isLhsPathJson);
+        super(PredicateType.EXCLUDED, lhsPath, isLhsPathJson, defaultResult);
         this.values = values;
+    }
+
+    @Override
+    public boolean evaluate(EvaluationContext context, Object lhsValue) {
+        return !values.contains(lhsValue);
     }
 
     @Override
     public <T> T accept(PredicateVisitor<T> visitor) {
         return visitor.visit(this);
-    }
-
-    @Override
-    public boolean process(EvaluationContext context) {
-        // TODO Auto-generated method stub
-        return false;
     }
 
 }

@@ -1,12 +1,12 @@
 package com.phonepe.growth.mustang.predicate;
 
-import com.phonepe.growth.mustang.predicate.impl.InPredicate;
-import com.phonepe.growth.mustang.predicate.impl.NotInPredicate;
+import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 
 public interface PredicateVisitor<T> {
 
-    T visit(InPredicate predicate);
+    T visit(IncludedPredicate predicate);
 
-    T visit(NotInPredicate predicate);
+    T visit(ExcludedPredicate predicate);
 
 }

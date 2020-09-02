@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.EvaluationContext;
-import com.phonepe.growth.mustang.composition.impl.Conjunction;
+import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
@@ -22,27 +22,27 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class DNFExpression extends Criteria {
+public class CNFCriteria extends Criteria {
     @Valid
     @NotEmpty
-    private List<Conjunction> conjunctions;
+    private List<Disjunction> disjunctions;
 
     @Builder
     @JsonCreator
-    public DNFExpression(@JsonProperty("conjunctions") List<Conjunction> conjunctions) {
-        super(CriteriaForm.DNF);
-        this.conjunctions = conjunctions;
+    public CNFCriteria(@JsonProperty("disjunctions") List<Disjunction> disjunctions) {
+        super(CriteriaForm.CNF);
+        this.disjunctions = disjunctions;
     }
 
     @Override
-    public boolean process(EvaluationContext context) {
-        return conjunctions.stream().filter(conjunction -> conjunction.process(context)).findFirst().isPresent();
+    public boolean evaluate(EvaluationContext context) {
+        return disjunctions.stream().filter(disjunction -> !disjunction.evaluate(context)).findFirst().isPresent();
     }
 
     @Override
-    public double getScore(EvaluationContext context) {
-        // score of a DNF is the max of scores of its constituent conjunctions.
-        return conjunctions.stream().map(conjunction -> conjunction.score(context)).max(Double::compare).get();
+    public long getScore(EvaluationContext context) {
+        // score of a CNF is the sum of score of all its constituent disjunctions.
+        return disjunctions.stream().mapToLong(disjunction -> disjunction.score(context)).sum();
     }
 
     @Override

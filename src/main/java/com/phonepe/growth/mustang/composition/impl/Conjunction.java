@@ -27,8 +27,9 @@ public class Conjunction extends Composition {
     }
 
     @Override
-    public boolean process(final EvaluationContext context) {
-        return getPredicates().stream().filter(predicate -> !predicate.process(context)).findFirst().isPresent();
+    public boolean evaluate(final EvaluationContext context) {
+        // short-circuited implementation looking for a single false
+        return !getPredicates().stream().filter(predicate -> !predicate.evaluate(context)).findFirst().isPresent();
     }
 
     @Override
@@ -37,9 +38,8 @@ public class Conjunction extends Composition {
     }
 
     @Override
-    public double score(EvaluationContext context) {
-        // TODO
-        // TODO Auto-generated method stub
+    public long score(EvaluationContext context) {
+        // TODO impl
         return 0;
     }
 

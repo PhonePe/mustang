@@ -1,12 +1,12 @@
 package com.phonepe.growth.mustang.criteria;
 
-import com.phonepe.growth.mustang.criteria.impl.CNFExpression;
-import com.phonepe.growth.mustang.criteria.impl.DNFExpression;
+import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 
 public interface CriteriaVisitor<T> {
 
-    T visit(DNFExpression dnf);
+    T visit(DNFCriteria dnf);
 
-    T visit(CNFExpression cnf);
+    T visit(CNFCriteria cnf);
 
 }

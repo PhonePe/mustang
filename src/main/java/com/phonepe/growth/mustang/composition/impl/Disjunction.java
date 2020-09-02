@@ -27,8 +27,9 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public boolean process(EvaluationContext context) {
-        return getPredicates().stream().filter(predicate -> predicate.process(context)).findFirst().isPresent();
+    public boolean evaluate(EvaluationContext context) {
+        // short-circuited implementation looking for a single true
+        return getPredicates().stream().filter(predicate -> predicate.evaluate(context)).findFirst().isPresent();
     }
 
     @Override
@@ -37,9 +38,8 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public double score(EvaluationContext context) {
-        // TODO
-        // TODO Auto-generated method stub
+    public long score(EvaluationContext context) {
+        // TODO impl
         return 0;
     }
 
