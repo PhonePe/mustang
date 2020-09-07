@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.EvaluationContext;
+import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
@@ -29,8 +29,8 @@ public class CNFCriteria extends Criteria {
 
     @Builder
     @JsonCreator
-    public CNFCriteria(@JsonProperty("disjunctions") List<Disjunction> disjunctions) {
-        super(CriteriaForm.CNF);
+    public CNFCriteria(@JsonProperty("id") String id, @JsonProperty("disjunctions") List<Disjunction> disjunctions) {
+        super(CriteriaForm.CNF, id);
         this.disjunctions = disjunctions;
     }
 
@@ -42,7 +42,7 @@ public class CNFCriteria extends Criteria {
     @Override
     public long getScore(EvaluationContext context) {
         // score of a CNF is the sum of score of all its constituent disjunctions.
-        return disjunctions.stream().mapToLong(disjunction -> disjunction.score(context)).sum();
+        return disjunctions.stream().mapToLong(disjunction -> disjunction.getScore(context)).sum();
     }
 
     @Override

@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.EvaluationContext;
+import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.CompositionVisitor;
@@ -38,7 +38,7 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public long score(EvaluationContext context) {
+    public long getScore(EvaluationContext context) {
         // TODO impl
         return 0;
     }

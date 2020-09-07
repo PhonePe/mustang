@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.EvaluationContext;
+import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
@@ -26,15 +26,10 @@ public class IncludedPredicate extends Predicate {
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhsPath") String lhsPath,
-            @JsonProperty("isLhsPathJson") boolean isLhsPathJson, @JsonProperty("defaultResult") boolean defaultResult,
-            @JsonProperty("values") Set<?> values) {
-        super(PredicateType.INCLUDED, lhsPath, isLhsPathJson, defaultResult);
+            @JsonProperty("isLhsPathJson") boolean isLhsPathJson, @JsonProperty("weight") long weight,
+            @JsonProperty("defaultResult") boolean defaultResult, @JsonProperty("values") Set<?> values) {
+        super(PredicateType.INCLUDED, lhsPath, isLhsPathJson, weight, defaultResult);
         this.values = values;
-    }
-
-    @Override
-    public <T> T accept(PredicateVisitor<T> visitor) {
-        return visitor.visit(this);
     }
 
     @Override
@@ -42,4 +37,8 @@ public class IncludedPredicate extends Predicate {
         return values.contains(lhsValue);
     }
 
+    @Override
+    public <T> T accept(PredicateVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

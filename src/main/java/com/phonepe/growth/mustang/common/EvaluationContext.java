@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang;
+package com.phonepe.growth.mustang.common;
 
 import javax.validation.constraints.NotNull;
 
