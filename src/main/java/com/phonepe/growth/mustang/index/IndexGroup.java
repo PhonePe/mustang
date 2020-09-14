@@ -2,8 +2,8 @@ package com.phonepe.growth.mustang.index;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.phonepe.growth.mustang.index.cnf.CNFInvertedList;
-import com.phonepe.growth.mustang.index.dnf.DNFInvertedList;
+import com.phonepe.growth.mustang.index.cnf.CNFInvertedIndex;
+import com.phonepe.growth.mustang.index.dnf.DNFInvertedIndex;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.Data;
 public class IndexGroup {
     @NotBlank
     private String name;
-    private DNFInvertedList dnf;
-    private CNFInvertedList cnf;
+    private DNFInvertedIndex dnf;
+    private CNFInvertedIndex cnf;
 
 }

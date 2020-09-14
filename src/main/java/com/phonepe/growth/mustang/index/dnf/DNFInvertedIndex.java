@@ -10,6 +10,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DNFInvertedList {
+public class DNFInvertedIndex {
     private Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable;
 }

@@ -1,7 +1,7 @@
 package com.phonepe.growth.mustang.index.cnf;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.phonepe.growth.mustang.index.Key;
 
@@ -10,6 +10,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CNFInvertedList {
-    private Map<Integer, List<Map<Key, List<DisjunctionPostingEntry>>>> indexTable;
+public class CNFInvertedIndex {
+    private Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable;
 }
