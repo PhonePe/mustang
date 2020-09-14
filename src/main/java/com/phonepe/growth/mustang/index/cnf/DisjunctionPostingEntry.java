@@ -14,5 +14,6 @@ import lombok.NoArgsConstructor;
 public class DisjunctionPostingEntry {
     private String id;
     private PredicateType predicateType;
+    private int disjunctionOrderId;
     private long score;
 }

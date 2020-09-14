@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = { "name", "value" })
+@EqualsAndHashCode(of = { "name", "value", "order" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class Key {
@@ -20,6 +20,7 @@ public class Key {
     private String name;
     @NotNull
     private Object value;
+    private int order;
     @Builder.Default
     private long upperBoundScore = 10;
 }
