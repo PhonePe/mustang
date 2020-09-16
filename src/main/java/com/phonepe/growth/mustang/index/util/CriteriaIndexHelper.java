@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index;
+package com.phonepe.growth.mustang.index.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,10 +23,9 @@ import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.IndexGroup;
 import com.phonepe.growth.mustang.index.core.Key;
+import com.phonepe.growth.mustang.index.util.CnfPredicateVisitorImpl;
+import com.phonepe.growth.mustang.index.util.DnfPredicatorVisitorImpl;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.predicate.PredicateVisitor;
-import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
-import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
 import lombok.Builder;
 import lombok.Data;
@@ -46,14 +45,15 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
     @Override
     public Void visit(DNFCriteria dnf) {
         dnf.getConjunctions().forEach(conjunction -> {
-            final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = indexGroup.getDnfInvertedIndex().getTable();
+            final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = indexGroup.getDnfInvertedIndex()
+                    .getTable();
             final int kSize = conjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
 
             final List<Map<Key, Set<ConjunctionPostingEntry>>> postingLists = IntStream
                     .range(0, conjunction.getPredicates().size()).boxed().map(i -> {
-                        return conjunction.getPredicates().get(i).accept(
-                                new DnfPredicatorVisitorImpl(String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteriaId, i)));
+                        return conjunction.getPredicates().get(i).accept(DnfPredicatorVisitorImpl.builder()
+                                .id(String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteriaId, i)).build());
                     }).collect(Collectors.toList());
             if (kSize == 0) {
                 // ZERO size handling
@@ -77,7 +77,8 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(CNFCriteria cnf) {
-        final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = indexGroup.getCnfInvertedIndex().getTable();
+        final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = indexGroup.getCnfInvertedIndex()
+                .getTable();
         final int kSize = cnf.getDisjunctions().stream().filter(disjunction -> {
             return !disjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
@@ -87,7 +88,7 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, Set<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
                     .map(predicate -> {
-                        return predicate.accept(new CnfPredicateVisitorImpl(cnf.getId(), i));
+                        return predicate.accept(CnfPredicateVisitorImpl.builder().id(cnf.getId()).order(i).build());
                     }).collect(Collectors.toList());
 
             if (kSize == 0) {
@@ -118,64 +119,6 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
                     combined.addAll(s2);
                     return combined;
                 }))));
-    }
-
-    private static final class CnfPredicateVisitorImpl
-            implements PredicateVisitor<Map<Key, Set<DisjunctionPostingEntry>>> {
-        private String id;
-        private int order;
-
-        public CnfPredicateVisitorImpl(String id, int order) {
-            this.id = id;
-            this.order = order;
-        }
-
-        @Override
-        public Map<Key, Set<DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
-            return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
-        }
-
-        @Override
-        public Map<Key, Set<DisjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
-            return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
-        }
-
-        private Map<Key, Set<DisjunctionPostingEntry>> extractPostingLists(PredicateType predicateType, String lhs,
-                Set<?> values) {
-            return values.stream().map(value -> Key.builder().name(lhs).value(value).build()).map(key -> {
-                final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder().id(id)
-                        .predicateType(predicateType).order(order).score(0).build();
-                return Pair.of(key, postingEntry);
-            }).collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toSet())));
-        }
-    }
-
-    private static final class DnfPredicatorVisitorImpl
-            implements PredicateVisitor<Map<Key, Set<ConjunctionPostingEntry>>> {
-        private String id;
-
-        public DnfPredicatorVisitorImpl(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public Map<Key, Set<ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
-            return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
-        }
-
-        @Override
-        public Map<Key, Set<ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
-            return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
-        }
-
-        private Map<Key, Set<ConjunctionPostingEntry>> extractPostingLists(PredicateType predicateType, String lhs,
-                Set<?> values) {
-            return values.stream().map(value -> Key.builder().name(lhs).value(value).build()).map(key -> {
-                final ConjunctionPostingEntry postingEntry = ConjunctionPostingEntry.builder().id(id)
-                        .predicateType(predicateType).score(0).build();
-                return Pair.of(key, postingEntry);
-            }).collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toSet())));
-        }
     }
 
 }
