@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.search;
+package com.phonepe.growth.mustang.search.util;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
+import com.phonepe.growth.mustang.index.IndexGroup;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.IndexGroup;
 import com.phonepe.growth.mustang.index.core.Key;
 
 import lombok.AllArgsConstructor;

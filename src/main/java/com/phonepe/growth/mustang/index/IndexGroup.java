@@ -1,8 +1,10 @@
-package com.phonepe.growth.mustang.index.core;
+package com.phonepe.growth.mustang.index;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.phonepe.growth.mustang.index.InvertedIndex;
+import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
 

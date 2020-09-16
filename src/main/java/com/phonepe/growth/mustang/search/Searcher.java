@@ -15,6 +15,7 @@ import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.Indexer;
 import com.phonepe.growth.mustang.json.FlattenedJson;
+import com.phonepe.growth.mustang.search.util.CriteriaSearchHelper;
 
 import lombok.Builder;
 import lombok.Data;

@@ -19,12 +19,10 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.index.IndexGroup;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.IndexGroup;
 import com.phonepe.growth.mustang.index.core.Key;
-import com.phonepe.growth.mustang.index.util.CnfPredicateVisitorImpl;
-import com.phonepe.growth.mustang.index.util.DnfPredicatorVisitorImpl;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
 import lombok.Builder;

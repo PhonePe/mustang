@@ -7,7 +7,6 @@ import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
-import com.phonepe.growth.mustang.index.core.IndexGroup;
 import com.phonepe.growth.mustang.index.util.CriteriaIndexHelper;
 
 import lombok.AccessLevel;

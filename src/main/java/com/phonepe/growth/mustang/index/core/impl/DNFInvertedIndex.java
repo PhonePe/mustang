@@ -2,8 +2,8 @@ package com.phonepe.growth.mustang.index.core.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
-import com.phonepe.growth.mustang.index.InvertedIndex;
-import com.phonepe.growth.mustang.index.InvertedIndexVisitor;
+import com.phonepe.growth.mustang.index.core.InvertedIndex;
+import com.phonepe.growth.mustang.index.core.InvertedIndexVisitor;
 
 import lombok.Builder;
 import lombok.Data;

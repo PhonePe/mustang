@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index;
+package com.phonepe.growth.mustang.index.core;
 
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;

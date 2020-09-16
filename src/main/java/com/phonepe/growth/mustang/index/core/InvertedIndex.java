@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index;
+package com.phonepe.growth.mustang.index.core;
 
 import java.util.Collections;
 import java.util.Map;
