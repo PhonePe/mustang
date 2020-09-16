@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index.dnf;
+package com.phonepe.growth.mustang.index.core;
 
 import com.phonepe.growth.mustang.predicate.PredicateType;
 

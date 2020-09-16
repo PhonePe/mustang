@@ -2,23 +2,40 @@ package com.phonepe.growth.mustang;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.Indexer;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Searcher;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MustangEngine {
-    public void index(String index, List<Criteria> criterias) {
-        Indexer.add(index, criterias);
+    @Valid
+    @NotNull
+    private ObjectMapper mapper;
+
+    public void index(String indexName, Criteria criteria) {
+        Indexer.add(indexName, criteria);
     }
 
-    public void index(String index, Criteria criteria) {
-        Indexer.add(index, criteria);
+    public void index(String indexName, List<Criteria> criterias) {
+        Indexer.add(indexName, criterias);
     }
 
-    public List<Criteria> search(String index, EvaluationContext context) {
-        return Searcher.builder().index(index).context(context).build().search();
+    public List<String> search(String index, EvaluationContext context) {
+        return Searcher.builder().indexName(index).context(context).mapper(mapper).build().search();
     }
 
     public List<Criteria> scan(List<Criteria> criterias, EvaluationContext context) {

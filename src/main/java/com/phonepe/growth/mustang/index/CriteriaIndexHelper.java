@@ -19,8 +19,10 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.index.dnf.ConjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.cnf.DisjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.IndexGroup;
+import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
@@ -31,8 +33,7 @@ import lombok.Data;
 
 @Data
 @Builder
-//TODO refac
-public class CriteriaIndexer implements CriteriaVisitor<Void> {
+public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
     private static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
     private static final String ZERO_SIZE_DISJUNCTION_ENTRY_KEY = "ZZZ";
@@ -40,21 +41,22 @@ public class CriteriaIndexer implements CriteriaVisitor<Void> {
     @NotNull
     private IndexGroup indexGroup;
     @NotBlank
-    private String cId;
+    private String criteriaId;
 
     @Override
     public Void visit(DNFCriteria dnf) {
         dnf.getConjunctions().forEach(conjunction -> {
-            final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = indexGroup.getDnf().getIndexTable();
+            final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = indexGroup.getDnfInvertedIndex().getTable();
             final int kSize = conjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
 
             final List<Map<Key, Set<ConjunctionPostingEntry>>> postingLists = IntStream
                     .range(0, conjunction.getPredicates().size()).boxed().map(i -> {
                         return conjunction.getPredicates().get(i).accept(
-                                new DnfPredicatorVisitorImpl(String.format(CONJUNCTION_ENTRY_ID_FORMAT, cId, i)));
+                                new DnfPredicatorVisitorImpl(String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteriaId, i)));
                     }).collect(Collectors.toList());
             if (kSize == 0) {
+                // ZERO size handling
                 final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
                 final Map<Key, Set<ConjunctionPostingEntry>> map = postingLists.stream()
                         .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
@@ -75,7 +77,7 @@ public class CriteriaIndexer implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(CNFCriteria cnf) {
-        final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = indexGroup.getCnf().getIndexTable();
+        final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = indexGroup.getCnfInvertedIndex().getTable();
         final int kSize = cnf.getDisjunctions().stream().filter(disjunction -> {
             return !disjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
@@ -89,12 +91,13 @@ public class CriteriaIndexer implements CriteriaVisitor<Void> {
                     }).collect(Collectors.toList());
 
             if (kSize == 0) {
+                // Zero size handling
                 final Key key = Key.builder().name(ZERO_SIZE_DISJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
                 final Map<Key, Set<DisjunctionPostingEntry>> map = postingLists.stream()
                         .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
                         .distinct()
                         .map(entry -> DisjunctionPostingEntry.builder().id(entry.getId())
-                                .predicateType(PredicateType.INCLUDED).disjunctionOrderId(-1).score(0).build())
+                                .predicateType(PredicateType.INCLUDED).order(-1).score(0).build())
                         .distinct().map(entry -> Pair.of(key, entry)).collect(Collectors.groupingBy(Pair::getKey,
                                 Collectors.mapping(Pair::getValue, Collectors.toSet())));
                 postingLists.add(map);
@@ -120,11 +123,11 @@ public class CriteriaIndexer implements CriteriaVisitor<Void> {
     private static final class CnfPredicateVisitorImpl
             implements PredicateVisitor<Map<Key, Set<DisjunctionPostingEntry>>> {
         private String id;
-        private int orderId;
+        private int order;
 
-        public CnfPredicateVisitorImpl(String id, int disjunctionOrderId) {
+        public CnfPredicateVisitorImpl(String id, int order) {
             this.id = id;
-            this.orderId = disjunctionOrderId;
+            this.order = order;
         }
 
         @Override
@@ -141,7 +144,7 @@ public class CriteriaIndexer implements CriteriaVisitor<Void> {
                 Set<?> values) {
             return values.stream().map(value -> Key.builder().name(lhs).value(value).build()).map(key -> {
                 final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder().id(id)
-                        .predicateType(predicateType).disjunctionOrderId(orderId).score(0).build();
+                        .predicateType(predicateType).order(order).score(0).build();
                 return Pair.of(key, postingEntry);
             }).collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toSet())));
         }
