@@ -34,8 +34,8 @@ public class MustangEngine {
         Indexer.add(indexName, criterias);
     }
 
-    public List<String> search(String index, EvaluationContext context) {
-        return Searcher.builder().indexName(index).context(context).mapper(mapper).build().search();
+    public List<String> search(String indexName, EvaluationContext context) {
+        return Searcher.builder().indexName(indexName).context(context).mapper(mapper).build().search();
     }
 
     public List<Criteria> scan(List<Criteria> criterias, EvaluationContext context) {
