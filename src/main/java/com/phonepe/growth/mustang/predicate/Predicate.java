@@ -1,0 +1,47 @@
+package com.phonepe.growth.mustang.predicate;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
+import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
+import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
+@JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
+        @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
+public abstract class Predicate {
+    @NotNull
+    private PredicateType type;
+    @NotBlank
+    private String lhs;
+    private boolean isLhsJsonPath;
+    private long weight;
+    private boolean defaultResult;
+
+    public boolean evaluate(EvaluationContext context) {
+        if (isLhsJsonPath) {
+            try {
+                return evaluate(context, JsonPath.read(context.getNode().toString(), lhs));
+            } catch (PathNotFoundException e) {
+                return defaultResult;
+            }
+        }
+        return evaluate(context, lhs);
+    }
+
+    public abstract <T> T accept(PredicateVisitor<T> visitor);
+
+    protected abstract boolean evaluate(EvaluationContext context, Object lhsValue);
+
+}
