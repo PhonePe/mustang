@@ -57,7 +57,9 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
                 // ZERO size handling
                 final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
                 final Map<Key, Set<ConjunctionPostingEntry>> map = postingLists.stream()
-                        .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
+                        .flatMap(m -> m.entrySet().stream())
+                        .map(Map.Entry::getValue)
+                        .flatMap(m -> m.stream())
                         .distinct()
                         .map(entry -> ConjunctionPostingEntry.builder().id(entry.getId())
                                 .predicateType(PredicateType.INCLUDED).score(0).build())
@@ -77,10 +79,8 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
     public Void visit(CNFCriteria cnf) {
         final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = indexGroup.getCnfInvertedIndex()
                 .getTable();
-        final int kSize = cnf.getDisjunctions().stream().filter(disjunction -> {
-            return !disjunction.getPredicates().stream()
-                    .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
-        }).mapToInt(e -> 1).sum();
+        final int kSize = cnf.getDisjunctions().stream()
+                .filter(disjunction -> !isDisjunctionWithExcludedPredicate(disjunction)).mapToInt(e -> 1).sum();
 
         IntStream.range(0, cnf.getDisjunctions().size()).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
@@ -106,6 +106,11 @@ public class CriteriaIndexHelper implements CriteriaVisitor<Void> {
             indexTable.put(kSize, compactPostingLists(postingLists));
         });
         return null;
+    }
+
+    private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {
+        return disjunction.getPredicates().stream()
+                .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
     }
 
     private <T, S> Map<T, Set<S>> compactPostingLists(List<Map<T, Set<S>>> maps) {
