@@ -13,9 +13,18 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = { "id", "predicateType", "order" })
 @NoArgsConstructor
 @AllArgsConstructor
-public class DisjunctionPostingEntry {
+public class DisjunctionPostingEntry implements Comparable<DisjunctionPostingEntry> {
     private String id;
     private PredicateType predicateType;
     private int order;
     private long score;
+
+    @Override
+    public int compareTo(DisjunctionPostingEntry o) {
+        final int idc = id.compareTo(o.getId());
+        if (idc != 0) {
+            return idc;
+        }
+        return predicateType.compareTo(o.getPredicateType());
+    }
 }
