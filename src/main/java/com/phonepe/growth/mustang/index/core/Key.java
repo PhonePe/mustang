@@ -23,4 +23,7 @@ public class Key {
     private int order;
     @Builder.Default
     private long upperBoundScore = 10;
+    
+    // TODO implement equals and hashcode
+
 }

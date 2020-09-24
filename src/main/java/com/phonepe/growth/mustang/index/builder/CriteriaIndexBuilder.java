@@ -13,8 +13,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.validator.constraints.NotBlank;
 
+import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
@@ -38,25 +38,23 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
     @Valid
     @NotNull
     private IndexGroup indexGroup;
-    @NotBlank
-    private String criteriaId;
 
     @Override
     public Void visit(DNFCriteria dnf) {
-        dnf.getConjunctions().forEach(conjunction -> {
+        IntStream.range(0, dnf.getConjunctions().size()).boxed().forEach(j -> {
+            final Conjunction conjunction = dnf.getConjunctions().get(j);
             final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
             final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
             final int kSize = conjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
 
-            final List<Map<Key, Set<ConjunctionPostingEntry>>> postingLists = IntStream
-                    .range(0, conjunction.getPredicates().size()).boxed().map(i -> {
-                        return conjunction.getPredicates().get(i)
-                                .accept(DnfPredicatorVisitorImpl.builder()
-                                        .iId(dnfInvertedIndex.getInternalIdFromCache(
-                                                String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteriaId, i)))
-                                        .eId(criteriaId).build());
-                    }).collect(Collectors.toList());
+            final List<Map<Key, Set<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates().stream()
+                    .map(predicate -> predicate.accept(DnfPredicatorVisitorImpl.builder()
+                            .iId(dnfInvertedIndex
+                                    .getInternalIdFromCache(String.format(CONJUNCTION_ENTRY_ID_FORMAT, dnf.getId(), j)))
+                            .eId(dnf.getId()).build()))
+                    .collect(Collectors.toList());
+
             if (kSize == 0) {
                 // ZERO size handling
                 final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
@@ -72,8 +70,8 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
             postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
             indexTable.put(kSize, compactPostingLists(postingLists));
-
         });
+
         return null;
     }
 

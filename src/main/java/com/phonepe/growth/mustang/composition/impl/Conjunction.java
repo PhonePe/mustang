@@ -14,6 +14,7 @@ import com.phonepe.growth.mustang.predicate.PredicateType;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -23,7 +24,7 @@ public class Conjunction extends Composition {
 
     @Builder
     @JsonCreator
-    public Conjunction(@JsonProperty("predicates") List<Predicate> predicates) {
+    public Conjunction(@JsonProperty("predicates") @Singular List<Predicate> predicates) {
         super(CompositionType.AND, predicates);
     }
 

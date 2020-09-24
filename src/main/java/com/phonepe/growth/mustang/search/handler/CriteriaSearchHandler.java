@@ -50,9 +50,11 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         // TODO revisit
         final List<String> result = Lists.newArrayList();
         final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
-        final int start = 0, end = Math.min(query.getAssigment().size(), table.size() - 1);
-        IntStream.range(start, end).map(i -> end - i + start - 1).boxed().forEach(K -> {
-            Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
+        final int start = 0,
+                end = Math.min(query.getAssigment().size(), table.keySet().stream().max(Integer::compare).get());
+        IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
+            Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] PLists = getPostingLists1(table, K);
+            InitializeCurrentEntries(PLists);
             /* Processing K =0 and K =1 are identical */
             if (K == 0) {
                 K = 1;
@@ -62,22 +64,22 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
                 return;
             }
             int NextID = 0;
-            while (PLists[K - 1].getValue().getValue().size() > PLists[K - 1].getValue().getKey()) {
+            while (getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey()) != null
+                    && getConjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
+                            PLists[K - 1].getValue().getKey()) != null) {
                 sortByCurrentEntries(PLists);
                 /*
                  * Check if the first K posting lists have the same conjunction ID in their
                  * current entries
                  */
-                if (PLists[0].getValue().getValue().get(PLists[0].getValue().getKey()).getIId()
-                        .equals(PLists[K - 1].getValue().getValue().get(PLists[K - 1].getValue().getKey()).getIId())) {
+                if (PLists[0].getValue().getKey().equals(PLists[K - 1].getValue().getKey())) {
                     /* Reject conjunction if a ̸∈ predicate is violated */
-                    if (PredicateType.EXCLUDED
-                            .equals(PLists[0].getValue().getValue().get(PLists[0].getValue().getKey()).getType())) {
-                        final Integer rejectId = PLists[0].getValue().getValue().get(PLists[0].getValue().getKey())
-                                .getIId();
-                        for (int L = K; L < PLists.length - 1; L--) {
-                            if (PLists[0].getValue().getValue().get(PLists[0].getValue().getKey()).getIId()
-                                    .equals(rejectId)) {
+                    if (PredicateType.EXCLUDED.equals(
+                            getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey())
+                                    .getType())) {
+                        final Integer rejectId = PLists[0].getValue().getKey();
+                        for (int L = 0; L <= K - 1; L++) {
+                            if (PLists[L].getValue().getKey().equals(rejectId)) {
                                 /* Skip to smallest ID where ID > RejectID */
                                 PLists[L].getValue().setLeft(rejectId + 1);
                             } else {
@@ -87,15 +89,16 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
-                        result.add(PLists[K - 1].getValue().getValue().get(PLists[K - 1].getValue().getKey()).getEId());
+                        result.add(getConjunctionPostingEntry(PLists[0].getValue().getValue(),
+                                PLists[0].getValue().getKey()).getEId());
                     }
                     /* NextID is the smallest possible ID after current ID */
-                    NextID = PLists[K - 1].getValue().getValue().get(PLists[K - 1].getValue().getKey()).getIId() + 1;
+                    NextID = PLists[K - 1].getValue().getKey() + 1;
                 } else {
                     /* Skip first K-1 posting lists */
-                    NextID = PLists[K - 1].getValue().getValue().get(PLists[K - 1].getValue().getKey()).getIId();
+                    NextID = PLists[K - 1].getValue().getKey();
                 }
-                for (int L = 0; L < K - 1; L++) {
+                for (int L = 0; L <= K - 1; L++) {
                     PLists[L].getValue().setLeft(NextID);
                 }
             }
@@ -140,27 +143,45 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         return (Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[]) collect.entrySet().toArray();
     }
 
-//    private Map<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> sortByCurrentEntries(
-//            Map<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> PLists) {
-//        Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> idComparator = (e1, e2) -> e1.getKey()
-//                .getId().compareTo(e2.getKey().getId());
-//        Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> predicateTypeComparator = (e1, e2) -> e1
-//                .getKey().getPredicateType().compareTo(e2.getKey().getPredicateType());
-//        return PLists.entrySet().stream()
-//                .sorted(Map.Entry.<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>comparingByValue(
-//                        idComparator.thenComparing(predicateTypeComparator.reversed())))
-//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
-//                        LinkedHashMap::new));
-//    }
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] getPostingLists1(
+            Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table, int k) {
+        final Map<Key, Set<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+
+        final Set<Key> collect = query.getAssigment().entrySet().stream()
+                .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
+                .collect(Collectors.toSet());
+        final Set<Key> collect2 = collect.stream().filter(key -> map.containsKey(key)).collect(Collectors.toSet());
+
+        final Map.Entry[] array = collect2.stream()
+                .collect(Collectors.toMap(x -> x,
+                        x -> MutablePair.of(0, new ArrayList<ConjunctionPostingEntry>(map.get(x))),
+                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .entrySet().stream().toArray(Map.Entry[]::new);
+        return ((Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[]) array);
+    }
 
     private void sortByCurrentEntries(Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] PLists) {
+        // TODO Fix NPE
         final Comparator<Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>> idComparator = (e1,
-                e2) -> (e1.getValue().getValue().get(e1.getValue().getKey()).getIId()
-                        .compareTo(e2.getValue().getValue().get(e2.getValue().getKey()).getIId()));
+                e2) -> (e1.getValue().getKey().compareTo(e2.getValue().getKey()));
         final Comparator<Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>> typeComparator = (e1,
-                e2) -> (e1.getValue().getValue().get(e1.getValue().getKey()).getType()
-                        .compareTo(e2.getValue().getValue().get(e1.getValue().getKey()).getType()));
+                e2) -> (getConjunctionPostingEntry(e1.getValue().getValue(), e1.getValue().getKey()).getType()
+                        .compareTo(getConjunctionPostingEntry(e2.getValue().getValue(), e2.getValue().getKey())
+                                .getType()));
         Arrays.sort(PLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
+    }
+
+    private void InitializeCurrentEntries(
+            Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] PLists) {
+        Arrays.stream(PLists).forEach(pList -> {
+            pList.getValue().setLeft(pList.getValue().getRight().get(0).getIId());
+        });
+    }
+
+    private ConjunctionPostingEntry getConjunctionPostingEntry(Collection<ConjunctionPostingEntry> set, Integer iId) {
+        return set.stream().filter(x -> x.getIId().equals(iId)).findFirst().orElse(null);
+
     }
 
 }
