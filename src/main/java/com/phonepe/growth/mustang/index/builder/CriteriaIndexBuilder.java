@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,11 +43,11 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         IntStream.range(0, dnf.getConjunctions().size()).boxed().forEach(j -> {
             final Conjunction conjunction = dnf.getConjunctions().get(j);
             final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
-            final Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
+            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
             final int kSize = conjunction.getPredicates().stream()
                     .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
 
-            final List<Map<Key, Set<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates().stream()
+            final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates().stream()
                     .map(predicate -> predicate.accept(DnfPredicatorVisitorImpl.builder()
                             .iId(dnfInvertedIndex
                                     .getInternalIdFromCache(String.format(CONJUNCTION_ENTRY_ID_FORMAT, dnf.getId(), j)))
@@ -58,13 +57,13 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             if (kSize == 0) {
                 // ZERO size handling
                 final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
-                final Map<Key, Set<ConjunctionPostingEntry>> map = postingLists.stream()
+                final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
                         .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
                         .distinct()
                         .map(entry -> ConjunctionPostingEntry.builder().iId(entry.getIId()).eId(entry.getEId())
                                 .type(PredicateType.INCLUDED).score(0).build())
                         .distinct().map(entry -> Pair.of(key, entry)).collect(Collectors.groupingBy(Pair::getKey,
-                                Collectors.mapping(Pair::getValue, Collectors.toSet())));
+                                Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
                 postingLists.add(map);
             }
 
@@ -78,13 +77,13 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
     @Override
     public Void visit(CNFCriteria cnf) {
         final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = indexGroup.getCnfInvertedIndex();
-        final Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
+        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
         final int kSize = cnf.getDisjunctions().stream()
                 .filter(disjunction -> !isDisjunctionWithExcludedPredicate(disjunction)).mapToInt(e -> 1).sum();
 
         IntStream.range(0, cnf.getDisjunctions().size()).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
-            final List<Map<Key, Set<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
+            final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
                     .map(predicate -> {
                         return predicate.accept(CnfPredicateVisitorImpl.builder()
                                 .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId())).eId(cnf.getId()).order(i)
@@ -94,13 +93,13 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             if (kSize == 0) {
                 // Zero size handling
                 final Key key = Key.builder().name(ZERO_SIZE_DISJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
-                final Map<Key, Set<DisjunctionPostingEntry>> map = postingLists.stream()
+                final Map<Key, TreeSet<DisjunctionPostingEntry>> map = postingLists.stream()
                         .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
                         .distinct()
                         .map(entry -> DisjunctionPostingEntry.builder().iId(entry.getIId()).eId(entry.getEId())
                                 .type(PredicateType.INCLUDED).order(-1).score(0).build())
                         .distinct().map(entry -> Pair.of(key, entry)).collect(Collectors.groupingBy(Pair::getKey,
-                                Collectors.mapping(Pair::getValue, Collectors.toSet())));
+                                Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
                 postingLists.add(map);
             }
 
@@ -115,12 +114,12 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
     }
 
-    private <T, S> Map<T, Set<S>> compactPostingLists(List<Map<T, Set<S>>> maps) {
-        final List<Map.Entry<T, Set<S>>> tempResult = maps.stream().collect(() -> new ArrayList<>(),
+    private <T, S> Map<T, TreeSet<S>> compactPostingLists(List<Map<T, TreeSet<S>>> maps) {
+        final List<Map.Entry<T, TreeSet<S>>> tempResult = maps.stream().collect(() -> new ArrayList<>(),
                 (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream().collect(Collectors.groupingBy(Map.Entry::getKey,
-                Collectors.mapping(Map.Entry::getValue, Collectors.reducing(Collections.emptySet(), (s1, s2) -> {
-                    final Set<S> combined = new TreeSet<>(s1);
+                Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeSet<>(), (s1, s2) -> {
+                    final TreeSet<S> combined = new TreeSet<>(s1);
                     combined.addAll(s2);
                     return combined;
                 }))));

@@ -1,7 +1,7 @@
 package com.phonepe.growth.mustang.index.core;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.validation.constraints.NotNull;
@@ -24,7 +24,7 @@ import lombok.Data;
 public abstract class InvertedIndex<T> {
     @NotNull
     private CriteriaForm form;
-    private final Map<Integer, Map<Key, Set<T>>> table = Maps.newConcurrentMap();
+    private final Map<Integer, Map<Key, TreeSet<T>>> table = Maps.newConcurrentMap();
 
     private final AtomicInteger counter = new AtomicInteger(0);
     private final Map<String, Integer> idCache = Maps.newConcurrentMap();
