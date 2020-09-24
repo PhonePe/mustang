@@ -22,7 +22,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Lists;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
@@ -109,25 +108,24 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
     @Override
     public List<String> visitCNF() {
         // TODO implement
-        Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
+//        Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
         return Collections.emptyList();
     }
 
-    /*
-     * @SuppressWarnings("unchecked") private Map.Entry<Key,
-     * MutablePair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>[]
-     * getPostingLists( Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table,
-     * int k) { final Map<Key, Set<ConjunctionPostingEntry>> map =
-     * table.getOrDefault(k, Collections.emptyMap()); final LinkedHashMap<Key,
-     * Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> collect = query
-     * .getAssigment().entrySet().stream() .map(entry ->
-     * Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-     * .filter(key -> map.containsKey(key)) .collect(Collectors.toMap(key -> key,
-     * key -> Pair.of(map.get(key).toArray(new ConjunctionPostingEntry[0])[0],
-     * map.get(key)), (oldValue, newValue) -> oldValue, LinkedHashMap::new)); return
-     * (Map.Entry<Key, MutablePair<ConjunctionPostingEntry,
-     * Set<ConjunctionPostingEntry>>>[]) collect.entrySet() .toArray(); }
-     */
+//    @SuppressWarnings("unchecked")
+//    private Map.Entry<Key, MutablePair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>[] getPostingLists(
+//            Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table, int k) {
+//        final Map<Key, Set<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+//        final LinkedHashMap<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> collect = query
+//                .getAssigment().entrySet().stream()
+//                .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
+//                .filter(key -> map.containsKey(key))
+//                .collect(Collectors.toMap(key -> key,
+//                        key -> Pair.of(map.get(key).toArray(new ConjunctionPostingEntry[0])[0], map.get(key)),
+//                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+//        return (Map.Entry<Key, MutablePair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>[]) collect.entrySet()
+//                .toArray();
+//    }
 
     @SuppressWarnings("unchecked")
     private Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] getPostingLists(
@@ -142,22 +140,18 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         return (Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[]) collect.entrySet().toArray();
     }
 
-    /*
-     * private Map<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>
-     * sortByCurrentEntries( Map<Key, Pair<ConjunctionPostingEntry,
-     * Set<ConjunctionPostingEntry>>> PLists) {
-     * Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>
-     * idComparator = (e1, e2) -> e1.getKey()
-     * .getId().compareTo(e2.getKey().getId());
-     * Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>
-     * predicateTypeComparator = (e1, e2) -> e1
-     * .getKey().getPredicateType().compareTo(e2.getKey().getPredicateType());
-     * return PLists.entrySet().stream() .sorted(Map.Entry.<Key,
-     * Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>comparingByValue(
-     * idComparator.thenComparing(predicateTypeComparator.reversed())))
-     * .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue,
-     * newValue) -> oldValue, LinkedHashMap::new)); }
-     */
+//    private Map<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> sortByCurrentEntries(
+//            Map<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> PLists) {
+//        Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> idComparator = (e1, e2) -> e1.getKey()
+//                .getId().compareTo(e2.getKey().getId());
+//        Comparator<Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> predicateTypeComparator = (e1, e2) -> e1
+//                .getKey().getPredicateType().compareTo(e2.getKey().getPredicateType());
+//        return PLists.entrySet().stream()
+//                .sorted(Map.Entry.<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>comparingByValue(
+//                        idComparator.thenComparing(predicateTypeComparator.reversed())))
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue,
+//                        LinkedHashMap::new));
+//    }
 
     private void sortByCurrentEntries(Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] PLists) {
         final Comparator<Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>> idComparator = (e1,
