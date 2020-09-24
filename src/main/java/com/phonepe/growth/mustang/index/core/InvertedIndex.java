@@ -2,6 +2,7 @@ package com.phonepe.growth.mustang.index.core;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,6 +26,13 @@ public abstract class InvertedIndex<T> {
     private CriteriaForm form;
     private final Map<Integer, Map<Key, Set<T>>> table = Maps.newConcurrentMap();
 
+    private final AtomicInteger counter = new AtomicInteger(0);
+    private final Map<String, Integer> idCache = Maps.newConcurrentMap();
+
     public abstract <U> U accept(InvertedIndexVisitor<T, U> visitor);
+
+    public Integer getInternalIdFromCache(String externalId) {
+        return idCache.computeIfAbsent(externalId, x -> counter.incrementAndGet());
+    }
 
 }

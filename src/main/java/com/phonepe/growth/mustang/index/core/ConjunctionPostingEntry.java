@@ -1,9 +1,5 @@
 package com.phonepe.growth.mustang.index.core;
 
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
 import lombok.AllArgsConstructor;
@@ -14,22 +10,21 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = { "id", "predicateType" })
+@EqualsAndHashCode(of = { "iId", "type" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConjunctionPostingEntry implements Comparable<ConjunctionPostingEntry> {
-    @NotBlank
-    private String id;
-    @NotNull
-    private PredicateType predicateType;
+    private Integer iId;
+    private String eId;
+    private PredicateType type;
     private long score;
 
     @Override
     public int compareTo(ConjunctionPostingEntry o) {
-        final int idc = id.compareTo(o.getId());
+        final int idc = iId.compareTo(o.getIId());
         if (idc != 0) {
             return idc;
         }
-        return predicateType.compareTo(o.getPredicateType());
+        return type.compareTo(o.getType());
     }
 }

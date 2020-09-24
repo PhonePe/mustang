@@ -1,11 +1,10 @@
-package com.phonepe.growth.mustang.index.util;
+package com.phonepe.growth.mustang.index.builder;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
@@ -22,8 +21,8 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CnfPredicateVisitorImpl implements PredicateVisitor<Map<Key, Set<DisjunctionPostingEntry>>> {
-    @NotBlank
-    private final String id;
+    private final Integer iId;
+    private final String eId;
     private final int order;
 
     @Override
@@ -36,12 +35,10 @@ public class CnfPredicateVisitorImpl implements PredicateVisitor<Map<Key, Set<Di
         return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
     }
 
-    private Map<Key, Set<DisjunctionPostingEntry>> extractPostingLists(PredicateType predicateType, String lhs,
-            Set<?> values) {
-        return values.stream().map(value -> Key.builder().name(lhs).value(value).build()).map(key -> {
-            final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder().id(id)
-                    .predicateType(predicateType).order(order).score(0).build();
-            return Pair.of(key, postingEntry);
-        }).collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toSet())));
+    private Map<Key, Set<DisjunctionPostingEntry>> extractPostingLists(PredicateType pType, String lhs, Set<?> values) {
+        return values.stream().map(value -> Key.builder().name(lhs).value(value).build())
+                .map(key -> Pair.of(key,
+                        DisjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).order(order).score(0).build()))
+                .collect(Collectors.groupingBy(Pair::getKey, Collectors.mapping(Pair::getValue, Collectors.toSet())));
     }
 }

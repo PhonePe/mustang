@@ -8,9 +8,11 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
-import com.phonepe.growth.mustang.index.Indexer;
+import com.phonepe.growth.mustang.index.IndexingFacade;
 import com.phonepe.growth.mustang.scan.Scanner;
-import com.phonepe.growth.mustang.search.Searcher;
+import com.phonepe.growth.mustang.search.Query;
+import com.phonepe.growth.mustang.search.QueryBuilder;
+import com.phonepe.growth.mustang.search.SearchFacade;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,15 +29,16 @@ public class MustangEngine {
     private ObjectMapper mapper;
 
     public void index(String indexName, Criteria criteria) {
-        Indexer.add(indexName, criteria);
+        IndexingFacade.add(indexName, criteria);
     }
 
     public void index(String indexName, List<Criteria> criterias) {
-        Indexer.add(indexName, criterias);
+        IndexingFacade.add(indexName, criterias);
     }
 
     public List<String> search(String indexName, EvaluationContext context) {
-        return Searcher.builder().indexName(indexName).context(context).mapper(mapper).build().search();
+        final Query query = QueryBuilder.buildQuery(mapper, context);
+        return SearchFacade.search(indexName, query);
     }
 
     public List<Criteria> scan(List<Criteria> criterias, EvaluationContext context) {

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlattenedJson {
-    private static final String NORMALISED_KEY_FORMAT = "$.%s"; // Normalisation to conform to jwayjson path.
+    private static final String NORMALISED_KEY_FORMAT = "$.%s"; // Normalization.
     @NotNull
     private ObjectMapper mapper;
     @NotNull
