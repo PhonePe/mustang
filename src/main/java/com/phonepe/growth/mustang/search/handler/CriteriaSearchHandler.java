@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -114,47 +113,15 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         return Collections.emptyList();
     }
 
-//    @SuppressWarnings("unchecked")
-//    private Map.Entry<Key, MutablePair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>[] getPostingLists(
-//            Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table, int k) {
-//        final Map<Key, Set<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-//        final LinkedHashMap<Key, Pair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>> collect = query
-//                .getAssigment().entrySet().stream()
-//                .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-//                .filter(key -> map.containsKey(key))
-//                .collect(Collectors.toMap(key -> key,
-//                        key -> Pair.of(map.get(key).toArray(new ConjunctionPostingEntry[0])[0], map.get(key)),
-//                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-//        return (Map.Entry<Key, MutablePair<ConjunctionPostingEntry, Set<ConjunctionPostingEntry>>>[]) collect.entrySet()
-//                .toArray();
-//    }
-
-//    @SuppressWarnings("unchecked")
-//    private Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[] getPostingLists(
-//            Map<Integer, Map<Key, Set<ConjunctionPostingEntry>>> table, int k) {
-//        final Map<Key, Set<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-//        final LinkedHashMap<Key, Pair<Integer, List<ConjunctionPostingEntry>>> collect = query.getAssigment().entrySet()
-//                .stream().map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-//                .filter(key -> map.containsKey(key))
-//                .map(key -> Pair.of(key, new ArrayList<ConjunctionPostingEntry>(map.get(key))))
-//                .collect(Collectors.toMap(Pair::getKey, x -> MutablePair.of(0, x.getValue()),
-//                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-//        return (Map.Entry<Key, MutablePair<Integer, List<ConjunctionPostingEntry>>>[]) collect.entrySet().toArray();
-//    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingLists(
             Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, int k) {
         final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
 
-        final Set<Key> collect = query.getAssigment().entrySet().stream()
+        final Map.Entry[] array = query.getAssigment().entrySet().stream()
                 .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-                .collect(Collectors.toSet());
-        final Set<Key> collect2 = collect.stream().filter(key -> map.containsKey(key)).collect(Collectors.toSet());
-
-        final Map.Entry[] array = collect2
-                .stream().collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
-                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .filter(key -> map.containsKey(key)).collect(Collectors.toMap(x -> x,
+                        x -> MutablePair.of(0, map.get(x)), (oldValue, newValue) -> newValue, LinkedHashMap::new))
                 .entrySet().stream().toArray(Map.Entry[]::new);
         return ((Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[]) array);
     }

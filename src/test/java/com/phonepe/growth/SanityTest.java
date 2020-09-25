@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.wnameless.json.flattener.JsonFlattener;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
@@ -24,7 +25,8 @@ public class SanityTest {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet("1", "2", "3")).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
                 .build()).build();
         Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
@@ -33,7 +35,8 @@ public class SanityTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
-        testQuery.put("n", "1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
 
         final ObjectMapper mapper = new ObjectMapper();
         final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
