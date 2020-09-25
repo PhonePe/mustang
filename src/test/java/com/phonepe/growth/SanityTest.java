@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.wnameless.json.flattener.JsonFlattener;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
