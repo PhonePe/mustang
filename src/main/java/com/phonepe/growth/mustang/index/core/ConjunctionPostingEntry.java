@@ -10,11 +10,21 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = { "id", "predicateType" })
+@EqualsAndHashCode(of = { "iId", "type" })
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConjunctionPostingEntry {
-    private String id;
-    private PredicateType predicateType;
+public class ConjunctionPostingEntry implements Comparable<ConjunctionPostingEntry> {
+    private Integer iId;
+    private String eId;
+    private PredicateType type;
     private long score;
+
+    @Override
+    public int compareTo(ConjunctionPostingEntry o) {
+        final int idc = iId.compareTo(o.getIId());
+        if (idc != 0) {
+            return idc;
+        }
+        return type.compareTo(o.getType());
+    }
 }

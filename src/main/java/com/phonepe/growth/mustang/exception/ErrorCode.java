@@ -6,5 +6,4 @@ public enum ErrorCode {
     INDEX_NOT_FOUND,
     INDEX_GENERATION_ERROR,
     CORRUPTED_JSON_ERROR;
-
 }

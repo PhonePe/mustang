@@ -13,6 +13,7 @@ import com.phonepe.growth.mustang.predicate.Predicate;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -22,7 +23,7 @@ public class Disjunction extends Composition {
 
     @Builder
     @JsonCreator
-    public Disjunction(@JsonProperty("predicates") List<Predicate> predicates) {
+    public Disjunction(@JsonProperty("predicates") @Singular List<Predicate> predicates) {
         super(CompositionType.OR, predicates);
     }
 

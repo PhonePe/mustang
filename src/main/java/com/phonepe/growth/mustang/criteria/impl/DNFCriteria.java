@@ -17,6 +17,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -29,7 +30,8 @@ public class DNFCriteria extends Criteria {
 
     @Builder
     @JsonCreator
-    public DNFCriteria(@JsonProperty("id") String id, @JsonProperty("conjunctions") List<Conjunction> conjunctions) {
+    public DNFCriteria(@JsonProperty("id") String id,
+            @JsonProperty("conjunctions") @Singular List<Conjunction> conjunctions) {
         super(CriteriaForm.DNF, id);
         this.conjunctions = conjunctions;
     }

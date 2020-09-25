@@ -1,15 +1,15 @@
 package com.phonepe.growth.mustang.index.core;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
-import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
 
@@ -24,8 +24,14 @@ import lombok.Data;
 public abstract class InvertedIndex<T> {
     @NotNull
     private CriteriaForm form;
-    private final Map<Integer, Map<Key, Set<T>>> table = Collections.emptyMap();
+    private final Map<Integer, Map<Key, TreeSet<T>>> table = Maps.newConcurrentMap();
+    private final AtomicInteger idCounter = new AtomicInteger(0);
+    private final Map<String, Integer> idCache = Maps.newConcurrentMap();
 
     public abstract <U> U accept(InvertedIndexVisitor<T, U> visitor);
+
+    public Integer getInternalIdFromCache(String externalId) {
+        return idCache.computeIfAbsent(externalId, x -> idCounter.incrementAndGet());
+    }
 
 }

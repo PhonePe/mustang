@@ -7,23 +7,24 @@ import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
-import com.phonepe.growth.mustang.index.util.CriteriaIndexHelper;
+import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
+import com.phonepe.growth.mustang.index.group.IndexGroup;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Indexer {
-    private static final Map<String, IndexGroup> indexMap = Maps.newHashMap();
+public class IndexingFacade {
+    private static final Map<String, IndexGroup> indexMap = Maps.newConcurrentMap();
 
     public static void add(String index, Criteria criteria) {
         final IndexGroup indexGroup = getIndexGroup(index);
-        criteria.accept(CriteriaIndexHelper.builder().indexGroup(indexGroup).build());
+        criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
     }
 
     public static void add(String index, List<Criteria> criterias) {
         final IndexGroup indexGroup = getIndexGroup(index);
-        criterias.forEach(criteria -> criteria.accept(CriteriaIndexHelper.builder().indexGroup(indexGroup).build()));
+        criterias.forEach(criteria -> criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build()));
     }
 
     public static IndexGroup get(String index) {

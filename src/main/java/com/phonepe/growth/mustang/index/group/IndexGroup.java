@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index;
+package com.phonepe.growth.mustang.index.group;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -22,11 +22,9 @@ import lombok.NoArgsConstructor;
 public class IndexGroup {
     @NotBlank
     private String name;
-    @Builder.Default
-    private InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = DNFInvertedIndex
+    private final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = DNFInvertedIndex
             .<ConjunctionPostingEntry>builder().build();
-    @Builder.Default
-    private InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
-            .<DisjunctionPostingEntry>builder().build();;
+    private final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
+            .<DisjunctionPostingEntry>builder().build();
 
 }

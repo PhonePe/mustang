@@ -17,6 +17,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -29,14 +30,15 @@ public class CNFCriteria extends Criteria {
 
     @Builder
     @JsonCreator
-    public CNFCriteria(@JsonProperty("id") String id, @JsonProperty("disjunctions") List<Disjunction> disjunctions) {
+    public CNFCriteria(@JsonProperty("id") String id,
+            @JsonProperty("disjunctions") @Singular List<Disjunction> disjunctions) {
         super(CriteriaForm.CNF, id);
         this.disjunctions = disjunctions;
     }
 
     @Override
     public boolean evaluate(EvaluationContext context) {
-        return disjunctions.stream().filter(disjunction -> !disjunction.evaluate(context)).findFirst().isPresent();
+        return !disjunctions.stream().filter(disjunction -> !disjunction.evaluate(context)).findFirst().isPresent();
     }
 
     @Override
