@@ -10,31 +10,32 @@ import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
+@Builder
 public class IndexingFacade {
-    private static final Map<String, IndexGroup> indexMap = Maps.newConcurrentMap();
+    private final Map<String, IndexGroup> indexMap = Maps.newConcurrentMap();
 
-    public static void add(String index, Criteria criteria) {
+    public void add(String index, Criteria criteria) {
         final IndexGroup indexGroup = getIndexGroup(index);
         criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
     }
 
-    public static void add(String index, List<Criteria> criterias) {
+    public void add(String index, List<Criteria> criterias) {
         final IndexGroup indexGroup = getIndexGroup(index);
         criterias.forEach(criteria -> criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build()));
     }
 
-    public static IndexGroup get(String index) {
+    public IndexGroup get(String index) {
         if (indexMap.containsKey(index)) {
             return indexMap.get(index);
         }
         throw MustangException.builder().errorCode(ErrorCode.INDEX_NOT_FOUND).build();
     }
 
-    private static IndexGroup getIndexGroup(String index) {
+    private IndexGroup getIndexGroup(String index) {
         if (!indexMap.containsKey(index)) {
             indexMap.put(index, IndexGroup.builder().name(index).build());
         }

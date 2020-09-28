@@ -5,14 +5,18 @@ import java.util.List;
 import com.phonepe.growth.mustang.index.IndexingFacade;
 import com.phonepe.growth.mustang.search.handler.CriteriaSearchHandler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
+@Builder
+@AllArgsConstructor
 public class SearchFacade {
+    private final IndexingFacade indexingFacade;
 
-    public static List<String> search(final String indexName, final Query query) {
-        return CriteriaSearchHandler.builder().index(IndexingFacade.get(indexName)).query(query).build().handle();
+    public List<String> search(final String indexName, final Query query) {
+        return CriteriaSearchHandler.builder().index(indexingFacade.get(indexName)).query(query).build().handle();
     }
 
 }

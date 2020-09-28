@@ -39,11 +39,11 @@ public class Conjunction extends Composition {
     }
 
     @Override
-    public long getScore(EvaluationContext context) {
+    public double getScore(EvaluationContext context) {
         return getPredicates()
                 .stream()
                 .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToLong(predicate -> predicate.getWeight()) // TODO should consider weight from the context also
+                .mapToDouble(predicate -> predicate.getWeight()) // TODO should consider weight from the context also
                 .sum();
     }
 

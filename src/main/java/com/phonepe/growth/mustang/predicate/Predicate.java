@@ -25,19 +25,19 @@ public abstract class Predicate {
     private PredicateType type;
     @NotBlank
     private String lhs;
-    private boolean isLhsJsonPath;
+    private boolean lhsNotAPath;
     private long weight;
     private boolean defaultResult;
 
     public boolean evaluate(EvaluationContext context) {
-        if (isLhsJsonPath) {
-            try {
-                return evaluate(context, JsonPath.read(context.getNode().toString(), lhs));
-            } catch (PathNotFoundException e) {
-                return defaultResult;
-            }
+        if (lhsNotAPath) {
+            return evaluate(context, lhs);
         }
-        return evaluate(context, lhs);
+        try {
+            return evaluate(context, JsonPath.read(context.getNode().toString(), lhs));
+        } catch (PathNotFoundException e) {
+            return defaultResult;
+        }
     }
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);

@@ -27,25 +27,27 @@ public class MustangEngine {
     @Valid
     @NotNull
     private ObjectMapper mapper;
+    private final IndexingFacade indexingFacde = IndexingFacade.builder().build();
+    private final SearchFacade searchFacade = SearchFacade.builder().indexingFacade(indexingFacde).build();
 
-    public void index(String indexName, Criteria criteria) {
-        IndexingFacade.add(indexName, criteria);
+    public synchronized void index(final String indexName, final Criteria criteria) {
+        indexingFacde.add(indexName, criteria);
     }
 
-    public void index(String indexName, List<Criteria> criterias) {
-        IndexingFacade.add(indexName, criterias);
+    public synchronized void index(final String indexName, final List<Criteria> criterias) {
+        indexingFacde.add(indexName, criterias);
     }
 
-    public List<String> search(String indexName, EvaluationContext context) {
+    public List<String> search(final String indexName, final EvaluationContext context) {
         final Query query = QueryBuilder.buildQuery(mapper, context);
-        return SearchFacade.search(indexName, query);
+        return searchFacade.search(indexName, query);
     }
 
-    public List<Criteria> scan(List<Criteria> criterias, EvaluationContext context) {
+    public List<Criteria> scan(final List<Criteria> criterias, final EvaluationContext context) {
         return Scanner.builder().criterias(criterias).context(context).build().scan();
     }
 
-    public boolean evaluate(Criteria criteria, EvaluationContext context) {
+    public boolean evaluate(final Criteria criteria, final EvaluationContext context) {
         return criteria.evaluate(context);
     }
 
