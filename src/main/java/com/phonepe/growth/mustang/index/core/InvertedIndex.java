@@ -28,10 +28,10 @@ public abstract class InvertedIndex<T> {
     private final AtomicInteger idCounter = new AtomicInteger(0);
     private final Map<String, Integer> idCache = Maps.newConcurrentMap();
 
-    public abstract <U> U accept(InvertedIndexVisitor<T, U> visitor);
-
     public Integer getInternalIdFromCache(String externalId) {
         return idCache.computeIfAbsent(externalId, x -> idCounter.incrementAndGet());
     }
+
+    public abstract <U> U accept(InvertedIndexVisitor<T, U> visitor);
 
 }
