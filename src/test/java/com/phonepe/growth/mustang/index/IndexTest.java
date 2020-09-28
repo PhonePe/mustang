@@ -1,4 +1,4 @@
-package com.phonepe.growt.mustang.index;
+package com.phonepe.growth.mustang.index;
 
 import java.util.Arrays;
 
