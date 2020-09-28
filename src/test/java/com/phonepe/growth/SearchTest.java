@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
@@ -64,8 +65,7 @@ public class SearchTest {
         testQuery.put("n", "7");
 
         final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final List<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());

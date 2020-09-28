@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,8 +36,6 @@ public class FlattenedJson {
                     .stream().collect(Collectors.toMap(e -> String.format(NORMALISED_KEY_FORMAT, e.getKey()),
                             Map.Entry::getValue));
             return mapper.readValue(mapper.writeValueAsBytes(collect), TYPE_REF); // for type safety
-        } catch (JsonProcessingException e) {
-            throw MustangException.propagate(e);
         } catch (IOException e) {
             throw MustangException.propagate(e);
         }

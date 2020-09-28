@@ -49,11 +49,11 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         // TODO revisit
         final List<String> result = Lists.newArrayList();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
-        final int start = 0,
-                end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
+        final int start = 0;
+        final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
             Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
-            InitializeCurrentEntries(PLists);
+            initializeCurrentEntries(PLists);
             /* Processing K =0 and K =1 are identical */
             if (K == 0) {
                 K = 1;
@@ -101,7 +101,6 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
                     PLists[L].getValue().setLeft(NextID);
                 }
             }
-
         });
 
         return result;
@@ -127,7 +126,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         return ((Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[]) array);
     }
 
-    private void sortByCurrentEntries(Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists) {
+    private void sortByCurrentEntries(Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
         // TODO Fix NPE
         final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> idComparator = (e1,
                 e2) -> (e1.getValue().getKey().compareTo(e2.getValue().getKey()));
@@ -135,14 +134,12 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
                 e2) -> (getConjunctionPostingEntry(e1.getValue().getValue(), e1.getValue().getKey()).getType()
                         .compareTo(getConjunctionPostingEntry(e2.getValue().getValue(), e2.getValue().getKey())
                                 .getType()));
-        Arrays.sort(PLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
+        Arrays.sort(pLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
     }
 
-    private void InitializeCurrentEntries(
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists) {
-        Arrays.stream(PLists).forEach(pList -> {
-            pList.getValue().setLeft(pList.getValue().getRight().first().getIId());
-        });
+    private void initializeCurrentEntries(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
     }
 
     private ConjunctionPostingEntry getConjunctionPostingEntry(Collection<ConjunctionPostingEntry> set, Integer iId) {

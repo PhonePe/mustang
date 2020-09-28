@@ -31,19 +31,13 @@ public class Conjunction extends Composition {
     @Override
     public boolean evaluate(final EvaluationContext context) {
         // short-circuited implementation looking for a single false
-        return !getPredicates()
-                .stream()
-                .filter(predicate -> !predicate.evaluate(context))
-                .findFirst()
-                .isPresent();
+        return getPredicates().stream().allMatch(predicate -> predicate.evaluate(context));
     }
 
     @Override
     public double getScore(EvaluationContext context) {
-        return getPredicates()
-                .stream()
-                .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(predicate -> predicate.getWeight()) // TODO should consider weight from the context also
+        return getPredicates().stream().filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
+                .mapToDouble(Predicate::getWeight) // TODO should consider weight from the context also
                 .sum();
     }
 

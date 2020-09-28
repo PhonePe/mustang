@@ -38,7 +38,7 @@ public class DNFCriteria extends Criteria {
 
     @Override
     public boolean evaluate(EvaluationContext context) {
-        return conjunctions.stream().filter(conjunction -> conjunction.evaluate(context)).findFirst().isPresent();
+        return conjunctions.stream().anyMatch(conjunction -> conjunction.evaluate(context));
     }
 
     @Override

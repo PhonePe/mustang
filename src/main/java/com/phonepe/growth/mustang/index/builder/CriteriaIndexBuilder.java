@@ -58,7 +58,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 // ZERO size handling
                 final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
                 final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
-                        .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
+                        .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(TreeSet::stream)
                         .distinct()
                         .map(entry -> ConjunctionPostingEntry.builder().iId(entry.getIId()).eId(entry.getEId())
                                 .type(PredicateType.INCLUDED).score(0).build())
@@ -84,17 +84,16 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         IntStream.range(0, cnf.getDisjunctions().size()).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
-                    .map(predicate -> {
-                        return predicate.accept(CnfPredicateVisitorImpl.builder()
-                                .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId())).eId(cnf.getId()).order(i)
-                                .build());
-                    }).collect(Collectors.toList());
+                    .map(predicate -> predicate.accept(
+                            CnfPredicateVisitorImpl.builder().iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
+                                    .eId(cnf.getId()).order(i).build()))
+                    .collect(Collectors.toList());
 
             if (kSize == 0) {
                 // Zero size handling
                 final Key key = Key.builder().name(ZERO_SIZE_DISJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
                 final Map<Key, TreeSet<DisjunctionPostingEntry>> map = postingLists.stream()
-                        .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(m -> m.stream())
+                        .flatMap(m -> m.entrySet().stream()).map(Map.Entry::getValue).flatMap(TreeSet::stream)
                         .distinct()
                         .map(entry -> DisjunctionPostingEntry.builder().iId(entry.getIId()).eId(entry.getEId())
                                 .type(PredicateType.INCLUDED).order(-1).score(0).build())
@@ -111,11 +110,11 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {
         return disjunction.getPredicates().stream()
-                .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
+                .anyMatch(predicate -> PredicateType.EXCLUDED.equals(predicate.getType()));
     }
 
     private <T, S> Map<T, TreeSet<S>> compactPostingLists(List<Map<T, TreeSet<S>>> maps) {
-        final List<Map.Entry<T, TreeSet<S>>> tempResult = maps.stream().collect(() -> new ArrayList<>(),
+        final List<Map.Entry<T, TreeSet<S>>> tempResult = maps.stream().collect(ArrayList::new,
                 (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream().collect(Collectors.groupingBy(Map.Entry::getKey,
                 Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeSet<>(), (s1, s2) -> {
