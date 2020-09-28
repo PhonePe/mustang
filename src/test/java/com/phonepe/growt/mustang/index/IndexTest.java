@@ -1,34 +1,27 @@
-package com.phonepe.growth;
+package com.phonepe.growt.mustang.index;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.phonepe.growth.mustang.MustangEngine;
-import org.junit.Test;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.EvaluationContext;
-import com.phonepe.growth.mustang.composition.impl.Conjunction;
-import com.phonepe.growth.mustang.composition.impl.Disjunction;
-import com.phonepe.growth.mustang.criteria.Criteria;
-import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
-import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.index.IndexingFacade;
-import com.phonepe.growth.mustang.index.core.Key;
-import com.phonepe.growth.mustang.index.group.IndexGroup;
-import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
-import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.MustangEngine;
+import com.phonepe.growth.mustang.composition.impl.Conjunction;
+import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.index.core.Key;
+import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
+import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
 public class IndexTest {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+    private MustangEngine engine;
 
-    private  MustangEngine engine;
-    final ObjectMapper mapper = new ObjectMapper();
     @Before
     public void setUp() throws Exception {
         engine = MustangEngine.builder().mapper(mapper).build();
@@ -39,9 +32,10 @@ public class IndexTest {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().get("test");
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
@@ -51,9 +45,12 @@ public class IndexTest {
 
     @Test
     public void testDnfIndexingWithOnlyExcludePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(
+                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                        .build())
+                .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().get("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
@@ -63,18 +60,21 @@ public class IndexTest {
         Assert.assertTrue(true);
     }
 
-
     @Test
     public void testDnfIndexingWithMultiplePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(
+                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                        .build())
+                .build();
         Criteria c2 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
         Criteria c3 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -83,8 +83,8 @@ public class IndexTest {
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build()).build())
+                .build();
         engine.index("test", Arrays.asList(c1, c2, c3, c4));
         IndexGroup index = engine.getIndexingFacde().get("test");
 

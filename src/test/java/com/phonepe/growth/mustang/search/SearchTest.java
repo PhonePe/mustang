@@ -83,7 +83,6 @@ public class SearchTest {
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet("4", "5", "6", 0.300000000003)).build())
                 .build()).build();
-
         Criteria c3 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet("P1", "P2", "P3")).build())
