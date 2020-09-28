@@ -84,11 +84,10 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         IntStream.range(0, cnf.getDisjunctions().size()).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
-                    .map(predicate -> {
-                        return predicate.accept(CnfPredicateVisitorImpl.builder()
-                                .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId())).eId(cnf.getId()).order(i)
-                                .build());
-                    }).collect(Collectors.toList());
+                    .map(predicate -> predicate.accept(
+                            CnfPredicateVisitorImpl.builder().iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
+                                    .eId(cnf.getId()).order(i).build()))
+                    .collect(Collectors.toList());
 
             if (kSize == 0) {
                 // Zero size handling
@@ -111,7 +110,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {
         return disjunction.getPredicates().stream()
-                .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).findAny().isPresent();
+                .anyMatch(predicate -> PredicateType.EXCLUDED.equals(predicate.getType()));
     }
 
     private <T, S> Map<T, TreeSet<S>> compactPostingLists(List<Map<T, TreeSet<S>>> maps) {
