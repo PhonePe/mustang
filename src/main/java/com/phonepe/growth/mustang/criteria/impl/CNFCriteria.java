@@ -42,9 +42,9 @@ public class CNFCriteria extends Criteria {
     }
 
     @Override
-    public long getScore(EvaluationContext context) {
+    public double getScore(EvaluationContext context) {
         // score of a CNF is the sum of score of all its constituent disjunctions.
-        return disjunctions.stream().mapToLong(disjunction -> disjunction.getScore(context)).sum();
+        return disjunctions.stream().mapToDouble(disjunction -> disjunction.getScore(context)).sum();
     }
 
     @Override

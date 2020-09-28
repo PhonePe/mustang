@@ -42,9 +42,9 @@ public class DNFCriteria extends Criteria {
     }
 
     @Override
-    public long getScore(EvaluationContext context) {
+    public double getScore(EvaluationContext context) {
         // score of a DNF is the max of scores of its constituent conjunctions.
-        return conjunctions.stream().map(conjunction -> conjunction.getScore(context)).max(Double::compare).get();
+        return conjunctions.stream().mapToDouble(conjunction -> conjunction.getScore(context)).max().orElse(0);
     }
 
     @Override

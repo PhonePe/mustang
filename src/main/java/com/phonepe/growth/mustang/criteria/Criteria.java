@@ -26,7 +26,7 @@ public abstract class Criteria {
 
     public abstract boolean evaluate(EvaluationContext context);
 
-    public abstract long getScore(EvaluationContext context);
+    public abstract double getScore(EvaluationContext context);
 
     public abstract <T> T accept(CriteriaVisitor<T> visitor);
 

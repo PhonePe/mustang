@@ -39,7 +39,7 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public long getScore(EvaluationContext context) {
+    public double getScore(EvaluationContext context) {
         // TODO impl
         return 0;
     }

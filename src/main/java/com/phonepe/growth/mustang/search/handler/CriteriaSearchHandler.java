@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import com.google.common.collect.Lists;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
+import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
@@ -49,7 +50,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         final List<String> result = Lists.newArrayList();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
         final int start = 0,
-                end = Math.min(query.getAssigment().size(), table.keySet().stream().max(Integer::compare).get());
+                end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
             Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
             InitializeCurrentEntries(PLists);
@@ -109,7 +110,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
     @Override
     public List<String> visitCNF() {
         // TODO implement
-//        Map<Integer, Map<Key, Set<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
+        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
         return Collections.emptyList();
     }
 
