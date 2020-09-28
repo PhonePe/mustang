@@ -38,7 +38,7 @@ public class CNFCriteria extends Criteria {
 
     @Override
     public boolean evaluate(EvaluationContext context) {
-        return !disjunctions.stream().anyMatch(disjunction -> !disjunction.evaluate(context));
+        return disjunctions.stream().allMatch(disjunction -> disjunction.evaluate(context));
     }
 
     @Override

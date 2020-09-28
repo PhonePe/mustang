@@ -101,7 +101,6 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
                     PLists[L].getValue().setLeft(NextID);
                 }
             }
-
         });
 
         return result;
