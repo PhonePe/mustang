@@ -37,7 +37,7 @@ public class IndexTest {
                 .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
                 .build();
         engine.index("test", c1);
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
         Assert.assertEquals(8, index.getDnfInvertedIndex().getTable().get(3).size());
 
@@ -52,7 +52,7 @@ public class IndexTest {
                         .build())
                 .build();
         engine.index("test", c1);
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
         Assert.assertTrue(index.getDnfInvertedIndex().getTable().get(0).containsKey(key));
@@ -86,7 +86,7 @@ public class IndexTest {
                 .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build()).build())
                 .build();
         engine.index("test", Arrays.asList(c1, c2, c3, c4));
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
 
         /* Asserions for index size */
         Assert.assertEquals(4, index.getDnfInvertedIndex().getTable().size());
