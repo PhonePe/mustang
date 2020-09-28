@@ -1,0 +1,37 @@
+variables:
+  GIT_STRATEGY: clone
+
+stages:
+  - build
+  - quality
+  - deploy
+
+build_snapshot:
+  stage: build
+  only:
+    - merge_requests
+  tags:
+    - backend
+  script:
+    - mvn clean install -DskipTests=true
+
+merge_ready:
+  stage: quality
+  only:
+    - merge_requests
+  tags:
+    - backend
+  script:
+    - mvn verify -U -Pquality_check
+
+deploy_snapshot:
+  stage: deploy
+  tags:
+    - backend
+  only:
+    refs:
+      - develop
+  script:
+    - mvn deploy -DskipTests=true
+  when: manual
+  allow_failure: false

@@ -27,7 +27,7 @@ public class SearchTest {
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.n")
-                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
                 .build();
         Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
@@ -37,7 +37,7 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
-        testQuery.put("n", 0.300000000003);
+        testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
         final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
@@ -45,7 +45,6 @@ public class SearchTest {
         engine.index("test", c2);
         final List<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        System.out.println(searchResults);
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -69,7 +68,6 @@ public class SearchTest {
         engine.index("test", c2);
         final List<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        System.out.println(searchResults);
         Assert.assertTrue(searchResults.isEmpty());
 
     }
