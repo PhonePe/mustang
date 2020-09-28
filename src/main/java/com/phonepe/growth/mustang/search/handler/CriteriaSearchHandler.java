@@ -49,8 +49,8 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
         // TODO revisit
         final List<String> result = Lists.newArrayList();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
-        final int start = 0,
-                end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
+        final int start = 0;
+        final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
             Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
             InitializeCurrentEntries(PLists);
