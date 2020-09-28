@@ -72,4 +72,37 @@ public class SearchTest {
 
     }
 
+    @Test
+    public void testDnfSearchingMultipleMatch(){
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
+                .build()).build();
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet("4", "5", "6", 0.300000000003)).build())
+                .build()).build();
+
+        Criteria c3 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet("P1", "P2", "P3")).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet("4", "5", "6", 0.300000000003)).build())
+                .build()).build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("n", 0.300000000003);
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+        engine.index("testsearch", c3);
+        final List<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        System.out.println(searchResults);
+        /* Assertions for multiple matches */
+        Assert.assertEquals(2, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
 }
