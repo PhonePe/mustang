@@ -30,7 +30,6 @@ public class Conjunction extends Composition {
 
     @Override
     public boolean evaluate(final EvaluationContext context) {
-        // short-circuited implementation looking for a single false
         return getPredicates().stream().allMatch(predicate -> predicate.evaluate(context));
     }
 

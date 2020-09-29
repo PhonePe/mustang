@@ -1,9 +1,10 @@
-package com.phonepe.growth;
+package com.phonepe.growth.mustang.scan;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,12 @@ import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 public class ScanTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private MustangEngine engine;
+
+    @Before
+    public void setUp() throws Exception {
+        engine = MustangEngine.builder().mapper(mapper).build();
+    }
 
     @Test
     public void testDNFPositiveMatch() throws Exception {
@@ -41,7 +48,6 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().filter(criteria -> criteria.getId().equals("C1")).findFirst().isPresent());
@@ -62,7 +68,6 @@ public class ScanTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.isEmpty());

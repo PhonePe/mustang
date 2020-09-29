@@ -29,7 +29,6 @@ public class Disjunction extends Composition {
 
     @Override
     public boolean evaluate(EvaluationContext context) {
-        // short-circuited implementation looking for a single true
         return getPredicates().stream().anyMatch(predicate -> predicate.evaluate(context));
     }
 

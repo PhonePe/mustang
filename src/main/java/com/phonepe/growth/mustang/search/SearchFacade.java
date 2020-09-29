@@ -16,7 +16,7 @@ public class SearchFacade {
     private final IndexingFacade indexingFacade;
 
     public List<String> search(final String indexName, final Query query) {
-        return CriteriaSearchHandler.builder().index(indexingFacade.get(indexName)).query(query).build().handle();
+        return CriteriaSearchHandler.builder().index(indexingFacade.getIndexGroup(indexName)).query(query).build().handle();
     }
 
 }

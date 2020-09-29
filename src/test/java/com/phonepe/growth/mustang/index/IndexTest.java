@@ -1,4 +1,10 @@
-package com.phonepe.growth;
+package com.phonepe.growth.mustang.index;
+
+import java.util.Arrays;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
@@ -12,17 +18,12 @@ import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
 
 public class IndexTest {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+    private MustangEngine engine;
 
-    private  MustangEngine engine;
-    final ObjectMapper mapper = new ObjectMapper();
     @Before
     public void setUp() throws Exception {
         engine = MustangEngine.builder().mapper(mapper).build();
@@ -33,11 +34,12 @@ public class IndexTest {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
         engine.index("test", c1);
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
         Assert.assertEquals(8, index.getDnfInvertedIndex().getTable().get(3).size());
 
@@ -45,29 +47,35 @@ public class IndexTest {
 
     @Test
     public void testDnfIndexingWithOnlyExcludePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(
+                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                        .build())
+                .build();
         engine.index("test", c1);
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
         Assert.assertTrue(index.getDnfInvertedIndex().getTable().get(0).containsKey(key));
         Assert.assertEquals(3, index.getDnfInvertedIndex().getTable().get(0).size());
     }
 
-
     @Test
     public void testDnfIndexingWithMultiplePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(
+                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                        .build())
+                .build();
         Criteria c2 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
         Criteria c3 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -76,10 +84,10 @@ public class IndexTest {
                 .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
                 .predicate(IncludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build()).build())
+                .build();
         engine.index("test", Arrays.asList(c1, c2, c3, c4));
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
 
         /* Asserions for index size */
         Assert.assertEquals(4, index.getDnfInvertedIndex().getTable().size());
@@ -129,7 +137,7 @@ public class IndexTest {
                 .build();
         Criteria c2 = CNFCriteria.builder().id("C1").disjunctions(Arrays.asList(d1, d2)).build();
         engine.index("test", Arrays.asList(c1, c2));
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key zKey = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(0).containsKey(zKey));
         Assert.assertEquals(2, index.getCnfInvertedIndex().getTable().size());
@@ -146,7 +154,7 @@ public class IndexTest {
                 .predicate(ExcludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet(5, 6)).build())
                 .build()).build();
         engine.index("test", c1);
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(0).containsKey(key));
         Assert.assertEquals(1, index.getCnfInvertedIndex().getTable().size());
@@ -193,7 +201,7 @@ public class IndexTest {
 
         Criteria c4 = CNFCriteria.builder().id("C4").disjunctions(Arrays.asList(d1, d2, d3)).build();
         engine.index("test", Arrays.asList(c1, c2, c3, c4));
-        IndexGroup index = engine.getIndexingFacde().get("test");
+        IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
 
         /* Asserions for index size */
         Assert.assertEquals(4, index.getCnfInvertedIndex().getTable().size());
