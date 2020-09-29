@@ -1,6 +1,6 @@
 # Mustang
 
-	Mustang solves the problem of efficiently indexing Disjunctive Normal Form (DNF) and Conjunctive Normal Form (CNF) 
+Mustang solves the problem of efficiently indexing Disjunctive Normal Form (DNF) and Conjunctive Normal Form (CNF) 
 Boolean expressions over a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
 Boolean expressions that evaluate to true for a given assignment of values to attributes. A solution to this problem 
 has applications in online advertising (where a Boolean expression represents an advertiser’s user targeting 
@@ -10,7 +10,7 @@ assignment of values to attributes represents an event). All existing solutions 
 specialized subset of conjunctive and/or disjunctive expressions, and cannot efficiently handle general DNF and CNF 
 expressions (including NOTs) over multi-valued attributes.
 
-	Mustang presents a novel solution based on the inverted list data structure that enables us to index arbitrarily 
+Mustang presents a novel solution based on the inverted list data structure that enables us to index arbitrarily 
 complex DNF and CNF Boolean expressions over multi-valued attributes. An interesting aspect of our solution is that, 
 by virtue of leveraging inverted lists traditionally used for ranked information retrieval, we can efficiently return 
 the top-N matching Boolean expressions. This capability enables applications such as ranked publish/subscribe systems, 
