@@ -19,5 +19,6 @@ public class Query {
     @Valid
     @NotEmpty
     private Map<String, Object> assigment;
+    private int topN;
 
 }

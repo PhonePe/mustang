@@ -39,7 +39,11 @@ public class MustangEngine {
     }
 
     public List<String> search(final String indexName, final EvaluationContext context) {
-        final Query query = QueryBuilder.buildQuery(mapper, context);
+        return search(indexName, context, -1);
+    }
+
+    public List<String> search(final String indexName, final EvaluationContext context, final int topN) {
+        final Query query = QueryBuilder.buildQuery(mapper, context, topN);
         return searchFacade.search(indexName, query);
     }
 
