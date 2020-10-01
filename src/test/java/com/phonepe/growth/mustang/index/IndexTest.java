@@ -32,11 +32,11 @@ public class IndexTest {
     @Test
     public void testDnfIndexing() {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
                 .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
@@ -50,7 +50,7 @@ public class IndexTest {
         Criteria c1 = DNFCriteria.builder().id("C1")
                 .conjunction(Conjunction.builder()
                         .predicate(
-                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                                ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
                         .build())
                 .build();
         engine.index("test", c1);
@@ -66,25 +66,25 @@ public class IndexTest {
         Criteria c1 = DNFCriteria.builder().id("C1")
                 .conjunction(Conjunction.builder()
                         .predicate(
-                                ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                                ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
                         .build())
                 .build();
         Criteria c2 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n")
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build()).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
                 .build();
         Criteria c3 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
                 .build()).build();
         Criteria c4 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build()).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.d").values(Sets.newHashSet(true)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.d").values(Sets.newHashSet(true)).build()).build())
                 .build();
         engine.index("test", Arrays.asList(c1, c2, c3, c4));
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
@@ -121,21 +121,21 @@ public class IndexTest {
     @Test
     public void testCnfIndexing() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet(1, 2)).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.age").values(Sets.newHashSet(25, 30)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.premium").values(Sets.newHashSet(true)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(25, 30)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
                 .build()).build();
         Disjunction d1 = Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet(1, 2)).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.age").values(Sets.newHashSet(25, 30)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.premium").values(Sets.newHashSet(true)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(25, 30)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
                 .build();
         Disjunction d2 = Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet(1, 2)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.age").values(Sets.newHashSet(35, 40)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.premium").values(Sets.newHashSet(true)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(35, 40)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
                 .build();
-        Criteria c2 = CNFCriteria.builder().id("C1").disjunctions(Arrays.asList(d1, d2)).build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunctions(Arrays.asList(d1, d2)).build();
         engine.index("test", Arrays.asList(c1, c2));
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key zKey = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
@@ -151,7 +151,7 @@ public class IndexTest {
     @Test
     public void testCnfIndexingWithOnlyExcludePredicate() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet(5, 6)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(5, 6)).build())
                 .build()).build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
@@ -166,37 +166,37 @@ public class IndexTest {
     @Test
     public void testCnfIndexingWithMultiplePredicate() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
                 .build()).build();
         Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.p").values(Sets.newHashSet(true)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.1000000000001,0.20000000000002,0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
                 .build()).build();
         Criteria c3 = CNFCriteria.builder().id("C3").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A3", "A4")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A3", "A4")).build())
                 .build())
                 .disjunction(Disjunction.builder()
-                    .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                    .predicate(IncludedPredicate.builder().lhsPath("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                    .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                    .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
                     .build()
                 )
                 .build();
         Disjunction d1 = Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.d").values(Sets.newHashSet(true)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.d").values(Sets.newHashSet(true)).build())
                 .build();
 
         Disjunction d2 = Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet("20", "22")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.amount").values(Sets.newHashSet(100, 150,200)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet("20", "22")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.amount").values(Sets.newHashSet(100, 150,200)).build())
                 .build();
 
         Disjunction d3 = Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhsPath("$.user_id").values(Sets.newHashSet("20", "22")).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.amount").values(Sets.newHashSet(100, 150,200)).build())
-                .predicate(IncludedPredicate.builder().lhsPath("$.age").values(Sets.newHashSet(25, 28,30)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet("20", "22")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.amount").values(Sets.newHashSet(100, 150,200)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(25, 28,30)).build())
                 .build();
 
         Criteria c4 = CNFCriteria.builder().id("C4").disjunctions(Arrays.asList(d1, d2, d3)).build();

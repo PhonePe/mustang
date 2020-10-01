@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,11 +17,12 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
+import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.search.Query;
@@ -33,21 +34,21 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>> {
+public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> {
     @NotNull
     private final IndexGroup index;
     @Valid
     @NotNull
     private final Query query;
 
-    public List<String> handle() {
-        return Stream.of(visitDNF(), visitCNF()).flatMap(Collection::stream).collect(Collectors.toList());
+    public Set<String> handle() {
+        return Stream.of(visitDNF(), visitCNF()).flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
     @Override
-    public List<String> visitDNF() {
+    public Set<String> visitDNF() {
         // TODO revisit
-        final List<String> result = Lists.newArrayList();
+        final Set<String> result = Sets.newHashSet();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
         final int start = 0;
         final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
@@ -107,10 +108,68 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<List<String>>
     }
 
     @Override
-    public List<String> visitCNF() {
-        // TODO implement
-        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
-        return Collections.emptyList();
+    public Set<String> visitCNF() {
+        // TODO revisit
+        final Set<String> result = Sets.newHashSet();
+        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
+        final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) index
+                .getCnfInvertedIndex()).getDisjunctionCounters();
+        final int start = 0;
+        final int end = table.keySet().stream().mapToInt(x -> x).max().orElse(0);
+        IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
+            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
+            initializeCurrentEntries(PLists);
+            /* Processing K =0 and K =1 are identical */
+            if (K == 0) {
+                K = 1;
+            }
+            if (PLists.length < K) {
+                /* Too few posting lists for any conjunction to be satisfied */
+                return;
+            }
+            int NextID = 0;
+            while (getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey()) != null
+                    && getConjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
+                            PLists[K - 1].getValue().getKey()) != null) {
+                sortByCurrentEntries(PLists);
+                /*
+                 * Check if the first K posting lists have the same conjunction ID in their
+                 * current entries
+                 */
+                if (PLists[0].getValue().getKey().equals(PLists[K - 1].getValue().getKey())) {
+                    /* Reject conjunction if a ̸∈ predicate is violated */
+                    if (PredicateType.EXCLUDED.equals(
+                            getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey())
+                                    .getType())) {
+                        final Integer rejectId = PLists[0].getValue().getKey();
+                        for (int L = 0; L <= K - 1; L++) {
+                            if (PLists[L].getValue().getKey().equals(rejectId)) {
+                                /* Skip to smallest ID where ID > RejectID */
+                                PLists[L].getValue().setLeft(rejectId + 1);
+                            } else {
+                                break; // break out of this for loop
+                            }
+                        }
+                        continue; // continue to next while loop iteration
+                    } else {
+                        /* conjunction is fully satisfied */
+                        result.add(getConjunctionPostingEntry(PLists[0].getValue().getValue(),
+                                PLists[0].getValue().getKey()).getEId());
+                    }
+                    /* NextID is the smallest possible ID after current ID */
+                    NextID = PLists[K - 1].getValue().getKey() + 1;
+                } else {
+                    /* Skip first K-1 posting lists */
+                    NextID = PLists[K - 1].getValue().getKey();
+                }
+                for (int L = 0; L <= K - 1; L++) {
+                    PLists[L].getValue().setLeft(NextID);
+                }
+            }
+        });
+
+        return result;
+    
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
