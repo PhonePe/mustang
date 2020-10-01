@@ -108,7 +108,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 postingLists.add(map);
             }
 
-            postingLists.add(indexTable.getOrDefault(indexTable, Collections.emptyMap()));
+            postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
             indexTable.put(kSize, compactPostingLists(postingLists));
             disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
         });
@@ -132,7 +132,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
     }
 
     private int getExcludedPredicateCountFromDisjunction(Disjunction disjunction) {
-        return -1 * disjunction.getPredicates().stream()
+        return disjunction.getPredicates().stream()
                 .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
     }
 

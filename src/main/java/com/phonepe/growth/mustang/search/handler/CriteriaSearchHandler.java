@@ -53,8 +53,9 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
         final int start = 0;
         final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
-            initializeCurrentEntries(PLists);
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingListsDNF(table,
+                    K);
+            initializeCurrentEntriesDNF(PLists);
             /* Processing K =0 and K =1 are identical */
             if (K == 0) {
                 K = 1;
@@ -67,7 +68,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
             while (getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey()) != null
                     && getConjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
                             PLists[K - 1].getValue().getKey()) != null) {
-                sortByCurrentEntries(PLists);
+                sortByCurrentEntriesDNF(PLists);
                 /*
                  * Check if the first K posting lists have the same conjunction ID in their
                  * current entries
@@ -111,14 +112,15 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
     public Set<String> visitCNF() {
         // TODO revisit
         final Set<String> result = Sets.newHashSet();
-        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = index.getDnfInvertedIndex().getTable();
+        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table = index.getCnfInvertedIndex().getTable();
         final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) index
                 .getCnfInvertedIndex()).getDisjunctionCounters();
         final int start = 0;
         final int end = table.keySet().stream().mapToInt(x -> x).max().orElse(0);
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(K -> {
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] PLists = getPostingLists(table, K);
-            initializeCurrentEntries(PLists);
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] PLists = getPostingListsCNF(table,
+                    K);
+            initializeCurrentEntriesCNF(PLists);
             /* Processing K =0 and K =1 are identical */
             if (K == 0) {
                 K = 1;
@@ -128,33 +130,45 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
                 return;
             }
             int NextID = 0;
-            while (getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey()) != null
-                    && getConjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
+            while (getDisjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey()) != null
+                    && getDisjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
                             PLists[K - 1].getValue().getKey()) != null) {
-                sortByCurrentEntries(PLists);
+                sortByCurrentEntriesCNF(PLists);
                 /*
                  * Check if the first K posting lists have the same conjunction ID in their
                  * current entries
                  */
                 if (PLists[0].getValue().getKey().equals(PLists[K - 1].getValue().getKey())) {
-                    /* Reject conjunction if a ̸∈ predicate is violated */
-                    if (PredicateType.EXCLUDED.equals(
-                            getConjunctionPostingEntry(PLists[0].getValue().getValue(), PLists[0].getValue().getKey())
-                                    .getType())) {
-                        final Integer rejectId = PLists[0].getValue().getKey();
-                        for (int L = 0; L <= K - 1; L++) {
-                            if (PLists[L].getValue().getKey().equals(rejectId)) {
-                                /* Skip to smallest ID where ID > RejectID */
-                                PLists[L].getValue().setLeft(rejectId + 1);
-                            } else {
-                                break; // break out of this for loop
+                    /*
+                     * For each disjunction in the current CNF, one counter is initialized to the
+                     * negative number of ̸∈ predicates
+                     */
+                    final Integer[] counters = getCounters(disjunctionCounters, PLists[0].getValue().getKey());
+
+                    for (int L = 0; L < PLists.length; L++) {
+                        if (PLists[L].getValue().getKey().equals(PLists[0].getValue().getKey())) {
+                            /* Ignore entries in the Z posting list */
+                            if (getDisjunctionPostingEntry(PLists[L].getValue().getValue(),
+                                    PLists[L].getValue().getKey()).getOrder() == -1) {
+                                continue;
                             }
+                            if (PredicateType.EXCLUDED
+                                    .equals(getDisjunctionPostingEntry(PLists[L].getValue().getValue(),
+                                            PLists[L].getValue().getKey()).getType())) {
+                                counters[getDisjunctionPostingEntry(PLists[L].getValue().getValue(),
+                                        PLists[L].getValue().getKey()).getOrder()]++;
+                            } else {
+                                /* Disjunction is satisfied */
+                                counters[getDisjunctionPostingEntry(PLists[L].getValue().getValue(),
+                                        PLists[L].getValue().getKey()).getOrder()] = 1;
+                            }
+                        } else {
+                            break;
                         }
-                        continue; // continue to next while loop iteration
-                    } else {
-                        /* conjunction is fully satisfied */
-                        result.add(getConjunctionPostingEntry(PLists[0].getValue().getValue(),
-                                PLists[0].getValue().getKey()).getEId());
+                    }
+                    if (Arrays.stream(counters).allMatch(i -> i != 0)) {
+                        result.add(getDisjunctionPostingEntry(PLists[K - 1].getValue().getValue(),
+                                PLists[K - 1].getValue().getKey()).getEId());
                     }
                     /* NextID is the smallest possible ID after current ID */
                     NextID = PLists[K - 1].getValue().getKey() + 1;
@@ -169,11 +183,11 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
         });
 
         return result;
-    
+
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingLists(
+    private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
             Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, int k) {
         final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
 
@@ -185,7 +199,8 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
         return ((Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[]) array);
     }
 
-    private void sortByCurrentEntries(Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+    private void sortByCurrentEntriesDNF(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
         // TODO Fix NPE
         final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> idComparator = (e1,
                 e2) -> (e1.getValue().getKey().compareTo(e2.getValue().getKey()));
@@ -196,7 +211,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
         Arrays.sort(pLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
     }
 
-    private void initializeCurrentEntries(
+    private void initializeCurrentEntriesDNF(
             Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
         Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
     }
@@ -204,6 +219,45 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> 
     private ConjunctionPostingEntry getConjunctionPostingEntry(Collection<ConjunctionPostingEntry> set, Integer iId) {
         return set.stream().filter(x -> x.getIId().equals(iId)).findFirst().orElse(null);
 
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] getPostingListsCNF(
+            Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table, int k) {
+        final Map<Key, TreeSet<DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+
+        final Map.Entry[] array = query.getAssigment().entrySet().stream()
+                .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
+                .filter(key -> map.containsKey(key)).collect(Collectors.toMap(x -> x,
+                        x -> MutablePair.of(0, map.get(x)), (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .entrySet().stream().toArray(Map.Entry[]::new);
+        return ((Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[]) array);
+    }
+
+    private void sortByCurrentEntriesCNF(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
+        // TODO Fix NPE
+        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> idComparator = (e1,
+                e2) -> (e1.getValue().getKey().compareTo(e2.getValue().getKey()));
+        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> typeComparator = (e1,
+                e2) -> (getDisjunctionPostingEntry(e1.getValue().getValue(), e1.getValue().getKey()).getType()
+                        .compareTo(getDisjunctionPostingEntry(e2.getValue().getValue(), e2.getValue().getKey())
+                                .getType()));
+        Arrays.sort(pLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
+    }
+
+    private void initializeCurrentEntriesCNF(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
+        Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
+    }
+
+    private DisjunctionPostingEntry getDisjunctionPostingEntry(Collection<DisjunctionPostingEntry> set, Integer iId) {
+        return set.stream().filter(x -> x.getIId().equals(iId)).findFirst().orElse(null);
+
+    }
+
+    private Integer[] getCounters(final Map<Integer, Integer[]> disjunctionCounters, int iId) {
+        return Arrays.stream(disjunctionCounters.get(iId)).map(x -> -1 * x).toArray(Integer[]::new);
     }
 
 }
