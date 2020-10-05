@@ -49,7 +49,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                     .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
 
             final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates().stream()
-                    .map(predicate -> predicate.accept(DnfPredicatorVisitorImpl.builder()
+                    .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
                             .iId(dnfInvertedIndex
                                     .getInternalIdFromCache(String.format(CONJUNCTION_ENTRY_ID_FORMAT, dnf.getId(), j)))
                             .eId(dnf.getId()).build()))
@@ -91,7 +91,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
                     .map(predicate -> predicate.accept(
-                            CnfPredicateVisitorImpl.builder().iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
+                            CNFPostingListsExtractor.builder().iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
                                     .eId(cnf.getId()).order(i).build()))
                     .collect(Collectors.toList());
 

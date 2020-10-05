@@ -21,7 +21,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class DnfPredicatorVisitorImpl implements PredicateVisitor<Map<Key, TreeSet<ConjunctionPostingEntry>>> {
+public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeSet<ConjunctionPostingEntry>>> {
     private final Integer iId;
     private final String eId;
 

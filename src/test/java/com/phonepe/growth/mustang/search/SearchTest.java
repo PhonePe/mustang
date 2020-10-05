@@ -80,7 +80,42 @@ public class SearchTest {
     }
 
     @Test
-    public void testDnfSearchingMultipleMatch() {
+    public void testDnfMultipleMatch() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .build()).build();
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+        Criteria c3 = DNFCriteria.builder().id("C3").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet("P1", "P2", "P3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet("4", "5", "6", 0.300000000003))
+                        .build())
+                .build()).build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("n", 0.300000000003);
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+        engine.index("testsearch", c3);
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        /* Assertions for multiple matches */
+        Assert.assertEquals(2, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testDnfMultipleMatch1() {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -207,7 +242,7 @@ public class SearchTest {
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
                 .build()).build();
         final Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A4", "A2", "A3")).build())
                 .predicate(IncludedPredicate.builder().lhs("$.n")
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
                 .build()).build();
