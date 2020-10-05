@@ -94,17 +94,16 @@ public class DNFMatcher {
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
             final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, final int k) {
         final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
 
-        final Map.Entry[] array = query.getAssigment().entrySet().stream()
+        return query.getAssigment().entrySet().stream()
                 .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-                .filter(key -> map.containsKey(key)).collect(Collectors.toMap(x -> x,
-                        x -> MutablePair.of(0, map.get(x)), (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .filter(map::containsKey).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
+                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
                 .entrySet().stream().toArray(Map.Entry[]::new);
-        return ((Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[]) array);
     }
 
     private void sortByCurrentEntriesDNF(

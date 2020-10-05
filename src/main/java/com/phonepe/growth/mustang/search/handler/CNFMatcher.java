@@ -108,17 +108,16 @@ public class CNFMatcher {
 
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     private Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] getPostingListsCNF(
             Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table, int k) {
         final Map<Key, TreeSet<DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
 
-        final Map.Entry[] array = query.getAssigment().entrySet().stream()
+        return query.getAssigment().entrySet().stream()
                 .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-                .filter(key -> map.containsKey(key)).collect(Collectors.toMap(x -> x,
-                        x -> MutablePair.of(0, map.get(x)), (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .filter(map::containsKey).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
+                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
                 .entrySet().stream().toArray(Map.Entry[]::new);
-        return ((Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[]) array);
     }
 
     private void sortByCurrentEntriesCNF(
