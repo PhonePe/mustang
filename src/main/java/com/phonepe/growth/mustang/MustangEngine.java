@@ -1,6 +1,7 @@
 package com.phonepe.growth.mustang;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -38,8 +39,12 @@ public class MustangEngine {
         indexingFacde.add(indexName, criterias);
     }
 
-    public List<String> search(final String indexName, final EvaluationContext context) {
-        final Query query = QueryBuilder.buildQuery(mapper, context);
+    public Set<String> search(final String indexName, final EvaluationContext context) {
+        return search(indexName, context, -1);
+    }
+
+    public Set<String> search(final String indexName, final EvaluationContext context, final int topN) {
+        final Query query = QueryBuilder.buildQuery(mapper, context, topN);
         return searchFacade.search(indexName, query);
     }
 

@@ -25,10 +25,10 @@ public class IncludedPredicate extends Predicate {
 
     @Builder
     @JsonCreator
-    public IncludedPredicate(@JsonProperty("lhsPath") String lhsPath,
-            @JsonProperty("lhsNotAPath") boolean lhsNotAPath, @JsonProperty("weight") long weight,
-            @JsonProperty("defaultResult") boolean defaultResult, @JsonProperty("values") Set<?> values) {
-        super(PredicateType.INCLUDED, lhsPath, lhsNotAPath, weight, defaultResult);
+    public IncludedPredicate(@JsonProperty("lhs") String lhs, @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
+            @JsonProperty("weight") long weight, @JsonProperty("defaultResult") boolean defaultResult,
+            @JsonProperty("values") Set<?> values) {
+        super(PredicateType.INCLUDED, lhs, lhsNotAPath, weight, defaultResult);
         this.values = values;
     }
 

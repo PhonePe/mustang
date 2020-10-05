@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryBuilder {
 
-    public static Query buildQuery(ObjectMapper mapper, final EvaluationContext context) {
+    public static Query buildQuery(ObjectMapper mapper, final EvaluationContext context, int topN) {
         return Query.builder()
-                .assigment(FlattenedJson.builder().node(context.getNode()).mapper(mapper).build().flatten()).build();
+                .assigment(FlattenedJson.builder().node(context.getNode()).mapper(mapper).build().flatten())
+                .topN(topN)
+                .build();
     }
 
 }

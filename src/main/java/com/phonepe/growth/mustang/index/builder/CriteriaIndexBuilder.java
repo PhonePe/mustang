@@ -22,6 +22,7 @@ import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
+import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
@@ -76,12 +77,17 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(CNFCriteria cnf) {
+        final int disjunctionSize = cnf.getDisjunctions().size();
         final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = indexGroup.getCnfInvertedIndex();
+        final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) cnfInvertedIndex)
+                .getDisjunctionCounters();
+        final Integer[] disjunctionCounter = disjunctionCounters.computeIfAbsent(
+                cnfInvertedIndex.getInternalIdFromCache(cnf.getId()), x -> new Integer[disjunctionSize]);
         final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
         final int kSize = cnf.getDisjunctions().stream()
                 .filter(disjunction -> !isDisjunctionWithExcludedPredicate(disjunction)).mapToInt(e -> 1).sum();
 
-        IntStream.range(0, cnf.getDisjunctions().size()).boxed().forEach(i -> {
+        IntStream.range(0, disjunctionSize).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
                     .map(predicate -> predicate.accept(
@@ -102,8 +108,9 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 postingLists.add(map);
             }
 
-            postingLists.add(indexTable.getOrDefault(indexTable, Collections.emptyMap()));
+            postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
             indexTable.put(kSize, compactPostingLists(postingLists));
+            disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
         });
         return null;
     }
@@ -122,6 +129,11 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                     combined.addAll(s2);
                     return combined;
                 }))));
+    }
+
+    private int getExcludedPredicateCountFromDisjunction(Disjunction disjunction) {
+        return disjunction.getPredicates().stream()
+                .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType())).mapToInt(e -> 1).sum();
     }
 
 }
