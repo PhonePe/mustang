@@ -50,9 +50,7 @@ public class DNFMatcher {
                 return;
             }
             int nextID = 0;
-            while (getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()) != null
-                    && getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                            pLists[k - 1].getValue().getKey()) != null) {
+            while (canContinue(pLists, k)) {
                 sortByCurrentEntriesDNF(pLists);
                 /*
                  * Check if the first K posting lists have the same conjunction ID in their
@@ -63,15 +61,8 @@ public class DNFMatcher {
                     if (PredicateType.EXCLUDED.equals(
                             getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey())
                                     .getType())) {
-                        final Integer rejectId = pLists[0].getValue().getKey();
-                        for (int l = 0; l <= k - 1; l++) {
-                            if (pLists[l].getValue().getKey().equals(rejectId)) {
-                                /* Skip to smallest ID where ID > RejectID */
-                                pLists[l].getValue().setLeft(rejectId + 1);
-                            } else {
-                                break; // break out of this for loop
-                            }
-                        }
+                        conjunctionRejectionCheck(pLists, k, pLists[0].getValue().getKey());
+
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
@@ -92,6 +83,26 @@ public class DNFMatcher {
 
         return result;
 
+    }
+
+    private void conjunctionRejectionCheck(
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, final Integer k,
+            final Integer rejectId) {
+        for (int l = 0; l <= k - 1; l++) {
+            if (pLists[l].getValue().getKey().equals(rejectId)) {
+                /* Skip to smallest ID where ID > RejectID */
+                pLists[l].getValue().setLeft(rejectId + 1);
+            } else {
+                break; // break out of this for loop
+            }
+        }
+    }
+
+    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final int k) {
+        return getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()) != null
+                && getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
+                        pLists[k - 1].getValue().getKey()) != null;
     }
 
     @SuppressWarnings("unchecked")

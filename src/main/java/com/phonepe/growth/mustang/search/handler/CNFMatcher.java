@@ -52,9 +52,7 @@ public class CNFMatcher {
                 return;
             }
             int nextID = 0;
-            while (getDisjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()) != null
-                    && getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                            pLists[k - 1].getValue().getKey()) != null) {
+            while (canContinue(pLists, k)) {
                 sortByCurrentEntriesCNF(pLists);
                 /*
                  * Check if the first K posting lists have the same conjunction ID in their
@@ -63,35 +61,12 @@ public class CNFMatcher {
                 if (pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey())) {
                     /*
                      * For each disjunction in the current CNF, one counter is initialized to the
-                     * negative number of ̸∈ predicates
+                     * negative number of EXCLUDED predicates
                      */
                     final Integer[] counters = getCounters(disjunctionCounters, pLists[0].getValue().getKey());
 
-                    for (int l = 0; l < pLists.length; l++) {
-                        if (pLists[l].getValue().getKey().equals(pLists[0].getValue().getKey())) {
-                            /* Ignore entries in the Z posting list */
-                            if (getDisjunctionPostingEntry(pLists[l].getValue().getValue(),
-                                    pLists[l].getValue().getKey()).getOrder() == -1) {
-                                continue;
-                            }
-                            if (PredicateType.EXCLUDED
-                                    .equals(getDisjunctionPostingEntry(pLists[l].getValue().getValue(),
-                                            pLists[l].getValue().getKey()).getType())) {
-                                counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(),
-                                        pLists[l].getValue().getKey()).getOrder()]++;
-                            } else {
-                                /* Disjunction is satisfied */
-                                counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(),
-                                        pLists[l].getValue().getKey()).getOrder()] = 1;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    if (Arrays.stream(counters).allMatch(i -> i != 0)) {
-                        result.add(getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                                pLists[k - 1].getValue().getKey()).getEId());
-                    }
+                    disjunctionEvaluationCheck(result, pLists, k, counters);
+
                     /* NextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;
                 } else {
@@ -106,6 +81,44 @@ public class CNFMatcher {
 
         return result;
 
+    }
+
+    private void disjunctionEvaluationCheck(final Set<String> result,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists, final Integer k,
+            final Integer[] counters) {
+        for (int l = 0; l < pLists.length; l++) {
+            if (pLists[l].getValue().getKey().equals(pLists[0].getValue().getKey())) {
+                /* Ignore entries in the Z posting list */
+                if (getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
+                        .getOrder() == -1) {
+                    continue;
+                }
+                if (PredicateType.EXCLUDED.equals(
+                        getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
+                                .getType())) {
+                    counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
+                            .getOrder()]++;
+                } else {
+                    /* Disjunction is satisfied */
+                    counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
+                            .getOrder()] = 1;
+                }
+            } else {
+                break;
+            }
+        }
+        if (Arrays.stream(counters).allMatch(i -> i != 0)) {
+            result.add(
+                    getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey())
+                            .getEId());
+        }
+    }
+
+    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final int k) {
+        return getDisjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()) != null
+                && getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
+                        pLists[k - 1].getValue().getKey()) != null;
     }
 
     @SuppressWarnings("unchecked")
