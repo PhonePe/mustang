@@ -73,14 +73,17 @@ public class CNFMatcher {
                     /* Skip first K-1 posting lists */
                     nextID = pLists[k - 1].getValue().getKey();
                 }
-                for (int l = 0; l <= k - 1; l++) {
-                    pLists[l].getValue().setLeft(nextID);
-                }
+                skipTo(k, pLists, nextID);
             }
         });
 
         return result;
 
+    }
+
+    private void skipTo(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists, final int nextID) {
+        IntStream.range(0, k).boxed().forEach(l -> pLists[l].getValue().setLeft(nextID));
     }
 
     private void disjunctionEvaluationCheck(final Set<String> result,

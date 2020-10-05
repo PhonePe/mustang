@@ -61,7 +61,7 @@ public class DNFMatcher {
                     if (PredicateType.EXCLUDED.equals(
                             getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey())
                                     .getType())) {
-                        conjunctionRejectionCheck(pLists, k, pLists[0].getValue().getKey());
+                        conjunctionRejectionCheck(k, pLists, pLists[0].getValue().getKey());
 
                         continue; // continue to next while loop iteration
                     } else {
@@ -75,9 +75,7 @@ public class DNFMatcher {
                     /* Skip first K-1 posting lists */
                     nextID = pLists[k - 1].getValue().getKey();
                 }
-                for (int L = 0; L <= k - 1; L++) {
-                    pLists[L].getValue().setLeft(nextID);
-                }
+                skipTo(k, pLists, nextID);
             }
         });
 
@@ -85,8 +83,13 @@ public class DNFMatcher {
 
     }
 
-    private void conjunctionRejectionCheck(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, final Integer k,
+    private void skipTo(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
+        IntStream.range(0, k).boxed().forEach(l -> pLists[l].getValue().setLeft(nextID));
+    }
+
+    private void conjunctionRejectionCheck(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
         for (int l = 0; l <= k - 1; l++) {
             if (pLists[l].getValue().getKey().equals(rejectId)) {
