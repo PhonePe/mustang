@@ -177,6 +177,32 @@ public class SearchTest {
     }
 
     @Test
+    public void testCNFPositiveMatch2() throws Exception {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A3")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 4)).build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", 1);
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 2);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
     public void testCNFNegativeMatch() throws Exception {
 
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()

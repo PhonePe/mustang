@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -129,11 +130,14 @@ public class CNFMatcher {
             Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table, int k) {
         final Map<Key, TreeSet<DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
 
-        return query.getAssigment().entrySet().stream()
-                .map(entry -> Key.builder().name(entry.getKey()).value(entry.getValue()).build())
-                .filter(map::containsKey).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
-                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
-                .entrySet().stream().toArray(Map.Entry[]::new);
+        return map.entrySet().stream().map(entry -> {
+            final Key key = entry.getKey();
+            if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))) {
+                return key;
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
+                (oldValue, newValue) -> newValue, LinkedHashMap::new)).entrySet().stream().toArray(Map.Entry[]::new);
     }
 
     private void sortByCurrentEntriesCNF(
