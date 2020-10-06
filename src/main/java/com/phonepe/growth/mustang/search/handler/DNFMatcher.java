@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -58,16 +59,16 @@ public class DNFMatcher {
                  */
                 if (pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey())) {
                     /* Reject conjunction if EXCLUDED predicate is violated */
-                    if (PredicateType.EXCLUDED.equals(
-                            getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey())
-                                    .getType())) {
+                    final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(
+                            pLists[0].getValue().getValue(), pLists[0].getValue().getKey());
+                    if (Objects.isNull(conjunctionPostingEntry)
+                            || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.getType())) {
                         conjunctionRejectionCheck(k, pLists, pLists[0].getValue().getKey());
 
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
-                        result.add(getConjunctionPostingEntry(pLists[0].getValue().getValue(),
-                                pLists[0].getValue().getKey()).getEId());
+                        result.add(conjunctionPostingEntry.getEId());
                     }
                     /* NextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;

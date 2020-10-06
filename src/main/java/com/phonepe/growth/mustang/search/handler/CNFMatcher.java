@@ -93,28 +93,27 @@ public class CNFMatcher {
         for (int l = 0; l < pLists.length; l++) {
             if (pLists[l].getValue().getKey().equals(pLists[0].getValue().getKey())) {
                 /* Ignore entries in the Z posting list */
-                if (getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
-                        .getOrder() == -1) {
+                final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(
+                        pLists[l].getValue().getValue(), pLists[l].getValue().getKey());
+                if (Objects.isNull(disjunctionPostingEntry) || disjunctionPostingEntry.getOrder() == -1) {
                     continue;
                 }
-                if (PredicateType.EXCLUDED.equals(
-                        getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
-                                .getType())) {
-                    counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
-                            .getOrder()]++;
+                if (PredicateType.EXCLUDED.equals(disjunctionPostingEntry.getType())) {
+                    counters[disjunctionPostingEntry.getOrder()]++;
                 } else {
                     /* Disjunction is satisfied */
-                    counters[getDisjunctionPostingEntry(pLists[l].getValue().getValue(), pLists[l].getValue().getKey())
-                            .getOrder()] = 1;
+                    counters[disjunctionPostingEntry.getOrder()] = 1;
                 }
             } else {
                 break;
             }
         }
         if (Arrays.stream(counters).allMatch(i -> i != 0)) {
-            result.add(
-                    getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey())
-                            .getEId());
+            final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(
+                    pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey());
+            if (Objects.nonNull(disjunctionPostingEntry)) {
+                result.add(disjunctionPostingEntry.getEId());
+            }
         }
     }
 
