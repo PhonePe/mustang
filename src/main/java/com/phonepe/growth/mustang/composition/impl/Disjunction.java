@@ -9,6 +9,7 @@ import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.CompositionVisitor;
 import com.phonepe.growth.mustang.predicate.Predicate;
+import com.phonepe.growth.mustang.predicate.PredicateType;
 
 import lombok.Builder;
 import lombok.Data;
@@ -33,14 +34,14 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public <T> T accept(CompositionVisitor<T> visitor) {
-        return visitor.visit(this);
+    public double getScore(EvaluationContext context) {
+        return getPredicates().stream().filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
+                .mapToDouble(Predicate::getWeight) // TODO should consider weight from the context also
+                .max().orElse(0);
     }
 
     @Override
-    public double getScore(EvaluationContext context) {
-        // TODO impl
-        return 0;
+    public <T> T accept(CompositionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
-
 }

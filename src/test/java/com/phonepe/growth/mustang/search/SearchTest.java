@@ -80,7 +80,42 @@ public class SearchTest {
     }
 
     @Test
-    public void testDnfSearchingMultipleMatch() {
+    public void testDnfMultipleMatch() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .build()).build();
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+        Criteria c3 = DNFCriteria.builder().id("C3").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet("P1", "P2", "P3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet("4", "5", "6", 0.300000000003))
+                        .build())
+                .build()).build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("n", 0.300000000003);
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+        engine.index("testsearch", c3);
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        /* Assertions for multiple matches */
+        Assert.assertEquals(2, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testDnfMultipleMatch1() {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -139,6 +174,32 @@ public class SearchTest {
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    @Test
+    public void testCNFPositiveMatch2() throws Exception {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A3")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 4)).build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", 1);
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 2);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
     }
 
     @Test
@@ -207,7 +268,7 @@ public class SearchTest {
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
                 .build()).build();
         final Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A4", "A2", "A3")).build())
                 .predicate(IncludedPredicate.builder().lhs("$.n")
                         .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
                 .build()).build();
@@ -232,4 +293,135 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C2"));
         Assert.assertTrue(searchResults.contains("C3"));
     }
+
+    @Test
+    public void testMixedPositiveMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet("4", "5", "6")).build())
+                .build()).build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 2);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testMixedNegativeMatch() throws Exception {
+
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("B", "C")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6)).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A");
+        testQuery.put("n", "7");
+
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.isEmpty());
+
+    }
+
+    @Test
+    public void testMultiMixedPositiveMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A3", "A4")).build())
+                        .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B3", "B4")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(false)).build())
+                        .build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A7", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(false)).build()).build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder().id("C3").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A4", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A7", "A5", "A6"))
+                                .build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6)).build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        engine.index("test", c3);
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 2);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testMultiMixedNegativeMatch() throws Exception {
+
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("B", "C")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(5, 6, 7)).build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("B", "C")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6)).build()).build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "C")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(5, 6, 7)).build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A");
+        testQuery.put("n", "7");
+
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.isEmpty());
+
+    }
+
 }

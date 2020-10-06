@@ -21,7 +21,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CnfPredicateVisitorImpl implements PredicateVisitor<Map<Key, TreeSet<DisjunctionPostingEntry>>> {
+public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeSet<DisjunctionPostingEntry>>> {
     private final Integer iId;
     private final String eId;
     private final int order;
@@ -38,7 +38,7 @@ public class CnfPredicateVisitorImpl implements PredicateVisitor<Map<Key, TreeSe
 
     private Map<Key, TreeSet<DisjunctionPostingEntry>> extractPostingLists(PredicateType pType, String lhs,
             Set<?> values) {
-        return values.stream().map(value -> Key.builder().name(lhs).value(value).build())
+        return values.stream().map(value -> Key.builder().name(lhs).value(value).order(order).build())
                 .map(key -> Pair.of(key,
                         DisjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).order(order).score(0).build()))
                 .collect(Collectors.groupingBy(Pair::getKey,

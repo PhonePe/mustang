@@ -142,7 +142,7 @@ public class IndexTest {
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(0).containsKey(zKey));
         Assert.assertEquals(2, index.getCnfInvertedIndex().getTable().size());
         Assert.assertEquals(6, index.getCnfInvertedIndex().getTable().get(0).size());
-        Assert.assertEquals(7, index.getCnfInvertedIndex().getTable().get(1).size());
+        Assert.assertEquals(10, index.getCnfInvertedIndex().getTable().get(1).size());
 
     }
 
@@ -221,13 +221,13 @@ public class IndexTest {
 
         /* Asserions for keys in k = 2 */
         Assert.assertEquals(6, index.getCnfInvertedIndex().getTable().get(2).size());
-        final Key keyK2 = Key.builder().name("$.a").value("A1").upperBoundScore(0).build();
+        final Key keyK2 = Key.builder().name("$.a").value("A1").order(1).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(2).containsKey(keyK2));
 
         /* Asserions for keys in k = 3 */
-        Assert.assertEquals(11, index.getCnfInvertedIndex().getTable().get(3).size());
+        Assert.assertEquals(16, index.getCnfInvertedIndex().getTable().get(3).size());
         Assert.assertFalse(index.getCnfInvertedIndex().getTable().get(3).containsKey(zKey));
-        final Key aKey = Key.builder().name("$.user_id").value("22").upperBoundScore(0).build();
+        final Key aKey = Key.builder().name("$.user_id").value("22").order(1).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(3).containsKey(aKey));
     }
 
