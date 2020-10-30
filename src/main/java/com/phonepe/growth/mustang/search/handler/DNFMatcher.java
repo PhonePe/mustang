@@ -26,7 +26,7 @@ import com.phonepe.growth.mustang.search.Query;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;;
+import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;
 
 @Data
 @Builder

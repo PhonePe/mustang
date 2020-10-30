@@ -57,9 +57,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                 counter.incrementAndGet();
                 return !postingLists.get(key).contains(postingEntry);
             }).findFirst().orElse(Key.builder().name(lhs).value(value).order(counter.get()).build());
-        }).map(key -> {
-            return Pair.of(key, postingEntry);
-        }).collect(Collectors.groupingBy(Pair::getKey,
+        }).map(key -> Pair.of(key, postingEntry)).collect(Collectors.groupingBy(Pair::getKey,
                 Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }
 }
