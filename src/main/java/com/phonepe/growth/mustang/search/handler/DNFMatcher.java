@@ -60,7 +60,7 @@ public class DNFMatcher {
                  * Check if the first K posting lists have the same conjunction ID in their
                  * current entries
                  */
-                if (pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey())) {
+                if (sameConjunctionCheck(k, pLists)) {
                     /* Reject conjunction if EXCLUDED predicate is violated */
                     final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(
                             pLists[0].getValue().getValue(), pLists[0].getValue().getKey());
@@ -90,9 +90,23 @@ public class DNFMatcher {
 
     }
 
+    private boolean sameConjunctionCheck(Integer k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        if (Objects.nonNull(getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()))
+                && Objects.nonNull(getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
+                        pLists[k - 1].getValue().getKey()))) {
+            return pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey());
+        }
+        return false;
+    }
+
     private void skipTo(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
-        IntStream.range(0, k).boxed().forEach(l -> pLists[l].getValue().setLeft(nextID));
+        IntStream.rangeClosed(0, k).boxed().forEach(l -> {
+            if (pLists.length > l) {
+                pLists[l].getValue().setLeft(nextID);
+            }
+        });
     }
 
     private void conjunctionRejectionCheck(final int k,

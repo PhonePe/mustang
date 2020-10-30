@@ -62,7 +62,7 @@ public class CNFMatcher {
                  * Check if the first K posting lists have the same conjunction ID in their
                  * current entries
                  */
-                if (pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey())) {
+                if (sameConjunctionCheck(k, pLists)) {
                     /*
                      * For each disjunction in the current CNF, one counter is initialized to the
                      * negative number of EXCLUDED predicates
@@ -86,6 +86,16 @@ public class CNFMatcher {
 
         return result;
 
+    }
+
+    private boolean sameConjunctionCheck(Integer k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
+        if (Objects.nonNull(getDisjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()))
+                && Objects.nonNull(getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
+                        pLists[k - 1].getValue().getKey()))) {
+            return pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey());
+        }
+        return false;
     }
 
     private void skipTo(final int k,
