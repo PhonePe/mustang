@@ -1,8 +1,10 @@
 package com.phonepe.growth.mustang.index.builder;
 
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,9 +24,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeSet<DisjunctionPostingEntry>>> {
+    private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.valueOf(k1.getOrder())
+            .compareTo(k2.getOrder());
     private final Integer iId;
     private final String eId;
     private final int order;
+    private final Map<Key, TreeSet<DisjunctionPostingEntry>> postingLists;
 
     @Override
     public Map<Key, TreeSet<DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
@@ -38,10 +43,23 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
 
     private Map<Key, TreeSet<DisjunctionPostingEntry>> extractPostingLists(PredicateType pType, String lhs,
             Set<?> values) {
-        return values.stream().map(value -> Key.builder().name(lhs).value(value).order(order).build())
-                .map(key -> Pair.of(key,
-                        DisjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).order(order).score(0).build()))
-                .collect(Collectors.groupingBy(Pair::getKey,
-                        Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+        final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType)
+                .order(order).score(0).build();
+        return values.stream().map(value -> {
+            final Set<Key> keys = postingLists.keySet().stream()
+                    .filter(key -> key.getName().equals(lhs) && key.getValue().equals(value))
+                    .sorted(KEY_ORDER_COMPARATOR).collect(Collectors.toSet());
+            if (keys.isEmpty()) {
+                return Key.builder().name(lhs).value(value).order(0).build();
+            }
+            final AtomicInteger counter = new AtomicInteger(0);
+            return keys.stream().sequential().filter(key -> {
+                counter.incrementAndGet();
+                return !postingLists.get(key).contains(postingEntry);
+            }).findFirst().orElse(Key.builder().name(lhs).value(value).order(counter.get()).build());
+        }).map(key -> {
+            return Pair.of(key, postingEntry);
+        }).collect(Collectors.groupingBy(Pair::getKey,
+                Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }
 }
