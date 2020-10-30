@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.google.common.collect.Sets;
@@ -25,6 +27,7 @@ import com.phonepe.growth.mustang.search.Query;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
 
 @Data
 @Builder
@@ -49,7 +52,7 @@ public class CNFMatcher {
                 k = 1;
             }
             if (pLists.length < k) {
-                /* Too few posting lists for any conjunction to be satisfied */
+                /* Too few posting lis ts for any conjunction to be satisfied */
                 return;
             }
             int nextID = 0;
@@ -75,6 +78,9 @@ public class CNFMatcher {
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);
+                if (!canContinue(pLists, k)) {
+                    sortByCurrentEntriesCNF(pLists);
+                }
             }
         });
 
@@ -84,7 +90,11 @@ public class CNFMatcher {
 
     private void skipTo(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists, final int nextID) {
-        IntStream.range(0, k).boxed().forEach(l -> pLists[l].getValue().setLeft(nextID));
+        IntStream.rangeClosed(0, k).boxed().forEach(l -> {
+            if (pLists.length > l) {
+                pLists[l].getValue().setLeft(nextID);
+            }
+        });
     }
 
     private void disjunctionEvaluationCheck(final Set<String> result,
@@ -115,13 +125,15 @@ public class CNFMatcher {
                 result.add(disjunctionPostingEntry.getEId());
             }
         }
+        if (!canContinue(pLists, k)) {
+            sortByCurrentEntriesCNF(pLists);
+        }
     }
 
     private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
             final int k) {
-        return getDisjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()) != null
-                && getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                        pLists[k - 1].getValue().getKey()) != null;
+        return getDisjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
+                pLists[k - 1].getValue().getKey()) != null;
     }
 
     @SuppressWarnings("unchecked")
@@ -131,7 +143,8 @@ public class CNFMatcher {
 
         return map.entrySet().stream().map(entry -> {
             final Key key = entry.getKey();
-            if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))) {
+            if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))
+                    || (k == 0 && key.getName().equals(ZERO_SIZE_DISJUNCTION_ENTRY_KEY))) {
                 return key;
             }
             return null;
@@ -142,12 +155,28 @@ public class CNFMatcher {
     private void sortByCurrentEntriesCNF(
             Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
         final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> idComparator = (e1,
-                e2) -> (e1.getValue().getKey().compareTo(e2.getValue().getKey()));
+                e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
         final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> typeComparator = (e1,
-                e2) -> (getDisjunctionPostingEntry(e1.getValue().getValue(), e1.getValue().getKey()).getType()
-                        .compareTo(getDisjunctionPostingEntry(e2.getValue().getValue(), e2.getValue().getKey())
-                                .getType()));
-        Arrays.sort(pLists, Comparator.nullsLast(idComparator.thenComparing(typeComparator.reversed())));
+                e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
+        Arrays.sort(pLists, idComparator.thenComparing(typeComparator));
+    }
+
+    private Integer getIdSafely(Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> e1) {
+        final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(e1.getValue().getValue(),
+                e1.getValue().getKey());
+        if (Objects.nonNull(disjunctionPostingEntry)) {
+            return disjunctionPostingEntry.getIId();
+        }
+        return null;
+    }
+
+    private PredicateType getTypeSafely(Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> e1) {
+        final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(e1.getValue().getValue(),
+                e1.getValue().getKey());
+        if (Objects.nonNull(disjunctionPostingEntry)) {
+            return disjunctionPostingEntry.getType();
+        }
+        return null;
     }
 
     private void initializeCurrentEntriesCNF(
