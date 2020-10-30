@@ -667,7 +667,7 @@ public class SearchTest {
             searchResults = engine.search("test",
                     EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         } catch (MustangException e) {
-            Assert.assertEquals("Error code message is not matching", e.getErrorCode().toString(), "INDEX_NOT_FOUND");
+            Assert.assertEquals("Error code message is not matching", "INDEX_NOT_FOUND", e.getErrorCode().toString());
         }
         Assert.assertTrue(searchResults.isEmpty());
     }
@@ -724,8 +724,7 @@ public class SearchTest {
         Criteria c3 = DNFCriteria.builder().id("C3").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
                 .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet("P1", "P2", "P3")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.300000000003))
-                        .build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.300000000003)).build())
                 .build()).build();
         // Index ingestion
         final ObjectMapper mapper = new ObjectMapper();
@@ -768,7 +767,7 @@ public class SearchTest {
         // Search query
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 0);
+        Assert.assertTrue(searchResults.isEmpty());
     }
 
     @Test
@@ -786,7 +785,7 @@ public class SearchTest {
         // Search query
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -805,7 +804,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         // issue
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -824,7 +823,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -840,7 +839,7 @@ public class SearchTest {
         // Search query - with new value
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -848,7 +847,7 @@ public class SearchTest {
         // Search query - with older value
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
@@ -869,7 +868,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -887,7 +886,7 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -896,7 +895,7 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
@@ -915,7 +914,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -931,7 +930,7 @@ public class SearchTest {
         // Search query - with new value
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -939,7 +938,7 @@ public class SearchTest {
         // Search query - with older value
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
@@ -960,7 +959,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -978,7 +977,7 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -987,7 +986,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
@@ -1039,7 +1038,7 @@ public class SearchTest {
         // Search query
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
     }
 
     @Test // TODO -issue reported
@@ -1065,7 +1064,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
 
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -1084,7 +1083,7 @@ public class SearchTest {
         // Search query
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -1105,7 +1104,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -1123,7 +1122,7 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -1132,11 +1131,11 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testCNFSingleExclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1151,7 +1150,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine = MustangEngine.builder().mapper(mapper).build();
@@ -1168,7 +1167,7 @@ public class SearchTest {
         // Search query - with new value
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -1179,7 +1178,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.isEmpty());
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1196,7 +1195,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults.size(), 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
@@ -1214,7 +1213,7 @@ public class SearchTest {
         // Search query with new values
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults1.size(), 1);
+        Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
@@ -1223,7 +1222,7 @@ public class SearchTest {
         // Search Engine call
         final Set<String> searchResults2 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
-        Assert.assertEquals(searchResults2.size(), 1);
+        Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
