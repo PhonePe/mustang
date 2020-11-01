@@ -79,9 +79,6 @@ public class DNFMatcher {
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);
-                if (!canContinue(pLists, k)) {
-                    sortByCurrentEntriesDNF(pLists);
-                }
             }
         });
 
@@ -173,6 +170,12 @@ public class DNFMatcher {
                 break; // break out of this for loop
             }
         }
+        preEmptiveSortCheck(k, pLists);
+    }
+
+    private void preEmptiveSortCheck(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        // preemptive sort if possible to continue
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesDNF(pLists);
         }
@@ -182,6 +185,8 @@ public class DNFMatcher {
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
         IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
                 .forEach(l -> pLists[l].getValue().setLeft(nextID));
+
+        preEmptiveSortCheck(k, pLists);
     }
 
 }

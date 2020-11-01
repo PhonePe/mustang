@@ -77,9 +77,6 @@ public class CNFMatcher {
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);
-                if (!canContinue(pLists, k)) {
-                    sortByCurrentEntriesCNF(pLists);
-                }
             }
         });
 
@@ -180,6 +177,12 @@ public class CNFMatcher {
                     pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey());
             disjunctionPostingEntryOptional.ifPresent(postingEntry -> result.add(postingEntry.getEId()));
         }
+        preEmptiveSortCheck(pLists, k);
+    }
+
+    private void preEmptiveSortCheck(
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists, final Integer k) {
+        // preemptive sort if possible to continue
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesCNF(pLists);
         }
@@ -193,6 +196,7 @@ public class CNFMatcher {
             final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists, final int nextID) {
         IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
                 .forEach(l -> pLists[l].getValue().setLeft(nextID));
+        preEmptiveSortCheck(pLists, k);
     }
 
 }
