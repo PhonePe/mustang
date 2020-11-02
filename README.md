@@ -36,7 +36,7 @@ MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 ``` 
 
 ### Defining criteria
-Mustang Engine supports DNF and CNF criteria, Crieteria is combination of predicates,
+Mustang Engine supports DNF and CNF criteria, Criteria is combination of predicates,
 as part of Mustang we support two type of predicate as of now, Include and Exlude predicate
 
 A Boolean Expression is either a DNF (i.e., disjunctive normal form) or CNF
@@ -56,7 +56,7 @@ ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")
 #### Defining DNF criteria
 DNF expression is of the form:
 ```
-DNF_crieteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧
+DNF_criteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧
 D ∉ {d1})
 ```
 In summary DNF is disjunctive combination of the conjuctions. To define a DNF criteria 
@@ -70,7 +70,7 @@ Criteria C1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
 #### Defining CNF criteria
 CNF expression is of the form:
 ```
-CNF_crieteria = age ∈ {2, 3}∧(state ∈ {CA} ∨ gender ∈ {F})
+CNF_criteria = age ∈ {2, 3}∧(state ∈ {CA} ∨ gender ∈ {F})
 ```
 In summary CNF is Conjuctive combination of the disjunctions.
 To define a CNF criteria 
