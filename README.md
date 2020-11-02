@@ -37,12 +37,11 @@ MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 
 ### Defining criteria
 Mustang Engine supports DNF and CNF criteria, Criteria is combination of predicates,
-as part of Mustang we support two type of predicate as of now, Include and Exlude predicate
+as part of Mustang we support two type of predicate as of now, Include and Exclude predicate
 
 A Boolean Expression is either a DNF (i.e., disjunctive normal form) or CNF
-(i.e., conjunctive normal form) expression of the basic ∈ and ∉
-predicates.
-  
+(i.e., conjunctive normal form) expression of the basic ∈ and ∉ predicates.
+
 #### Defining Include predicate 
 ```java
 IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
@@ -50,14 +49,13 @@ IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build
 
 #### Defining Exclude predicate 
 ```java
-ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")
+ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
 ```
 
 #### Defining DNF criteria
 DNF expression is of the form:
 ```
-DNF_criteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧
-D ∉ {d1})
+DNF_criteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧ D ∉ {d1})
 ```
 In summary DNF is disjunctive combination of the conjuctions. To define a DNF criteria 
 ``` java
@@ -88,15 +86,15 @@ Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
 ```java
 engine.index("index_name", criteria)
 ```
-or 
+OR 
 ```java
 engine.index("index_name", Arrays.asList(criteria1, criteria2, criteria3));
 ```
 
 #### Defining assignment
-An assignment is a set of attribute name and value pairs {A1 = v1, A2 = v2, . . .}
+An assignment is a set of attribute name and value pairs `{ "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
 Ex such as: 
-`{gender = F, state = CA}`
+`{"gender": "F", "state": "CA"}`
 
 To define an assignment and search on index 
 ```java
@@ -111,7 +109,6 @@ EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(
 ```
 
 #### Searching over Index
-
 To search a context over a index 
 
 ``` java
