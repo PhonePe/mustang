@@ -1,13 +1,12 @@
 package com.phonepe.growth.mustang.search.handler;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class DNFMatcher {
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
                     table, k);
             initializeCurrentEntriesDNF(pLists);
-            /* Processing K =0 and K =1 are identical */
+            /* Processing k = 0 and k = 1 are identical */
             if (k == 0) {
                 k = 1;
             }
@@ -57,21 +56,21 @@ public class DNFMatcher {
             while (canContinue(pLists, k)) {
                 sortByCurrentEntriesDNF(pLists);
                 /*
-                 * Check if the first K posting lists have the same conjunction ID in their
+                 * Check if the first k posting lists have the same conjunction ID in their
                  * current entries
                  */
-                if (sameConjunctionCheck(k, pLists)) {
+                if (sameConjunctionCheck(pLists, k - 1)) {
                     /* Reject conjunction if EXCLUDED predicate is violated */
-                    final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(
+                    final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
                             pLists[0].getValue().getValue(), pLists[0].getValue().getKey());
-                    if (Objects.isNull(conjunctionPostingEntry)
-                            || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.getType())) {
+                    if (!conjunctionPostingEntry.isPresent()
+                            || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get().getType())) {
                         conjunctionRejectionCheck(k, pLists, pLists[0].getValue().getKey());
 
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
-                        result.add(conjunctionPostingEntry.getEId());
+                        result.add(conjunctionPostingEntry.get().getEId());
                     }
                     /* NextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;
@@ -80,9 +79,6 @@ public class DNFMatcher {
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);
-                if (!canContinue(pLists, k)) {
-                    sortByCurrentEntriesDNF(pLists);
-                }
             }
         });
 
@@ -90,23 +86,77 @@ public class DNFMatcher {
 
     }
 
-    private boolean sameConjunctionCheck(Integer k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
-        if (Objects.nonNull(getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()))
-                && Objects.nonNull(getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                        pLists[k - 1].getValue().getKey()))) {
-            return pLists[0].getValue().getKey().equals(pLists[k - 1].getValue().getKey());
-        }
-        return false;
+    @SuppressWarnings("unchecked")
+    private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
+            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, final int k) {
+        final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+        return map.entrySet().stream().map(entry -> getMatchingKey(k, entry)).filter(Optional::isPresent)
+                .map(Optional::get).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
+                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
+                .entrySet().stream().toArray(Map.Entry[]::new);
     }
 
-    private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
-        IntStream.rangeClosed(0, k).boxed().forEach(l -> {
-            if (pLists.length > l) {
-                pLists[l].getValue().setLeft(nextID);
-            }
-        });
+    private Optional<Key> getMatchingKey(final int k, final Entry<Key, TreeSet<ConjunctionPostingEntry>> entry) {
+        final Key key = entry.getKey();
+        if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))
+                || (k == 0 && key.getName().equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY))) {
+            return Optional.of(key);
+        }
+        return Optional.empty();
+    }
+
+    private void initializeCurrentEntriesDNF(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
+    }
+
+    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final int k) {
+        return getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey())
+                .isPresent();
+    }
+
+    private Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(Set<ConjunctionPostingEntry> set,
+            Integer iId) {
+        return set.stream().filter(x -> x.getIId().equals(iId)).findFirst();
+
+    }
+
+    private void sortByCurrentEntriesDNF(
+            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> idComparator = (e1,
+                e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
+        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> typeComparator = (e1,
+                e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
+        Arrays.sort(pLists, idComparator.thenComparing(typeComparator));
+    }
+
+    private Integer getIdSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
+        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
+                entry.getValue().getValue(), entry.getValue().getKey());
+        if (conjunctionPostingEntry.isPresent()) {
+            return conjunctionPostingEntry.get().getIId();
+        }
+        return null;
+    }
+
+    private PredicateType getTypeSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
+        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
+                entry.getValue().getValue(), entry.getValue().getKey());
+        if (conjunctionPostingEntry.isPresent()) {
+            return conjunctionPostingEntry.get().getType();
+        }
+        return null;
+    }
+
+    private boolean sameConjunctionCheck(
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, Integer k) {
+        if (getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()).isPresent()
+                && getConjunctionPostingEntry(pLists[k].getValue().getValue(), pLists[k].getValue().getKey())
+                        .isPresent()) {
+            return pLists[0].getValue().getKey().equals(pLists[k].getValue().getKey());
+        }
+        return false;
     }
 
     private void conjunctionRejectionCheck(final int k,
@@ -120,68 +170,23 @@ public class DNFMatcher {
                 break; // break out of this for loop
             }
         }
+        preEmptiveSortCheck(k, pLists);
+    }
+
+    private void preEmptiveSortCheck(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+        // preemptive sort if possible to continue
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesDNF(pLists);
         }
     }
 
-    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
-            final int k) {
-        return getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(),
-                pLists[k - 1].getValue().getKey()) != null;
-    }
+    private void skipTo(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
+        IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
+                .forEach(l -> pLists[l].getValue().setLeft(nextID));
 
-    @SuppressWarnings("unchecked")
-    private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
-            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, final int k) {
-        final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-
-        return map.entrySet().stream().map(entry -> {
-            final Key key = entry.getKey();
-            if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))
-                    || (k == 0 && key.getName().equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY))) {
-                return key;
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
-                (oldValue, newValue) -> newValue, LinkedHashMap::new)).entrySet().stream().toArray(Map.Entry[]::new);
-    }
-
-    private void sortByCurrentEntriesDNF(
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
-        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> idComparator = (e1,
-                e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
-        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> typeComparator = (e1,
-                e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
-        Arrays.sort(pLists, idComparator.thenComparing(typeComparator));
-    }
-
-    private Integer getIdSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
-        final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue().getValue(),
-                entry.getValue().getKey());
-        if (conjunctionPostingEntry != null) {
-            return conjunctionPostingEntry.getIId();
-        }
-        return null;
-    }
-
-    private PredicateType getTypeSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
-        final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue().getValue(),
-                entry.getValue().getKey());
-        if (conjunctionPostingEntry != null) {
-            return conjunctionPostingEntry.getType();
-        }
-        return null;
-    }
-
-    private void initializeCurrentEntriesDNF(
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
-        Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
-    }
-
-    private ConjunctionPostingEntry getConjunctionPostingEntry(Collection<ConjunctionPostingEntry> set, Integer iId) {
-        return set.stream().filter(x -> x.getIId().equals(iId)).findFirst().orElse(null);
-
+        preEmptiveSortCheck(k, pLists);
     }
 
 }
