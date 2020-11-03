@@ -26,3 +26,92 @@ on the number of advertisements that can be shown on a given page and only the �
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
+## Usage
+
+### Initializing Mustang Engine
+
+```java
+ObjectMapper mapper = new ObjectMapper();
+MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+``` 
+
+### Defining criteria
+Mustang Engine supports DNF and CNF criteria, Criteria is combination of predicates,
+as part of Mustang we support two type of predicate as of now, Include and Exclude predicate
+
+A Boolean Expression is either a DNF (i.e., disjunctive normal form) or CNF
+(i.e., conjunctive normal form) expression of the basic ∈ and ∉ predicates.
+
+#### Defining Include predicate 
+```java
+IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
+```
+
+#### Defining Exclude predicate 
+```java
+ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
+```
+
+#### Defining DNF criteria
+DNF expression is of the form:
+```
+DNF_criteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧ D ∉ {d1})
+```
+In summary DNF is disjunctive combination of the conjuctions. To define a DNF criteria 
+``` java
+Criteria C1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet("4", "5", "6")).build())
+                .build()).build();
+```
+
+#### Defining CNF criteria
+CNF expression is of the form:
+```
+CNF_criteria = age ∈ {2, 3}∧(state ∈ {CA} ∨ gender ∈ {F})
+```
+In summary CNF is Conjuctive combination of the disjunctions.
+To define a CNF criteria 
+``` java
+Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+```
+
+#### Indexing criteria
+```java
+engine.index("index_name", criteria)
+```
+OR 
+```java
+engine.index("index_name", Arrays.asList(criteria1, criteria2, criteria3));
+```
+
+#### Defining assignment
+An assignment is a set of attribute name and value pairs `{ "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
+Ex such as: 
+`{"gender": "F", "state": "CA"}`
+
+To define an assignment and search on index 
+```java
+Map<String, Object> testQuery = Maps.newHashMap();
+testQuery.put("a", "A1");
+testQuery.put("b", "B3");
+testQuery.put("n", 5);
+testQuery.put("p", true);
+
+EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+
+```
+
+#### Searching over Index
+To search a context over a index 
+
+``` java
+Set<String> searchResults = engine.search("index_name",context);
+```
+This will return set of Id's of all the matching criteria
