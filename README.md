@@ -1,7 +1,7 @@
 # Mustang
 
 Mustang solves the problem of efficiently indexing Boolean expressions (both Disjunctive Normal Form (DNF) 
-and Conjunctive Normal Form (CNF)) a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
+and Conjunctive Normal Form (CNF)) in a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
 Boolean expressions that evaluate to true for a given assignment of values to attributes. A solution to this problem 
 has applications in online advertising (where a Boolean expression represents an advertiserâ€™s user targeting 
 requirements, and an assignment of values to attributes represents the characteristics of a user visiting an online 
@@ -29,7 +29,9 @@ on the number of advertisements that can be shown on a given page and only the â
 
 ## Overview
 
-Mustang allows indexing Boolean Expressions through a notion called `Criteria`, which can be either of the two types :
+Mustang allows indexing Boolean Expressions in high-dimensional multi-valued attribute space.
+
+`Criteria` represents the boolean expressions in one of the two normalized forms.
 
 - DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
 
