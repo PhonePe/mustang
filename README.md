@@ -26,6 +26,7 @@ on the number of advertisements that can be shown on a given page and only the â
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
+
 ## Overview
 
 Mustang allows indexing Boolean Expressions through a notion called `Criteria`, which can be either of the two types :
@@ -69,11 +70,11 @@ MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 
 ``` java
 Criteria dnf = DNFCriteria.builder()
-					.id("C1") // id we would get back should this criteria match a given assignment
-					.conjunction(Conjunction.builder()
-			                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
-			                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4,5,6)).build())
-			        .build())
+				.id("C1") // id we would get back should this criteria match a given assignment
+				.conjunction(Conjunction.builder()
+				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4,5,6)).build())
+				.build())
 			  .build();
 ```
 
@@ -81,14 +82,14 @@ Criteria dnf = DNFCriteria.builder()
 
 ``` java
 Criteria cnf = CNFCriteria.builder()
-					.id("C2") // id we would get back should this criteria match a given assignment
-					.disjunction(Disjunction.builder()
-			                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-			                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-			                .predicate(IncludedPredicate.builder().lhs("$.n")
-			                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
-			                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
-		            .build())
+				.id("C2") // id we would get back should this criteria match a given assignment
+				.disjunction(Disjunction.builder()
+				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+				        .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.n")
+				                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
+				.build())
               .build();
 ```
 
