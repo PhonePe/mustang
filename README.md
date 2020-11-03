@@ -1,7 +1,7 @@
 # Mustang
 
 Mustang solves the problem of efficiently indexing Boolean expressions (both Disjunctive Normal Form (DNF) 
-and Conjunctive Normal Form (CNF)) a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
+and Conjunctive Normal Form (CNF)) in a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
 Boolean expressions that evaluate to true for a given assignment of values to attributes. A solution to this problem 
 has applications in online advertising (where a Boolean expression represents an advertiser’s user targeting 
 requirements, and an assignment of values to attributes represents the characteristics of a user visiting an online 
@@ -26,92 +26,107 @@ on the number of advertisements that can be shown on a given page and only the �
   <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
-## Usage
 
-### Initializing Mustang Engine
+## Overview
 
-```java
+Mustang allows indexing Boolean Expressions in high-dimensional multi-valued attribute space.
+
+`Criteria` represents the boolean expressions in one of the two normalized forms.
+
+- DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
+
+	`(A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1}) ∨ (A ∈ {a1, a3} ∧ D ∉ {d1})`
+
+- CNF : Conjunctive Normal Form, which is a conjunction of disjunctions
+
+	`(A ∈ {a1, a2} ∨ B ∉ {b1, b2} ∨ C ∈ {c1}) ∧ (A ∈ {a1, a3} ∨ D ∉ {d1})`
+
+
+`Composition` is a set of `Predicate`(s). Depending upon how the constituent results are considered, it could be either :
+
+- `Conjunction` is satisfied only when all constituent predicates evaluate to true.
+- `Disjunction` is satisfied when any of the constituent predicates evaluate to true.
+
+
+
+`Predicate` is a conditional that supports the below operators.
+
+- `INCLUDED(∈)` is satisfied when any one of the given values match.
+- `EXCLUDED(∉)` is satisfied when none of the given values match.
+
+Further, Mustang allows for logical grouping of `Criteria`(s) when indexing through identification by a name.
+`Criteria` of any form can be indexed into an index-group. And searches are always directed to a specific index-group.
+
+
+### Usage
+
+#### Initializing Mustang Engine
+
+``` java
 ObjectMapper mapper = new ObjectMapper();
 MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
-``` 
-
-### Defining criteria
-Mustang Engine supports DNF and CNF criteria, Criteria is combination of predicates,
-as part of Mustang we support two type of predicate as of now, Include and Exclude predicate
-
-A Boolean Expression is either a DNF (i.e., disjunctive normal form) or CNF
-(i.e., conjunctive normal form) expression of the basic ∈ and ∉ predicates.
-
-#### Defining Include predicate 
-```java
-IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
 ```
 
-#### Defining Exclude predicate 
-```java
-ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build()
-```
 
 #### Defining DNF criteria
-DNF expression is of the form:
-```
-DNF_criteria = (A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1})∨ (A ∈ {a1, a3} ∧ D ∉ {d1})
-```
-In summary DNF is disjunctive combination of the conjuctions. To define a DNF criteria 
+
 ``` java
-Criteria C1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet("4", "5", "6")).build())
-                .build()).build();
+Criteria dnf = DNFCriteria.builder()
+				.id("C1") // id we would get back should this criteria match a given assignment
+				.conjunction(Conjunction.builder()
+				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4,5,6)).build())
+				.build())
+			  .build();
 ```
 
 #### Defining CNF criteria
-CNF expression is of the form:
-```
-CNF_criteria = age ∈ {2, 3}∧(state ∈ {CA} ∨ gender ∈ {F})
-```
-In summary CNF is Conjuctive combination of the disjunctions.
-To define a CNF criteria 
+
 ``` java
-Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n")
-                        .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
-                .build();
+Criteria cnf = CNFCriteria.builder()
+				.id("C2") // id we would get back should this criteria match a given assignment
+				.disjunction(Disjunction.builder()
+				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+				        .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.n")
+				                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
+				.build())
+              .build();
 ```
 
 #### Indexing criteria
+
+Index a single criteria
+
 ```java
 engine.index("index_name", criteria)
 ```
+
 OR 
+
+Multiple criteria(s) at once.
+
 ```java
-engine.index("index_name", Arrays.asList(criteria1, criteria2, criteria3));
+engine.index("index_name", Arrays.asList(criteria1, criteria2, ...));
 ```
 
-#### Defining assignment
-An assignment is a set of attribute name and value pairs `{ "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
-Ex such as: 
-`{"gender": "F", "state": "CA"}`
+#### Searching criteria(s) matching an assignment
 
-To define an assignment and search on index 
+An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
+
+Example : `JsonNode event = { "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
+
+First we need to build the context -
+
 ```java
-Map<String, Object> testQuery = Maps.newHashMap();
-testQuery.put("a", "A1");
-testQuery.put("b", "B3");
-testQuery.put("n", 5);
-testQuery.put("p", true);
-
-EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
-
+EvaluationContext context = EvaluationContext.builder().node(event).build();
 ```
 
-#### Searching over Index
-To search a context over a index 
+And search it in the required index - 
 
 ``` java
 Set<String> searchResults = engine.search("index_name",context);
 ```
-This will return set of Id's of all the matching criteria
+
+which returns a set of id(s) of all matching criteria(s).
