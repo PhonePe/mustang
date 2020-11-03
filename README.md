@@ -30,29 +30,26 @@ on the number of advertisements that can be shown on a given page and only the �
 
 Mustang allows indexing Boolean Expressions through a notion called `Criteria`, which can be either of the two types :
 
-- DNF : Disjunctive Normal Form
-- CNF : Conjunctive Normal Form
+- DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
+
+	`(A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1}) ∨ (A ∈ {a1, a3} ∧ D ∉ {d1})`
+
+- CNF : Conjunctive Normal Form, which is a conjunction of disjunctions
+
+	`(A ∈ {a1, a2} ∨ B ∉ {b1, b2} ∨ C ∈ {c1}) ∧ (A ∈ {a1, a3} ∨ D ∉ {d1})`
 
 
-DNF is a disjunction of conjunctions.
- 
-Example : `(A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1}) ∨ (A ∈ {a1, a3} ∧ D ∉ {d1})`
+`Composition` is a set of `Predicate`(s). Depending upon how the constituent results are considered, it could be either :
 
-CNF is a conjunction of disjunctions.
-
-Example : `age ∈ {2, 3} ∧ (state ∈ {"CA"} ∨ gender ∈ {"F"})`
-
-`Conjunction` / `Disjunction` is a `Composition` of `Predicate`(s).
-
-- `Conjunction` is a `Composition` that is satisfied only when all constituent predicates evaluate to true.
-- `Disjunction` is a `Composition` that is satisfied when any of the constituent predicates evaluate to true.
+- `Conjunction` is satisfied only when all constituent predicates evaluate to true.
+- `Disjunction` is satisfied when any of the constituent predicates evaluate to true.
 
 
 
 `Predicate` is a conditional that supports the below operators.
 
-- `INCLUDED (∈)`: which is satisfied when any one of the given values match.
-- `EXCLUDED (∉)`: which is satisfied when none of the given values match.
+- `INCLUDED(∈)` is satisfied when any one of the given values match.
+- `EXCLUDED(∉)` is satisfied when none of the given values match.
 
 Further, Mustang allows for logical grouping of `Criteria`(s) when indexing through identification by a name.
 `Criteria` of any form can be indexed into an index-group. And searches are always directed to a specific index-group.
