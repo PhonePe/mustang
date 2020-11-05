@@ -32,9 +32,9 @@ import lombok.Data;
 @Data
 @Builder
 public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
+    public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
+    public static final String ZERO_SIZE_DISJUNCTION_ENTRY_KEY = "ZZZ";
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
-    private static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
-    private static final String ZERO_SIZE_DISJUNCTION_ENTRY_KEY = "ZZZ";
     @Valid
     @NotNull
     private IndexGroup indexGroup;
@@ -90,9 +90,9 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         IntStream.range(0, disjunctionSize).boxed().forEach(i -> {
             final Disjunction disjunction = cnf.getDisjunctions().get(i);
             final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates().stream()
-                    .map(predicate -> predicate.accept(
-                            CNFPostingListsExtractor.builder().iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
-                                    .eId(cnf.getId()).order(i).build()))
+                    .map(predicate -> predicate.accept(CNFPostingListsExtractor.builder()
+                            .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId())).eId(cnf.getId()).order(i)
+                            .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap())).build()))
                     .collect(Collectors.toList());
 
             if (kSize == 0) {

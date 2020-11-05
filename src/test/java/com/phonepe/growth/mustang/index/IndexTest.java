@@ -227,7 +227,7 @@ public class IndexTest {
 
         /* Asserions for keys in k = 2 */
         Assert.assertEquals(6, index.getCnfInvertedIndex().getTable().get(2).size());
-        final Key keyK2 = Key.builder().name("$.a").value("A1").order(1).upperBoundScore(0).build();
+        final Key keyK2 = Key.builder().name("$.a").value("A1").order(0).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(2).containsKey(keyK2));
 
         /* Asserions for keys in k = 3 */
