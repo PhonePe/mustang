@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.phonepe.growth.mustang.exception.MustangException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -339,7 +340,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -419,7 +420,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());

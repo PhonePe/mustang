@@ -27,12 +27,12 @@ public class ScanTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         engine = MustangEngine.builder().mapper(mapper).build();
     }
 
     @Test
-    public void testDNFPositiveMatch() throws Exception {
+    public void testDNFPositiveMatch() {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -56,7 +56,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testDNFNegativeMatch() throws Exception {
+    public void testDNFNegativeMatch() {
 
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
@@ -77,7 +77,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testDNFMultiMatch() throws Exception {
+    public void testDNFMultiMatch() {
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -103,7 +103,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testCNFPositiveMatch() throws Exception {
+    public void testCNFPositiveMatch() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -127,7 +127,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testCNFNegativeMatch() throws Exception {
+    public void testCNFNegativeMatch() {
 
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
@@ -148,7 +148,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testCNFMultiMatch() throws Exception {
+    public void testCNFMultiMatch() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -172,5 +172,359 @@ public class ScanTest {
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
+
+
+
+
+    @Test
+    public void testDNFSingleCriteriaIncludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testDNFSingleCriteriaIncludeAndExcludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testDNFSingleCriteriaExcludePredicateAndQueryWithNonExclusionValues() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        testQuery.put("p", Boolean.FALSE);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testDNFSingleCriteriaExcludePredicateAndQueryWithExclusionValues() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("p", Boolean.TRUE);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testDNFMultipleCriteriaIncludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.abc").values(Sets.newHashSet("ABC1", "ABC2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.boolTest").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+        testQuery.put("abc", "ABC1");
+        testQuery.put("boolTest", true);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+    @Test
+    public void testDNFMultipleCriteriaExcludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.abc").values(Sets.newHashSet("ABC1", "ABC2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.boolTest").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        testQuery.put("b", "B10");
+        testQuery.put("n", 0.400000000003);
+        testQuery.put("p", false);
+        testQuery.put("abc", "ABC10");
+        testQuery.put("boolTest", false);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+    
+    @Test
+    public void testDNFMultipleCriteriaExcludePredicateAndQueryWithNonExclusionValues() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.helloWorld").values(Sets.newHashSet("helloWorld1", "helloWorld2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.statusCodes").values(Sets.newHashSet("200","400","500")).build()).build())
+                .build();
+
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("helloWorld", "helloWorld100");
+        testQuery.put("statusCodes", "404");
+        testQuery.put("a", "A10");
+        testQuery.put("p", false);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+    @Test
+    public void testDNFMultipleCriteriaExcludePredicateAndQueryWithExclusionValues() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.helloWorld").values(Sets.newHashSet("helloWorld1", "helloWorld2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.statusCodes").values(Sets.newHashSet("200","400","500")).build()).build())
+                .build();
+
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("helloWorld", "helloWorld1");
+        testQuery.put("statusCodes", "400");
+        testQuery.put("a", "A1");
+        testQuery.put("p", true);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+
+    @Test
+    public void testCNFSingleCriteriaIncludePredicate() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testCNFSingleCriteriaIncludeAndExcludePredicate() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B10");
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testCNFSingleCriteriaExcludePredicateAndQueryWithNonExclusionValues() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testCNFSingleCriteriaExcludePredicateAndQueryWithExclusionValues() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("p", Boolean.TRUE);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+    }
+
+    @Test
+    public void testCNFMultipleCriteriaIncludePredicate() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.abc").values(Sets.newHashSet("ABC1", "ABC2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.boolTest").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("abc", "ABC1");
+
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+    @Test
+    public void testCNFMultipleCriteriaExcludePredicate() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.abc").values(Sets.newHashSet("ABC1", "ABC2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.boolTest").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        testQuery.put("abc", "ABC10");
+        testQuery.put("boolTest", false);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+
+    @Test
+    public void testCNFMultipleCriteriaExcludePredicateAndQueryWithNonExclusionValues() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.helloWorld").values(Sets.newHashSet("helloWorld1", "helloWorld2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.statusCodes").values(Sets.newHashSet("200","400","500")).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("helloWorld", "helloWorld100");
+        testQuery.put("a", "A10");
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
+    @Test
+    public void testCNFMultipleCriteriaExcludePredicateAndQueryWithExclusionValues() {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.helloWorld").values(Sets.newHashSet("helloWorld1", "helloWorld2")).build())
+                .predicate(ExcludedPredicate.builder().lhs("$.statusCodes").values(Sets.newHashSet("200","400","500")).build()).build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("helloWorld", "helloWorld1");
+        testQuery.put("statusCodes", "400");
+        testQuery.put("a", "A1");
+        testQuery.put("p", true);
+
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
+        Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
+    }
+
 
 }
