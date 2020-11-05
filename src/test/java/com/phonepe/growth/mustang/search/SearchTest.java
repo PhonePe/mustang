@@ -1227,4 +1227,201 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
+    @Test // TODO -issue reported
+    public void testDNFWithBlankIncludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet(" ")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", " ");
+        engine.index("test", c1);
+        // Query engine
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    @Test
+    public void testDNFWithSpecialCharacterIncludePredicate() {
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("!")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "!");
+        engine.index("test", c1);
+        // Query engine
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    @Test
+    public void testDNFWithDoubleWhiteSpaceAndQueryWithOneWhiteSpace() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("  ")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", " ");
+        engine.index("test", c1);
+        // Query engine
+        final Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 0);
+    }
+
+    // CNF & DNF caases
+    @Test
+    public void testIndexDNFCNFQueryForBoth() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+
+        // Index ingestion
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+
+        // Search query for same criteria
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1"); // C1,C2 value
+        testQuery.put("b", "B1"); // C1 value
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        // Assertion
+        Assert.assertEquals(2, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testIndexDNFCNFQueryForCNF() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+
+        // Index ingestion
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+
+        // Search query for same criteria
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1"); // C1 value
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        // Assertion
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C2"));
+
+    }
+
+    @Test
+    public void testIndexDNFCNFQueryForDNF() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A10", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+
+        // Index ingestion
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+
+        // Search query for same criteria
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1"); // C1 value
+        testQuery.put("b", "B1"); // C1 value
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        // Assertion
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+    }
+
+    @Test
+    public void testIndexDNFCNFQueryForValueNotPresentInBothCriterias() {
+
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+
+        // Index ingestion
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+
+        // Search query -values not present in both the criteria
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        testQuery.put("b", "B10");
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        // Assertion
+        Assert.assertEquals(0, searchResults.size());
+
+    }
+
+    @Test
+    public void testIndexDNFCNFQueryWithAllValuesForBothCriteria() {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
+        Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
+                .predicate(
+                        IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4, 5, 6, 0.300000000003)).build())
+                .build()).build();
+
+        // Index ingestion
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
+        engine.index("testsearch", c1);
+        engine.index("testsearch", c2);
+
+        // Search query for same criteria
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1"); // C1,C2 value
+        testQuery.put("b", "B1"); // C1 value
+        testQuery.put("n", 4); // C2 value
+        final Set<String> searchResults = engine.search("testsearch",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        // Assertion
+        Assert.assertEquals(2, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+    }
+
 }

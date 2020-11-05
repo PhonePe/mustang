@@ -40,9 +40,9 @@ public class IndexTest {
                 .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
                 .build();
         engine.index("test", c1);
-        //Indexing Size assertion
+        // Indexing Size assertion
         Assert.assertEquals(1, engine.getIndexingFacde().getIndexMap().size());
-        //Fetch for a specific Index Group
+        // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
         Assert.assertEquals(8, index.getDnfInvertedIndex().getTable().get(3).size());
@@ -51,16 +51,13 @@ public class IndexTest {
 
     @Test
     public void testDnfIndexingWithOnlyExcludePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1")
-                .conjunction(Conjunction.builder()
-                        .predicate(
-                                ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                        .build())
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
                 .build();
         engine.index("test", c1);
-        //Indexing Size assertion
+        // Indexing Size assertion
         Assert.assertEquals(1, engine.getIndexingFacde().getIndexMap().size());
-        //Fetch for a specific Index Group
+        // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
@@ -70,11 +67,8 @@ public class IndexTest {
 
     @Test
     public void testDnfIndexingWithMultiplePredicate() {
-        Criteria c1 = DNFCriteria.builder().id("C1")
-                .conjunction(Conjunction.builder()
-                        .predicate(
-                                ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                        .build())
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
                 .build();
         Criteria c2 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
@@ -85,8 +79,8 @@ public class IndexTest {
                 .build();
         Criteria c3 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
         Criteria c4 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
@@ -124,29 +118,26 @@ public class IndexTest {
         Assert.assertTrue(index.getDnfInvertedIndex().getTable().get(3).containsKey(aKey));
     }
 
-
     @Test
     public void testCnfIndexing() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(25, 30)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build()).build())
+                .build();
         Disjunction d1 = Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(25, 30)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
-                .build();
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build()).build();
         Disjunction d2 = Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(1, 2)).build())
                 .predicate(IncludedPredicate.builder().lhs("$.age").values(Sets.newHashSet(35, 40)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build())
-                .build();
+                .predicate(IncludedPredicate.builder().lhs("$.premium").values(Sets.newHashSet(true)).build()).build();
         Criteria c2 = CNFCriteria.builder().id("C2").disjunctions(Arrays.asList(d1, d2)).build();
         engine.index("test", Arrays.asList(c1, c2));
-        //Indexing Size assertion
+        // Indexing Size assertion
         Assert.assertEquals(1, engine.getIndexingFacde().getIndexMap().size());
-        //Fetch for a specific Index Group
+        // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key zKey = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(0).containsKey(zKey));
@@ -159,8 +150,8 @@ public class IndexTest {
     @Test
     public void testCnfIndexingWithOnlyExcludePredicate() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(ExcludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(5, 6)).build())
-                .build()).build();
+                .predicate(ExcludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet(5, 6)).build()).build())
+                .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         final Key key = Key.builder().name("ZZZ").value(0).upperBoundScore(0).build();
@@ -172,27 +163,25 @@ public class IndexTest {
     @Test
     public void testCnfIndexingWithMultiplePredicate() {
         Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build()).build())
+                .build();
         Criteria c2 = CNFCriteria.builder().id("C2").disjunction(Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
-                .build()).build();
+                .predicate(IncludedPredicate.builder().lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
+                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+                .build();
         Criteria c3 = CNFCriteria.builder().id("C3").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A3", "A4")).build())
-                .build())
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A3", "A4")).build()).build())
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
                         .predicate(IncludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                        .build()
-                )
+                        .build())
                 .build();
         Disjunction d1 = Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.d").values(Sets.newHashSet(true)).build())
-                .build();
+                .predicate(IncludedPredicate.builder().lhs("$.d").values(Sets.newHashSet(true)).build()).build();
 
         Disjunction d2 = Disjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.user_id").values(Sets.newHashSet("20", "22")).build())
@@ -237,7 +226,6 @@ public class IndexTest {
         Assert.assertTrue(index.getCnfInvertedIndex().getTable().get(3).containsKey(aKey));
     }
 
-
     @Test
     public void getInvalidIndexGroup() {
         IndexGroup index = null;
@@ -245,7 +233,7 @@ public class IndexTest {
             index = engine.getIndexingFacde().getIndexGroup("test");
             ;
         } catch (MustangException e) {
-            Assert.assertEquals(e.getErrorCode().toString(), "INDEX_NOT_FOUND");
+            Assert.assertEquals("INDEX_NOT_FOUND", e.getErrorCode().toString());
         }
         Assert.assertNull(index);
     }
@@ -293,9 +281,9 @@ public class IndexTest {
                 .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
-        //Check value in DNF index
-        Assert.assertEquals(0,index.getDnfInvertedIndex().getTable().size());
-        //Check value in CNF index
+        // Check value in DNF index
+        Assert.assertEquals(0, index.getDnfInvertedIndex().getTable().size());
+        // Check value in CNF index
         Assert.assertEquals(1, index.getCnfInvertedIndex().getTable().size());
         Assert.assertEquals(2, index.getCnfInvertedIndex().getTable().get(1).size());
     }
@@ -307,9 +295,9 @@ public class IndexTest {
                 .build();
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
-        //Check value in DNF index
-        Assert.assertEquals(0,index.getDnfInvertedIndex().getTable().size());
-        //Check value in CNF index
+        // Check value in DNF index
+        Assert.assertEquals(0, index.getDnfInvertedIndex().getTable().size());
+        // Check value in CNF index
         Assert.assertEquals(1, index.getCnfInvertedIndex().getTable().size());
         Assert.assertEquals(3, index.getCnfInvertedIndex().getTable().get(0).size());
 
@@ -324,13 +312,12 @@ public class IndexTest {
         engine.index("test", c1);
 
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
-        //Check value in DNF index
-        Assert.assertEquals(0,index.getDnfInvertedIndex().getTable().size());
-        //Check value in CNF index
+        // Check value in DNF index
+        Assert.assertEquals(0, index.getDnfInvertedIndex().getTable().size());
+        // Check value in CNF index
         Assert.assertEquals(1, index.getCnfInvertedIndex().getTable().size());
         System.out.println(index.getCnfInvertedIndex().getTable());
         Assert.assertEquals(5, index.getCnfInvertedIndex().getTable().get(0).size());
     }
-
 
 }
