@@ -44,8 +44,8 @@ Mustang allows indexing Boolean Expressions in high-dimensional multi-valued att
 
 `Composition` is a set of `Predicate`(s). Depending upon how the constituent results are considered, it could be either :
 
-- `Conjunction` is satisfied only when all constituent predicates evaluate to true.
-- `Disjunction` is satisfied when any of the constituent predicates evaluate to true.
+- `Conjunction(∧)` is satisfied only when all constituent predicates evaluate to true.
+- `Disjunction(∨)` is satisfied when any of the constituent predicates evaluate to true.
 
 
 
@@ -130,3 +130,19 @@ Set<String> searchResults = engine.search("index_name",context);
 ```
 
 which returns a set of id(s) of all matching criteria(s).
+
+#### Support for scanning
+
+Mustang provides support for scanning a list of `Criteria` against a `context` and arriving at the satisfying ones.
+
+```java
+List<Criteria> matchingCriterias = engine.scan(criterias, context);
+```
+
+#### Support for evaluating a specific criteria
+
+A specific `Criteria` can also be evaluated against a given `context` to pull out the result.
+
+```java
+boolean result = evaluate(criteria, context);
+```
