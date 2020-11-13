@@ -21,11 +21,15 @@ public class IndexingFacade {
     public void add(String index, Criteria criteria) {
         final IndexGroup indexGroup = get(index);
         criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
+        indexGroup.getAllCriterias().put(criteria.getId(), criteria);
     }
 
     public void add(String index, List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
-        criterias.forEach(criteria -> criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build()));
+        criterias.forEach(criteria -> {
+            criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
+            indexGroup.getAllCriterias().put(criteria.getId(), criteria);
+        });
     }
 
     public IndexGroup getIndexGroup(String index) {
