@@ -20,7 +20,6 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
@@ -75,7 +74,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -340,7 +339,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -420,7 +419,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());

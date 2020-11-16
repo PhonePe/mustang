@@ -18,13 +18,13 @@ import lombok.Data;
 public class IndexingFacade {
     private final Map<String, IndexGroup> indexMap = Maps.newConcurrentMap();
 
-    public void add(String index, Criteria criteria) {
+    public void add(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
         criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
         indexGroup.getAllCriterias().put(criteria.getId(), criteria);
     }
 
-    public void add(String index, List<Criteria> criterias) {
+    public void add(final String index, final List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
         criterias.forEach(criteria -> {
             criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
@@ -32,14 +32,14 @@ public class IndexingFacade {
         });
     }
 
-    public IndexGroup getIndexGroup(String index) {
+    public IndexGroup getIndexGroup(final String index) {
         if (indexMap.containsKey(index)) {
             return indexMap.get(index);
         }
         throw MustangException.builder().errorCode(ErrorCode.INDEX_NOT_FOUND).build();
     }
 
-    private IndexGroup get(String index) {
+    private IndexGroup get(final String index) {
         if (!indexMap.containsKey(index)) {
             indexMap.put(index, IndexGroup.builder().name(index).build());
         }

@@ -63,15 +63,14 @@ public class MustangEngine {
         return criteria.evaluate(context);
     }
 
-    public double score(final String indexName, final Criteria criteria, final EvaluationContext context) {
+    public double score(final Criteria criteria, final EvaluationContext context) {
         if (criteria.evaluate(context)) {
             return criteria.getScore(context);
         }
         return -1.0; // negative score to indicate unmatched criteria.
     }
 
-    public List<Pair<String, Double>> score(final String indexName, final List<Criteria> criterias,
-            final EvaluationContext context) {
+    public List<Pair<String, Double>> score(final List<Criteria> criterias, final EvaluationContext context) {
         return criterias.stream().sequential().map(criteria -> {
             if (criteria.evaluate(context)) {
                 return Pair.of(criteria.getId(), criteria.getScore(context));
