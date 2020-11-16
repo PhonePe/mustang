@@ -7,6 +7,8 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.EvaluationContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
@@ -31,4 +33,13 @@ public abstract class Composition {
     public abstract double getScore(EvaluationContext context);
 
     public abstract <T> T accept(CompositionVisitor<T> visitor);
+
+    public int getWeigthFromContext(EvaluationContext context, Predicate predicate) {
+        try {
+            JsonPath.read(context.getNode().toString(), predicate.getLhs());
+            return 1;
+        } catch (PathNotFoundException e) {
+            return 0;
+        }
+    }
 }
