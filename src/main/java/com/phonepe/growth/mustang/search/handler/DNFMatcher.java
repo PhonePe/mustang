@@ -164,14 +164,10 @@ public class DNFMatcher {
     private void conjunctionRejectionSkip(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
-        for (int l = 0; l <= k - 1; l++) {
-            if (pLists[l].getValue().getKey().equals(rejectId)) {
-                /* Skip to smallest ID where ID > RejectID */
-                pLists[l].getValue().setLeft(rejectId + 1);
-            } else {
-                break; // break out of this for loop
-            }
-        }
+        IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
+                .filter(l -> pLists[l].getValue().getKey().equals(rejectId))
+                .forEach(l -> pLists[l].getValue().setLeft(rejectId + 1));
+
         preEmptiveSortCheck(k, pLists);
     }
 
