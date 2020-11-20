@@ -44,8 +44,8 @@ Mustang allows indexing Boolean Expressions in high-dimensional multi-valued att
 
 `Composition` is a set of `Predicate`(s). Depending upon how the constituent results are considered, it could be either :
 
-- `Conjunction` is satisfied only when all constituent predicates evaluate to true.
-- `Disjunction` is satisfied when any of the constituent predicates evaluate to true.
+- `Conjunction(∧)` is satisfied only when all constituent predicates evaluate to true.
+- `Disjunction(∨)` is satisfied when any of the constituent predicates evaluate to true.
 
 
 
@@ -130,3 +130,42 @@ Set<String> searchResults = engine.search("index_name",context);
 ```
 
 which returns a set of id(s) of all matching criteria(s).
+
+
+#### Searching TOP N criteria(s) matching an assignment
+
+We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
+These are then leveraged to sort rank the top N criteria.
+
+Score of a criteria - `E` reflects its relevance wrt to an assignment - `S`.
+
+If E is a conjunction of ∈ and ∉ predicates, the score of E is defined as
+
+Score<sub>conj</sub>(E,S) = \sum _{(A,v) \in IN(E) \cap S} w_{E}(A,v) * w_{S}(A,v)
+
+where 
+- IN (E ) is the set of all attribute name and value pairs in the ∈ predicates of E (we ignore scoring ∉ predicates)
+- w<sub>E</sub> (A, v) is the weight of the pair (A, v) in E 
+- w<sub>S</sub> (A, v) is the weight of the pair (A, v) in S
+
+Scores of different `Criteria` are defined as below :
+
+- Score of a `DNFCriteria` is defined as the maximum of the scores of the conjunctions.
+- Score of a `CNFCriteria` is defined as sum of the scores of the disjunctions.
+
+
+#### Support for scanning
+
+Mustang provides support for scanning a list of `Criteria` against a `context` and arriving at the satisfying ones.
+
+```java
+List<Criteria> matchingCriterias = engine.scan(criterias, context);
+```
+
+#### Support for evaluating a specific criteria
+
+A specific `Criteria` can also be evaluated against a given `context` to pull out the result.
+
+```java
+boolean result = evaluate(criteria, context);
+```

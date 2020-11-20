@@ -63,19 +63,17 @@ public class DNFMatcher {
                     /* Reject conjunction if EXCLUDED predicate is violated */
                     final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
                             pLists[0].getValue().getValue(), pLists[0].getValue().getKey());
-                    if (!conjunctionPostingEntry.isPresent()
-                            || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get().getType())) {
-                        conjunctionRejectionCheck(k, pLists, pLists[0].getValue().getKey());
-
+                    if (conjunctionRejectionCheck(conjunctionPostingEntry)) {
+                        conjunctionRejectionSkip(k, pLists, pLists[0].getValue().getKey());
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
                         result.add(conjunctionPostingEntry.get().getEId());
                     }
-                    /* NextID is the smallest possible ID after current ID */
+                    /* nextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;
                 } else {
-                    /* Skip first K-1 posting lists */
+                    /* Skip first k-1 posting lists */
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);
@@ -119,7 +117,11 @@ public class DNFMatcher {
     private Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(Set<ConjunctionPostingEntry> set,
             Integer iId) {
         return set.stream().filter(x -> x.getIId().equals(iId)).findFirst();
+    }
 
+    private boolean conjunctionRejectionCheck(final Optional<ConjunctionPostingEntry> conjunctionPostingEntry) {
+        return !conjunctionPostingEntry.isPresent()
+                || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get().getType());
     }
 
     private void sortByCurrentEntriesDNF(
@@ -159,17 +161,13 @@ public class DNFMatcher {
         return false;
     }
 
-    private void conjunctionRejectionCheck(final int k,
+    private void conjunctionRejectionSkip(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
-        for (int l = 0; l <= k - 1; l++) {
-            if (pLists[l].getValue().getKey().equals(rejectId)) {
-                /* Skip to smallest ID where ID > RejectID */
-                pLists[l].getValue().setLeft(rejectId + 1);
-            } else {
-                break; // break out of this for loop
-            }
-        }
+        IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
+                .filter(l -> pLists[l].getValue().getKey().equals(rejectId))
+                .forEach(l -> pLists[l].getValue().setLeft(rejectId + 1));
+
         preEmptiveSortCheck(k, pLists);
     }
 

@@ -36,8 +36,7 @@ public class Conjunction extends Composition {
     @Override
     public double getScore(EvaluationContext context) {
         return getPredicates().stream().filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(Predicate::getWeight) //TODO should consider weight from the context also
-                .sum();
+                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate)).sum();
     }
 
     @Override

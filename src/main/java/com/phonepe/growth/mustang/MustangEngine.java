@@ -2,9 +2,12 @@ package com.phonepe.growth.mustang;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phonepe.growth.mustang.common.EvaluationContext;
@@ -39,13 +42,21 @@ public class MustangEngine {
         indexingFacde.add(indexName, criterias);
     }
 
+    public synchronized boolean replace(final String oldIndex, final String newIndex) {
+        return indexingFacde.replace(oldIndex, newIndex);
+    }
+
     public Set<String> search(final String indexName, final EvaluationContext context) {
         return search(indexName, context, -1);
     }
 
     public Set<String> search(final String indexName, final EvaluationContext context, final int topN) {
-        final Query query = QueryBuilder.buildQuery(mapper, context, topN);
-        return searchFacade.search(indexName, query);
+        final Query query = QueryBuilder.buildQuery(mapper, context);
+        final Set<String> results = searchFacade.search(indexName, query);
+        if (topN == -1) {
+            return results;
+        }
+        return searchFacade.trimTopN(results, indexName, context, topN);
     }
 
     public List<Criteria> scan(final List<Criteria> criterias, final EvaluationContext context) {
@@ -54,6 +65,22 @@ public class MustangEngine {
 
     public boolean evaluate(final Criteria criteria, final EvaluationContext context) {
         return criteria.evaluate(context);
+    }
+
+    public double score(final Criteria criteria, final EvaluationContext context) {
+        if (criteria.evaluate(context)) {
+            return criteria.getScore(context);
+        }
+        return -1.0; // negative score to indicate unmatched criteria.
+    }
+
+    public List<Pair<String, Double>> score(final List<Criteria> criterias, final EvaluationContext context) {
+        return criterias.stream().sequential().map(criteria -> {
+            if (criteria.evaluate(context)) {
+                return Pair.of(criteria.getId(), criteria.getScore(context));
+            }
+            return Pair.of(criteria.getId(), -1.0); // negative score to indicate unmatched criteria.
+        }).collect(Collectors.toList());
     }
 
 }

@@ -20,7 +20,6 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
@@ -61,7 +60,7 @@ public class SearchTest {
     }
 
     @Test
-    public void testDNFNegativeMatch() throws Exception {
+    public void testDNFNegativeMatchMultiple() throws Exception {
 
         Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
                 .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
@@ -75,7 +74,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -340,7 +339,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -420,7 +419,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[]{c2}));
+        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(searchResults.isEmpty());
@@ -467,10 +466,15 @@ public class SearchTest {
                 .predicate(IncludedPredicate.builder().lhs("$.g").values(Sets.newHashSet("M")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.s").values(Sets.newHashSet("CA")).build()).build())
                 .build();
-        Criteria c4 = DNFCriteria.builder().id("C4").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet(3, 4)).build()).build())
+        Criteria c4 = DNFCriteria.builder().id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder().lhs("$.s").values(Sets.newHashSet("CA")).build())
+                        .predicate(IncludedPredicate.builder().lhs("$.g").values(Sets.newHashSet("M")).build()).build())
                 .build();
         Criteria c5 = DNFCriteria.builder().id("C5").conjunction(Conjunction.builder()
+                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet(3, 4)).build()).build())
+                .build();
+        Criteria c6 = DNFCriteria.builder().id("C6").conjunction(Conjunction.builder()
                 .predicate(ExcludedPredicate.builder().lhs("$.s").values(Sets.newHashSet("CA", "NY")).build()).build())
                 .build();
         // Index ingestion
@@ -481,6 +485,7 @@ public class SearchTest {
         engine.index("testsearch", c3);
         engine.index("testsearch", c4);
         engine.index("testsearch", c5);
+        engine.index("testsearch", c6);
 
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -919,11 +924,11 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
-        c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
                 .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(false)).build()).build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.index("test", c2);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -932,7 +937,7 @@ public class SearchTest {
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertEquals(1, searchResults1.size());
-        Assert.assertTrue(searchResults1.contains("C1"));
+        Assert.assertTrue(searchResults1.contains("C2"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
@@ -964,12 +969,12 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
-        c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+        Criteria c2 = DNFCriteria.builder().id("C2").conjunction(Conjunction.builder()
                 .predicate(ExcludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("B1", "B2")).build())
                 .predicate(ExcludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(false)).build()).build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.index("test", c2);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -979,7 +984,7 @@ public class SearchTest {
         final Set<String> searchResults1 = engine.search("test",
                 EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertEquals(1, searchResults1.size());
-        Assert.assertTrue(searchResults1.contains("C1"));
+        Assert.assertTrue(searchResults1.contains("C2"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
@@ -1422,6 +1427,116 @@ public class SearchTest {
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test
+    public void testDNFSingleExclusionNegativeMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder().predicate(
+                        ExcludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.000000000000003)).build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.isEmpty());
+    }
+
+    @Test
+    public void testDNFSingleExclusionPositiveMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    @Test
+    public void testCNFSingleExclusionNegativeMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B3")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.isEmpty());
+    }
+
+    @Test
+    public void testCNFSingleExclusionPositiveMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
+                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1")).build()).build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    @Test
+    public void testIndexReplacementPositive() throws Exception {
+        Criteria c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder().predicate(
+                        ExcludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.000000000000003)).build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        Set<String> searchResults = engine.search("test",
+                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.isEmpty());
+
+        c1 = DNFCriteria.builder().id("C1")
+                .conjunction(Conjunction.builder().predicate(
+                        ExcludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(0.000000000000004)).build())
+                        .build())
+                .build();
+        engine.index("test1", c1);
+        engine.replace("test", "test1");
+        searchResults = engine.search("test", EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        try {
+            searchResults = engine.search("test1",
+                    EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+            Assert.assertFalse(true);
+        } catch (MustangException e) {
+            Assert.assertTrue(true);
+        }
     }
 
 }

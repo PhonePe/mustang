@@ -36,8 +36,8 @@ public class Disjunction extends Composition {
     @Override
     public double getScore(EvaluationContext context) {
         return getPredicates().stream().filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(Predicate::getWeight) // TODO should consider weight from the context also
-                .max().orElse(0);
+                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate)).max()
+                .orElse(0);
     }
 
     @Override

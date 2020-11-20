@@ -70,10 +70,10 @@ public class CNFMatcher {
 
                     disjunctionEvaluationCheck(result, pLists, k, counters);
 
-                    /* NextID is the smallest possible ID after current ID */
+                    /* nextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;
                 } else {
-                    /* Skip first K-1 posting lists */
+                    /* Skip first k-1 posting lists */
                     nextID = pLists[k - 1].getValue().getKey();
                 }
                 skipTo(k, pLists, nextID);

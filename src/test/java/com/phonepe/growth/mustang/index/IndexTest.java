@@ -257,7 +257,6 @@ public class IndexTest {
         engine.index("test", c1);
         IndexGroup index = engine.getIndexingFacde().getIndexGroup("test");
         Assert.assertEquals(1, index.getDnfInvertedIndex().getTable().size());
-        System.out.println(index.getDnfInvertedIndex().getTable().get(0));
         Assert.assertEquals(3, index.getDnfInvertedIndex().getTable().get(0).size());
 
     }
@@ -316,7 +315,6 @@ public class IndexTest {
         Assert.assertEquals(0, index.getDnfInvertedIndex().getTable().size());
         // Check value in CNF index
         Assert.assertEquals(1, index.getCnfInvertedIndex().getTable().size());
-        System.out.println(index.getCnfInvertedIndex().getTable());
         Assert.assertEquals(5, index.getCnfInvertedIndex().getTable().get(0).size());
     }
 
