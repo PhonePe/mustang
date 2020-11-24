@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
@@ -33,7 +33,7 @@ public class IncludedPredicate extends Predicate {
     }
 
     @Override
-    protected boolean evaluate(EvaluationContext context, Object lhsValue) {
+    protected boolean evaluate(RequestContext context, Object lhsValue) {
         return values.contains(lhsValue);
     }
 

@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class EvaluationContext {
+public class RequestContext {
     @NotNull
     private JsonNode node;
 }

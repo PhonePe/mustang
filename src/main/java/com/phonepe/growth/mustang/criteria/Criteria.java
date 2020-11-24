@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 
@@ -24,9 +24,9 @@ public abstract class Criteria {
     @NotBlank
     private String id;
 
-    public abstract boolean evaluate(EvaluationContext context);
+    public abstract boolean evaluate(RequestContext context);
 
-    public abstract double getScore(EvaluationContext context);
+    public abstract double getScore(RequestContext context);
 
     public abstract <T> T accept(CriteriaVisitor<T> visitor);
 

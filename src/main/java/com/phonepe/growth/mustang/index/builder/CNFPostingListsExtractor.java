@@ -30,6 +30,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
     private final String eId;
     private final int order;
     private final Map<Key, TreeSet<DisjunctionPostingEntry>> postingLists;
+    private final Map<Key, AtomicInteger> cnfKeyFrequency;
 
     @Override
     public Map<Key, TreeSet<DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
@@ -57,6 +58,10 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                 counter.incrementAndGet();
                 return !postingLists.get(key).contains(postingEntry);
             }).findFirst().orElse(Key.builder().name(lhs).value(value).order(counter.get()).build());
+        }).map(key -> {
+            final Key baseKey = Key.builder().name(key.getName()).value(key.getValue()).build();
+            cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger()).getAndIncrement();
+            return key;
         }).map(key -> Pair.of(key, postingEntry)).collect(Collectors.groupingBy(Pair::getKey,
                 Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }

@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
@@ -51,7 +51,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -71,7 +71,7 @@ public class ScanTest {
         testQuery.put("n", "7");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.isEmpty());
 
     }
@@ -96,7 +96,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.size() == 2);
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
@@ -122,7 +122,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -142,7 +142,7 @@ public class ScanTest {
         testQuery.put("n", "7");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.isEmpty());
 
     }
@@ -167,7 +167,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.size() == 2);
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
@@ -193,7 +193,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -214,7 +214,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -230,7 +230,7 @@ public class ScanTest {
         testQuery.put("p", Boolean.FALSE);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -246,7 +246,7 @@ public class ScanTest {
         testQuery.put("p", Boolean.TRUE);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -274,7 +274,7 @@ public class ScanTest {
         testQuery.put("boolTest", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -303,7 +303,7 @@ public class ScanTest {
         testQuery.put("boolTest", false);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -328,7 +328,7 @@ public class ScanTest {
         testQuery.put("p", false);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -353,7 +353,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -373,7 +373,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -392,7 +392,7 @@ public class ScanTest {
         testQuery.put("b", "B10");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -407,7 +407,7 @@ public class ScanTest {
         testQuery.put("a", "A10");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -423,7 +423,7 @@ public class ScanTest {
         testQuery.put("p", Boolean.TRUE);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { }),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
     }
 
@@ -448,7 +448,7 @@ public class ScanTest {
 
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -474,7 +474,7 @@ public class ScanTest {
         testQuery.put("boolTest", false);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -497,7 +497,7 @@ public class ScanTest {
         testQuery.put("a", "A10");
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertTrue(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }
@@ -521,7 +521,7 @@ public class ScanTest {
         testQuery.put("p", true);
 
         final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2}),
-                EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build());
+                RequestContext.builder().node(mapper.valueToTree(testQuery)).build());
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C1")));
         Assert.assertFalse(scan.stream().anyMatch(criteria -> criteria.getId().equals("C2")));
     }

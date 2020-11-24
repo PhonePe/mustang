@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
@@ -29,7 +29,7 @@ public abstract class Predicate {
     private long weight;
     private boolean defaultResult;
 
-    public boolean evaluate(EvaluationContext context) {
+    public boolean evaluate(RequestContext context) {
         if (lhsNotAPath) {
             return evaluate(context, lhs);
         }
@@ -42,6 +42,6 @@ public abstract class Predicate {
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
-    protected abstract boolean evaluate(EvaluationContext context, Object lhsValue);
+    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
 
 }

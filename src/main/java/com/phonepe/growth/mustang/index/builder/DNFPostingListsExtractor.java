@@ -3,6 +3,7 @@ package com.phonepe.growth.mustang.index.builder;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,6 +25,7 @@ import lombok.Data;
 public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeSet<ConjunctionPostingEntry>>> {
     private final Integer iId;
     private final String eId;
+    private final Map<Key, AtomicInteger> dnfKeyFrequency;
 
     @Override
     public Map<Key, TreeSet<ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
@@ -35,10 +37,17 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
         return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
     }
 
-    private Map<Key, TreeSet<ConjunctionPostingEntry>> extractPostingLists(PredicateType pType, String lhs,
+    private Map<Key, TreeSet<ConjunctionPostingEntry>> extractPostingLists(PredicateType pType,
+            String lhs,
             Set<?> values) {
-        return values.stream().map(value -> Key.builder().name(lhs).value(value).build()).map(
-                key -> Pair.of(key, ConjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).score(0).build()))
+        return values.stream()
+                .map(value -> {
+                    final Key key = Key.builder().name(lhs).value(value).build();
+                    dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0)).getAndIncrement();
+                    return key;
+                })
+                .map(key -> Pair.of(key,
+                        ConjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).score(0).build()))
                 .collect(Collectors.groupingBy(Pair::getKey,
                         Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }

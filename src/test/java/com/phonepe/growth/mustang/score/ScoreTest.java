@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
@@ -59,7 +59,7 @@ public class ScoreTest {
 
         engine.index("test", c1);
         engine.index("test", c2);
-        final EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+        final RequestContext context = RequestContext.builder().node(mapper.valueToTree(testQuery)).build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(engine.score(c2, context) == -1);
@@ -81,7 +81,7 @@ public class ScoreTest {
         testQuery.put("n", "7");
 
         engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
-        final EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+        final RequestContext context = RequestContext.builder().node(mapper.valueToTree(testQuery)).build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.isEmpty());
         Assert.assertTrue(engine.score(c1, context) == -1);
@@ -116,7 +116,7 @@ public class ScoreTest {
 
         engine.index("test", c1);
         engine.index("test", c2);
-        final EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+        final RequestContext context = RequestContext.builder().node(mapper.valueToTree(testQuery)).build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
@@ -141,7 +141,7 @@ public class ScoreTest {
 
         engine.index("test", c1);
         engine.index("test", c2);
-        final EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+        final RequestContext context = RequestContext.builder().node(mapper.valueToTree(testQuery)).build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.isEmpty());
         Assert.assertTrue(engine.score(c1, context) == -1);
@@ -205,7 +205,7 @@ public class ScoreTest {
         engine.index("test", c1);
         engine.index("test", c2);
         engine.index("test", c3);
-        final EvaluationContext context = EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build();
+        final RequestContext context = RequestContext.builder().node(mapper.valueToTree(testQuery)).build();
 
         Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.size() == 2);

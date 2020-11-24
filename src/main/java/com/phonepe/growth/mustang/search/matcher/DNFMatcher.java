@@ -1,4 +1,6 @@
-package com.phonepe.growth.mustang.search.handler;
+package com.phonepe.growth.mustang.search.matcher;
+
+import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +17,8 @@ import java.util.stream.IntStream;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
+import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
@@ -25,7 +28,6 @@ import com.phonepe.growth.mustang.search.Query;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;
 
 @Data
 @Builder
@@ -34,15 +36,17 @@ public class DNFMatcher {
 
     private final InvertedIndex<ConjunctionPostingEntry> invertedInex;
     private final Query query;
+    private final Map<String, Criteria> allCriterias;
 
-    public Set<String> getMatches() {
-        final Set<String> result = Sets.newHashSet();
+    public Map<String, Double> getMatches() {
+        final Map<String, Double> result = Maps.newHashMap();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = invertedInex.getTable();
         final int start = 0;
         final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
         IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(k -> {
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
-                    table, k);
+                    table,
+                    k);
             initializeCurrentEntriesDNF(pLists);
             /* Processing k = 0 and k = 1 are identical */
             if (k == 0) {
@@ -62,13 +66,15 @@ public class DNFMatcher {
                 if (sameConjunctionCheck(pLists, k - 1)) {
                     /* Reject conjunction if EXCLUDED predicate is violated */
                     final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                            pLists[0].getValue().getValue(), pLists[0].getValue().getKey());
+                            pLists[0].getValue().getValue(),
+                            pLists[0].getValue().getKey());
                     if (conjunctionRejectionCheck(conjunctionPostingEntry)) {
                         conjunctionRejectionSkip(k, pLists, pLists[0].getValue().getKey());
                         continue; // continue to next while loop iteration
                     } else {
                         /* conjunction is fully satisfied */
-                        result.add(conjunctionPostingEntry.get().getEId());
+                        result.put(conjunctionPostingEntry.get().getEId(),
+                                computeScore(conjunctionPostingEntry.get().getEId()));
                     }
                     /* nextID is the smallest possible ID after current ID */
                     nextID = pLists[k - 1].getValue().getKey() + 1;
@@ -86,12 +92,21 @@ public class DNFMatcher {
 
     @SuppressWarnings("unchecked")
     private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
-            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table, final int k) {
+            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table,
+            final int k) {
         final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-        return map.entrySet().stream().map(entry -> getMatchingKey(k, entry)).filter(Optional::isPresent)
-                .map(Optional::get).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x)),
-                        (oldValue, newValue) -> newValue, LinkedHashMap::new))
-                .entrySet().stream().toArray(Map.Entry[]::new);
+        return map.entrySet()
+                .stream()
+                .map(entry -> getMatchingKey(k, entry))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(x -> x,
+                        x -> MutablePair.of(0, map.get(x)),
+                        (oldValue, newValue) -> newValue,
+                        LinkedHashMap::new))
+                .entrySet()
+                .stream()
+                .toArray(Map.Entry[]::new);
     }
 
     private Optional<Key> getMatchingKey(final int k, final Entry<Key, TreeSet<ConjunctionPostingEntry>> entry) {
@@ -135,7 +150,8 @@ public class DNFMatcher {
 
     private Integer getIdSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
         final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                entry.getValue().getValue(), entry.getValue().getKey());
+                entry.getValue().getValue(),
+                entry.getValue().getKey());
         if (conjunctionPostingEntry.isPresent()) {
             return conjunctionPostingEntry.get().getIId();
         }
@@ -144,7 +160,8 @@ public class DNFMatcher {
 
     private PredicateType getTypeSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
         final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                entry.getValue().getValue(), entry.getValue().getKey());
+                entry.getValue().getValue(),
+                entry.getValue().getKey());
         if (conjunctionPostingEntry.isPresent()) {
             return conjunctionPostingEntry.get().getType();
         }
@@ -152,7 +169,8 @@ public class DNFMatcher {
     }
 
     private boolean sameConjunctionCheck(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, Integer k) {
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            Integer k) {
         if (getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()).isPresent()
                 && getConjunctionPostingEntry(pLists[k].getValue().getValue(), pLists[k].getValue().getKey())
                         .isPresent()) {
@@ -164,7 +182,9 @@ public class DNFMatcher {
     private void conjunctionRejectionSkip(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
-        IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
+        IntStream.rangeClosed(0, k)
+                .boxed()
+                .filter(l -> l < pLists.length)
                 .filter(l -> pLists[l].getValue().getKey().equals(rejectId))
                 .forEach(l -> pLists[l].getValue().setLeft(rejectId + 1));
 
@@ -179,9 +199,16 @@ public class DNFMatcher {
         }
     }
 
+    private double computeScore(final String cId) {
+        return allCriterias.get(cId).getScore(query.getContext());
+    }
+
     private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists, int nextID) {
-        IntStream.rangeClosed(0, k).boxed().filter(l -> l < pLists.length)
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            int nextID) {
+        IntStream.rangeClosed(0, k)
+                .boxed()
+                .filter(l -> l < pLists.length)
                 .forEach(l -> pLists[l].getValue().setLeft(nextID));
 
         preEmptiveSortCheck(k, pLists);

@@ -9,8 +9,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
@@ -43,7 +42,7 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        Assert.assertTrue(engine.evaluate(c1, EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertTrue(engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
     }
 
     @Test
@@ -58,7 +57,7 @@ public class EvaluationTest {
         testQuery.put("n", "7");
 
         Assert.assertFalse(
-                engine.evaluate(c1, EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build()));
+                engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
 
     }
 
@@ -77,7 +76,7 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", false);
 
-        Assert.assertTrue(engine.evaluate(c1, EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertTrue(engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
     }
 
     @Test
@@ -92,7 +91,7 @@ public class EvaluationTest {
         testQuery.put("n", "7");
 
         Assert.assertFalse(
-                engine.evaluate(c1, EvaluationContext.builder().node(mapper.valueToTree(testQuery)).build()));
+                engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
 
     }
 
