@@ -53,7 +53,7 @@ public class MustangEngine {
 
     public Set<String> search(final String indexName, final RequestContext context, final int topN) {
         final Query query = QueryBuilder.buildQuery(mapper, context);
-        return searchFacade.search(rankingStrategy, indexName, query, topN);
+        return searchFacade.search(indexName, query, topN);
     }
 
     public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
