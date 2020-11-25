@@ -30,13 +30,13 @@ public class MustangEngine {
     @Valid
     @NotNull
     private ObjectMapper mapper;
+    @Builder.Default
+    private RankingStrategy rankingStrategy = RankingStrategy.EXPLICIT_WEIGHTS;
     private final IndexingFacade indexingFacde = IndexingFacade.builder()
             .build();
     private final SearchFacade searchFacade = SearchFacade.builder()
             .indexingFacade(indexingFacde)
             .build();
-    @Builder.Default
-    private final RankingStrategy rankingStrategy = RankingStrategy.EXPLICIT_WEIGHTS;
 
     public synchronized void index(final String indexName, final Criteria criteria) {
         indexingFacde.add(indexName, criteria);
