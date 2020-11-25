@@ -153,4 +153,72 @@ public class EvaluationTest {
 
     }
 
+    @Test
+    public void testPredicateWithDefaultValue() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A", "B"))
+                                .defaultResult(true) // responsible for making this predicate satisfy
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", "7");
+
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
+
+    }
+
+    @Test
+    public void testPredicateWithANonJsonPath() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("A") // This value is picked up for evaluation always when not a path.
+                                .lhsNotAPath(true)
+                                .values(Sets.newHashSet("A", "B"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "B"); // Doesn't matter as the predicate setup above already satisfies itself.
+        testQuery.put("n", "7");
+
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
+
+        Criteria c2 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("1")
+                                .lhsNotAPath(true)
+                                .values(Sets.newHashSet("6", "7")) // Never satisfied
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.evaluate(c2,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
+
+    }
+
 }
