@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index.extractor;
+package com.phonepe.growth.mustang.index.entry.extractor;
 
 import java.util.Comparator;
 import java.util.Map;

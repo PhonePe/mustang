@@ -23,8 +23,8 @@ import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
-import com.phonepe.growth.mustang.index.extractor.CNFPostingListsExtractor;
-import com.phonepe.growth.mustang.index.extractor.DNFPostingListsExtractor;
+import com.phonepe.growth.mustang.index.entry.extractor.CNFPostingListsExtractor;
+import com.phonepe.growth.mustang.index.entry.extractor.DNFPostingListsExtractor;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
