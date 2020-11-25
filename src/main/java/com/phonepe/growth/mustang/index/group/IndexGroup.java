@@ -31,9 +31,11 @@ public class IndexGroup {
     @NotBlank
     private String name;
     private final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = DNFInvertedIndex
-            .<ConjunctionPostingEntry>builder().build();
+            .<ConjunctionPostingEntry>builder()
+            .build();
     private final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
-            .<DisjunctionPostingEntry>builder().build();
+            .<DisjunctionPostingEntry>builder()
+            .build();
     private final Map<String, Criteria> allCriterias = Maps.newConcurrentMap();
     private final ExecutorService service = Executors.newCachedThreadPool();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();

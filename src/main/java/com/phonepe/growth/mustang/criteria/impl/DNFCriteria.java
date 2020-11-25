@@ -38,13 +38,17 @@ public class DNFCriteria extends Criteria {
 
     @Override
     public boolean evaluate(RequestContext context) {
-        return conjunctions.stream().anyMatch(conjunction -> conjunction.evaluate(context));
+        return conjunctions.stream()
+                .anyMatch(conjunction -> conjunction.evaluate(context));
     }
 
     @Override
     public double getScore(RequestContext context) {
         // score of a DNF is the max of scores of its constituent conjunctions.
-        return conjunctions.stream().mapToDouble(conjunction -> conjunction.getScore(context)).max().orElse(0);
+        return conjunctions.stream()
+                .mapToDouble(conjunction -> conjunction.getScore(context))
+                .max()
+                .orElse(0);
     }
 
     @Override

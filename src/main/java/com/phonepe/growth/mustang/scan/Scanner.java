@@ -24,7 +24,9 @@ public class Scanner {
     private RequestContext context;
 
     public List<Criteria> scan() {
-        return criterias.stream().filter(criteria -> criteria.evaluate(context)).collect(Collectors.toList());
+        return criterias.stream()
+                .filter(criteria -> criteria.evaluate(context))
+                .collect(Collectors.toList());
     }
 
 }

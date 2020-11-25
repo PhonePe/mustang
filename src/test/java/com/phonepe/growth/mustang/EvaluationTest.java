@@ -24,17 +24,33 @@ public class EvaluationTest {
 
     @Before
     public void setUp() throws Exception {
-        engine = MustangEngine.builder().mapper(mapper).build();
+        engine = MustangEngine.builder()
+                .mapper(mapper)
+                .build();
     }
 
     @Test
     public void testDNFPositiveMatch() throws Exception {
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n")
-                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -42,33 +58,61 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        Assert.assertTrue(engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
     }
 
     @Test
     public void testDNFNegativeMatch() throws Exception {
 
-        Criteria c1 = DNFCriteria.builder().id("C1").conjunction(Conjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A", "B"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .build())
+                        .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        Assert.assertFalse(
-                engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertFalse(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
 
     }
 
     @Test
     public void testCNFPositiveMatch() throws Exception {
-        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-                .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n")
-                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003)).build())
-                .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build()).build())
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A4");
@@ -76,22 +120,36 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", false);
 
-        Assert.assertTrue(engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
     }
 
     @Test
     public void testCNFNegativeMatch() throws Exception {
 
-        Criteria c1 = CNFCriteria.builder().id("C1").disjunction(Disjunction.builder()
-                .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A", "B")).build())
-                .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(1, 2, 3)).build()).build())
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A", "B"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .build())
+                        .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "C");
         testQuery.put("n", "7");
 
-        Assert.assertFalse(
-                engine.evaluate(c1, RequestContext.builder().node(mapper.valueToTree(testQuery)).build()));
+        Assert.assertFalse(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
 
     }
 

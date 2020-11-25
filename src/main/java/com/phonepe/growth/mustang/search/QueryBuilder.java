@@ -12,7 +12,11 @@ public class QueryBuilder {
 
     public static Query buildQuery(ObjectMapper mapper, final RequestContext context) {
         return Query.builder()
-                .assigment(FlattenedJson.builder().node(context.getNode()).mapper(mapper).build().flatten())
+                .assigment(FlattenedJson.builder()
+                        .node(context.getNode())
+                        .mapper(mapper)
+                        .build()
+                        .flatten())
                 .context(context)
                 .build();
     }

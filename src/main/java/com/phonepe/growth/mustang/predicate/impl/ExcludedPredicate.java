@@ -25,8 +25,11 @@ public class ExcludedPredicate extends Predicate {
 
     @Builder
     @JsonCreator
-    public ExcludedPredicate(@JsonProperty("lhs") String lhs, @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
-            @JsonProperty("weight") long weight, @JsonProperty("defaultResult") boolean defaultResult, Set<?> values) {
+    public ExcludedPredicate(@JsonProperty("lhs") String lhs,
+            @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
+            @JsonProperty("weight") long weight,
+            @JsonProperty("defaultResult") boolean defaultResult,
+            Set<?> values) {
         super(PredicateType.EXCLUDED, lhs, lhsNotAPath, weight, defaultResult);
         this.values = values;
     }

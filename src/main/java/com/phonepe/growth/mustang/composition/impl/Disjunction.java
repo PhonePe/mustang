@@ -30,7 +30,8 @@ public class Disjunction extends Composition {
 
     @Override
     public boolean evaluate(RequestContext context) {
-        return getPredicates().stream().anyMatch(predicate -> predicate.evaluate(context));
+        return getPredicates().stream()
+                .anyMatch(predicate -> predicate.evaluate(context));
     }
 
     @Override

@@ -38,13 +38,16 @@ public class CNFCriteria extends Criteria {
 
     @Override
     public boolean evaluate(RequestContext context) {
-        return disjunctions.stream().allMatch(disjunction -> disjunction.evaluate(context));
+        return disjunctions.stream()
+                .allMatch(disjunction -> disjunction.evaluate(context));
     }
 
     @Override
     public double getScore(RequestContext context) {
         // score of a CNF is the sum of score of all its constituent disjunctions.
-        return disjunctions.stream().mapToDouble(disjunction -> disjunction.getScore(context)).sum();
+        return disjunctions.stream()
+                .mapToDouble(disjunction -> disjunction.getScore(context))
+                .sum();
     }
 
     @Override

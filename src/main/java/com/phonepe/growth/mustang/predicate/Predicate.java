@@ -34,7 +34,9 @@ public abstract class Predicate {
             return evaluate(context, lhs);
         }
         try {
-            return evaluate(context, JsonPath.read(context.getNode().toString(), lhs));
+            return evaluate(context,
+                    JsonPath.read(context.getNode()
+                            .toString(), lhs));
         } catch (PathNotFoundException e) {
             return defaultResult;
         }

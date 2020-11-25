@@ -23,6 +23,8 @@ import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
+import com.phonepe.growth.mustang.index.extractor.CNFPostingListsExtractor;
+import com.phonepe.growth.mustang.index.extractor.DNFPostingListsExtractor;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
@@ -41,57 +43,69 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(DNFCriteria dnf) {
-        IntStream.range(0, dnf.getConjunctions().size()).boxed().forEach(j -> {
-            final Conjunction conjunction = dnf.getConjunctions().get(j);
-            final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
-            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
-            final int kSize = conjunction.getPredicates()
-                    .stream()
-                    .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                    .mapToInt(e -> 1)
-                    .sum();
+        IntStream.range(0,
+                dnf.getConjunctions()
+                        .size())
+                .boxed()
+                .forEach(j -> {
+                    final Conjunction conjunction = dnf.getConjunctions()
+                            .get(j);
+                    final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
+                    final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex
+                            .getTable();
+                    final int kSize = conjunction.getPredicates()
+                            .stream()
+                            .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
+                            .mapToInt(e -> 1)
+                            .sum();
 
-            final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates()
-                    .stream()
-                    .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
-                            .iId(dnfInvertedIndex
-                                    .getInternalIdFromCache(String.format(CONJUNCTION_ENTRY_ID_FORMAT, dnf.getId(), j)))
-                            .eId(dnf.getId())
-                            .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
-                            .build()))
-                    .collect(Collectors.toList());
+                    final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates()
+                            .stream()
+                            .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
+                                    .iId(dnfInvertedIndex.getInternalIdFromCache(
+                                            String.format(CONJUNCTION_ENTRY_ID_FORMAT, dnf.getId(), j)))
+                                    .eId(dnf.getId())
+                                    .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
+                                    .build()))
+                            .collect(Collectors.toList());
 
-            if (kSize == 0) {
-                // ZERO size handling
-                final Key key = Key.builder().name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
-                final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
-                        .flatMap(m -> m.entrySet().stream())
-                        .map(Map.Entry::getValue)
-                        .flatMap(TreeSet::stream)
-                        .distinct()
-                        .map(entry -> ConjunctionPostingEntry.builder()
-                                .iId(entry.getIId())
-                                .eId(entry.getEId())
-                                .type(PredicateType.INCLUDED)
-                                .score(0)
-                                .build())
-                        .distinct()
-                        .map(entry -> Pair.of(key, entry))
-                        .collect(Collectors.groupingBy(Pair::getKey,
-                                Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
-                postingLists.add(map);
-            }
+                    if (kSize == 0) {
+                        // ZERO size handling
+                        final Key key = Key.builder()
+                                .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY)
+                                .value(0)
+                                .upperBoundScore(0)
+                                .build();
+                        final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
+                                .flatMap(m -> m.entrySet()
+                                        .stream())
+                                .map(Map.Entry::getValue)
+                                .flatMap(TreeSet::stream)
+                                .distinct()
+                                .map(entry -> ConjunctionPostingEntry.builder()
+                                        .iId(entry.getIId())
+                                        .eId(entry.getEId())
+                                        .type(PredicateType.INCLUDED)
+                                        .score(0)
+                                        .build())
+                                .distinct()
+                                .map(entry -> Pair.of(key, entry))
+                                .collect(Collectors.groupingBy(Pair::getKey,
+                                        Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+                        postingLists.add(map);
+                    }
 
-            postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
-            indexTable.put(kSize, compactPostingLists(postingLists));
-        });
+                    postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
+                    indexTable.put(kSize, compactPostingLists(postingLists));
+                });
 
         return null;
     }
 
     @Override
     public Void visit(CNFCriteria cnf) {
-        final int disjunctionSize = cnf.getDisjunctions().size();
+        final int disjunctionSize = cnf.getDisjunctions()
+                .size();
         final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = indexGroup.getCnfInvertedIndex();
         final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) cnfInvertedIndex)
                 .getDisjunctionCounters();
@@ -105,45 +119,53 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 .mapToInt(e -> 1)
                 .sum();
 
-        IntStream.range(0, disjunctionSize).boxed().forEach(i -> {
-            final Disjunction disjunction = cnf.getDisjunctions().get(i);
-            final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates()
-                    .stream()
-                    .map(predicate -> predicate.accept(CNFPostingListsExtractor.builder()
-                            .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
-                            .eId(cnf.getId())
-                            .order(i)
-                            .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap()))
-                            .cnfKeyFrequency(indexGroup.getCnfKeyFrequency())
-                            .build()))
-                    .collect(Collectors.toList());
+        IntStream.range(0, disjunctionSize)
+                .boxed()
+                .forEach(i -> {
+                    final Disjunction disjunction = cnf.getDisjunctions()
+                            .get(i);
+                    final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction.getPredicates()
+                            .stream()
+                            .map(predicate -> predicate.accept(CNFPostingListsExtractor.builder()
+                                    .iId(cnfInvertedIndex.getInternalIdFromCache(cnf.getId()))
+                                    .eId(cnf.getId())
+                                    .order(i)
+                                    .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap()))
+                                    .cnfKeyFrequency(indexGroup.getCnfKeyFrequency())
+                                    .build()))
+                            .collect(Collectors.toList());
 
-            if (kSize == 0) {
-                // Zero size handling
-                final Key key = Key.builder().name(ZERO_SIZE_DISJUNCTION_ENTRY_KEY).value(0).upperBoundScore(0).build();
-                final Map<Key, TreeSet<DisjunctionPostingEntry>> map = postingLists.stream()
-                        .flatMap(m -> m.entrySet().stream())
-                        .map(Map.Entry::getValue)
-                        .flatMap(TreeSet::stream)
-                        .distinct()
-                        .map(entry -> DisjunctionPostingEntry.builder()
-                                .iId(entry.getIId())
-                                .eId(entry.getEId())
-                                .type(PredicateType.INCLUDED)
-                                .order(-1)
-                                .score(0)
-                                .build())
-                        .distinct()
-                        .map(entry -> Pair.of(key, entry))
-                        .collect(Collectors.groupingBy(Pair::getKey,
-                                Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
-                postingLists.add(map);
-            }
+                    if (kSize == 0) {
+                        // Zero size handling
+                        final Key key = Key.builder()
+                                .name(ZERO_SIZE_DISJUNCTION_ENTRY_KEY)
+                                .value(0)
+                                .upperBoundScore(0)
+                                .build();
+                        final Map<Key, TreeSet<DisjunctionPostingEntry>> map = postingLists.stream()
+                                .flatMap(m -> m.entrySet()
+                                        .stream())
+                                .map(Map.Entry::getValue)
+                                .flatMap(TreeSet::stream)
+                                .distinct()
+                                .map(entry -> DisjunctionPostingEntry.builder()
+                                        .iId(entry.getIId())
+                                        .eId(entry.getEId())
+                                        .type(PredicateType.INCLUDED)
+                                        .order(-1)
+                                        .score(0)
+                                        .build())
+                                .distinct()
+                                .map(entry -> Pair.of(key, entry))
+                                .collect(Collectors.groupingBy(Pair::getKey,
+                                        Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+                        postingLists.add(map);
+                    }
 
-            postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
-            indexTable.put(kSize, compactPostingLists(postingLists));
-            disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
-        });
+                    postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
+                    indexTable.put(kSize, compactPostingLists(postingLists));
+                    disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
+                });
         return null;
     }
 

@@ -32,7 +32,8 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Future<Map<St
     public Map<String, Double> handle() {
         return Stream.of(visitDNF(), visitCNF())
                 .map(this::extract)
-                .flatMap(map -> map.entrySet().stream())
+                .flatMap(map -> map.entrySet()
+                        .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
     }
 

@@ -1,4 +1,4 @@
-package com.phonepe.growth.mustang.index.builder;
+package com.phonepe.growth.mustang.index.extractor;
 
 import java.util.Map;
 import java.util.Set;
@@ -42,12 +42,21 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
             Set<?> values) {
         return values.stream()
                 .map(value -> {
-                    final Key key = Key.builder().name(lhs).value(value).build();
-                    dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0)).getAndIncrement();
+                    final Key key = Key.builder()
+                            .name(lhs)
+                            .value(value)
+                            .build();
+                    dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0))
+                            .getAndIncrement();
                     return key;
                 })
                 .map(key -> Pair.of(key,
-                        ConjunctionPostingEntry.builder().iId(iId).eId(eId).type(pType).score(0).build()))
+                        ConjunctionPostingEntry.builder()
+                                .iId(iId)
+                                .eId(eId)
+                                .type(pType)
+                                .score(0)
+                                .build()))
                 .collect(Collectors.groupingBy(Pair::getKey,
                         Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }

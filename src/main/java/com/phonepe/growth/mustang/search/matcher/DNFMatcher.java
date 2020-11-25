@@ -42,49 +42,67 @@ public class DNFMatcher {
         final Map<String, Double> result = Maps.newHashMap();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = invertedInex.getTable();
         final int start = 0;
-        final int end = Math.min(query.getAssigment().size(), table.keySet().stream().mapToInt(x -> x).max().orElse(0));
-        IntStream.rangeClosed(start, end).map(i -> end - i + start).boxed().forEach(k -> {
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
-                    table,
-                    k);
-            initializeCurrentEntriesDNF(pLists);
-            /* Processing k = 0 and k = 1 are identical */
-            if (k == 0) {
-                k = 1;
-            }
-            if (pLists.length < k) {
-                /* Too few posting lists for any conjunction to be satisfied */
-                return;
-            }
-            int nextID = 0;
-            while (canContinue(pLists, k)) {
-                sortByCurrentEntriesDNF(pLists);
-                /*
-                 * Check if the first k posting lists have the same conjunction ID in their
-                 * current entries
-                 */
-                if (sameConjunctionCheck(pLists, k - 1)) {
-                    /* Reject conjunction if EXCLUDED predicate is violated */
-                    final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                            pLists[0].getValue().getValue(),
-                            pLists[0].getValue().getKey());
-                    if (conjunctionRejectionCheck(conjunctionPostingEntry)) {
-                        conjunctionRejectionSkip(k, pLists, pLists[0].getValue().getKey());
-                        continue; // continue to next while loop iteration
-                    } else {
-                        /* conjunction is fully satisfied */
-                        result.put(conjunctionPostingEntry.get().getEId(),
-                                computeScore(conjunctionPostingEntry.get().getEId()));
+        final int end = Math.min(query.getAssigment()
+                .size(),
+                table.keySet()
+                        .stream()
+                        .mapToInt(x -> x)
+                        .max()
+                        .orElse(0));
+        IntStream.rangeClosed(start, end)
+                .map(i -> end - i + start)
+                .boxed()
+                .forEach(k -> {
+                    final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
+                            table,
+                            k);
+                    initializeCurrentEntriesDNF(pLists);
+                    /* Processing k = 0 and k = 1 are identical */
+                    if (k == 0) {
+                        k = 1;
                     }
-                    /* nextID is the smallest possible ID after current ID */
-                    nextID = pLists[k - 1].getValue().getKey() + 1;
-                } else {
-                    /* Skip first k-1 posting lists */
-                    nextID = pLists[k - 1].getValue().getKey();
-                }
-                skipTo(k, pLists, nextID);
-            }
-        });
+                    if (pLists.length < k) {
+                        /* Too few posting lists for any conjunction to be satisfied */
+                        return;
+                    }
+                    int nextID = 0;
+                    while (canContinue(pLists, k)) {
+                        sortByCurrentEntriesDNF(pLists);
+                        /*
+                         * Check if the first k posting lists have the same conjunction ID in their
+                         * current entries
+                         */
+                        if (sameConjunctionCheck(pLists, k - 1)) {
+                            /* Reject conjunction if EXCLUDED predicate is violated */
+                            final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
+                                    pLists[0].getValue()
+                                            .getValue(),
+                                    pLists[0].getValue()
+                                            .getKey());
+                            if (conjunctionRejectionCheck(conjunctionPostingEntry)) {
+                                conjunctionRejectionSkip(k,
+                                        pLists,
+                                        pLists[0].getValue()
+                                                .getKey());
+                                continue; // continue to next while loop iteration
+                            } else {
+                                /* conjunction is fully satisfied */
+                                result.put(conjunctionPostingEntry.get()
+                                        .getEId(),
+                                        computeScore(conjunctionPostingEntry.get()
+                                                .getEId()));
+                            }
+                            /* nextID is the smallest possible ID after current ID */
+                            nextID = pLists[k - 1].getValue()
+                                    .getKey() + 1;
+                        } else {
+                            /* Skip first k-1 posting lists */
+                            nextID = pLists[k - 1].getValue()
+                                    .getKey();
+                        }
+                        skipTo(k, pLists, nextID);
+                    }
+                });
 
         return result;
 
@@ -111,8 +129,11 @@ public class DNFMatcher {
 
     private Optional<Key> getMatchingKey(final int k, final Entry<Key, TreeSet<ConjunctionPostingEntry>> entry) {
         final Key key = entry.getKey();
-        if (key.getValue().equals(query.getAssigment().getOrDefault(key.getName(), null))
-                || (k == 0 && key.getName().equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY))) {
+        if (key.getValue()
+                .equals(query.getAssigment()
+                        .getOrDefault(key.getName(), null))
+                || (k == 0 && key.getName()
+                        .equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY))) {
             return Optional.of(key);
         }
         return Optional.empty();
@@ -120,23 +141,33 @@ public class DNFMatcher {
 
     private void initializeCurrentEntriesDNF(
             Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
-        Arrays.stream(pLists).forEach(pList -> pList.getValue().setLeft(pList.getValue().getRight().first().getIId()));
+        Arrays.stream(pLists)
+                .forEach(pList -> pList.getValue()
+                        .setLeft(pList.getValue()
+                                .getRight()
+                                .first()
+                                .getIId()));
     }
 
     private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final int k) {
-        return getConjunctionPostingEntry(pLists[k - 1].getValue().getValue(), pLists[k - 1].getValue().getKey())
-                .isPresent();
+        return getConjunctionPostingEntry(pLists[k - 1].getValue()
+                .getValue(),
+                pLists[k - 1].getValue()
+                        .getKey()).isPresent();
     }
 
     private Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(Set<ConjunctionPostingEntry> set,
             Integer iId) {
-        return set.stream().filter(x -> x.getIId().equals(iId)).findFirst();
+        return set.stream()
+                .filter(x -> x.getIId()
+                        .equals(iId))
+                .findFirst();
     }
 
     private boolean conjunctionRejectionCheck(final Optional<ConjunctionPostingEntry> conjunctionPostingEntry) {
-        return !conjunctionPostingEntry.isPresent()
-                || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get().getType());
+        return !conjunctionPostingEntry.isPresent() || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get()
+                .getType());
     }
 
     private void sortByCurrentEntriesDNF(
@@ -149,21 +180,25 @@ public class DNFMatcher {
     }
 
     private Integer getIdSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
-        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                entry.getValue().getValue(),
-                entry.getValue().getKey());
+        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
         if (conjunctionPostingEntry.isPresent()) {
-            return conjunctionPostingEntry.get().getIId();
+            return conjunctionPostingEntry.get()
+                    .getIId();
         }
         return null;
     }
 
     private PredicateType getTypeSafely(Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
-        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
-                entry.getValue().getValue(),
-                entry.getValue().getKey());
+        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
         if (conjunctionPostingEntry.isPresent()) {
-            return conjunctionPostingEntry.get().getType();
+            return conjunctionPostingEntry.get()
+                    .getType();
         }
         return null;
     }
@@ -171,10 +206,18 @@ public class DNFMatcher {
     private boolean sameConjunctionCheck(
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             Integer k) {
-        if (getConjunctionPostingEntry(pLists[0].getValue().getValue(), pLists[0].getValue().getKey()).isPresent()
-                && getConjunctionPostingEntry(pLists[k].getValue().getValue(), pLists[k].getValue().getKey())
-                        .isPresent()) {
-            return pLists[0].getValue().getKey().equals(pLists[k].getValue().getKey());
+        if (getConjunctionPostingEntry(pLists[0].getValue()
+                .getValue(),
+                pLists[0].getValue()
+                        .getKey()).isPresent()
+                && getConjunctionPostingEntry(pLists[k].getValue()
+                        .getValue(),
+                        pLists[k].getValue()
+                                .getKey()).isPresent()) {
+            return pLists[0].getValue()
+                    .getKey()
+                    .equals(pLists[k].getValue()
+                            .getKey());
         }
         return false;
     }
@@ -185,8 +228,11 @@ public class DNFMatcher {
         IntStream.rangeClosed(0, k)
                 .boxed()
                 .filter(l -> l < pLists.length)
-                .filter(l -> pLists[l].getValue().getKey().equals(rejectId))
-                .forEach(l -> pLists[l].getValue().setLeft(rejectId + 1));
+                .filter(l -> pLists[l].getValue()
+                        .getKey()
+                        .equals(rejectId))
+                .forEach(l -> pLists[l].getValue()
+                        .setLeft(rejectId + 1));
 
         preEmptiveSortCheck(k, pLists);
     }
@@ -200,7 +246,8 @@ public class DNFMatcher {
     }
 
     private double computeScore(final String cId) {
-        return allCriterias.get(cId).getScore(query.getContext());
+        return allCriterias.get(cId)
+                .getScore(query.getContext());
     }
 
     private void skipTo(final int k,
@@ -209,7 +256,8 @@ public class DNFMatcher {
         IntStream.rangeClosed(0, k)
                 .boxed()
                 .filter(l -> l < pLists.length)
-                .forEach(l -> pLists[l].getValue().setLeft(nextID));
+                .forEach(l -> pLists[l].getValue()
+                        .setLeft(nextID));
 
         preEmptiveSortCheck(k, pLists);
     }

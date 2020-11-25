@@ -30,8 +30,11 @@ public class MustangEngine {
     @Valid
     @NotNull
     private ObjectMapper mapper;
-    private final IndexingFacade indexingFacde = IndexingFacade.builder().build();
-    private final SearchFacade searchFacade = SearchFacade.builder().indexingFacade(indexingFacde).build();
+    private final IndexingFacade indexingFacde = IndexingFacade.builder()
+            .build();
+    private final SearchFacade searchFacade = SearchFacade.builder()
+            .indexingFacade(indexingFacde)
+            .build();
     @Builder.Default
     private final RankingStrategy rankingStrategy = RankingStrategy.EXPLICIT_WEIGHTS;
 
@@ -57,7 +60,11 @@ public class MustangEngine {
     }
 
     public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
-        return Scanner.builder().criterias(criterias).context(context).build().scan();
+        return Scanner.builder()
+                .criterias(criterias)
+                .context(context)
+                .build()
+                .scan();
     }
 
     public boolean evaluate(final Criteria criteria, final RequestContext context) {
@@ -72,12 +79,15 @@ public class MustangEngine {
     }
 
     public List<Pair<String, Double>> score(final List<Criteria> criterias, final RequestContext context) {
-        return criterias.stream().sequential().map(criteria -> {
-            if (criteria.evaluate(context)) {
-                return Pair.of(criteria.getId(), criteria.getScore(context));
-            }
-            return Pair.of(criteria.getId(), -1.0); // negative score to indicate unmatched criteria.
-        }).collect(Collectors.toList());
+        return criterias.stream()
+                .sequential()
+                .map(criteria -> {
+                    if (criteria.evaluate(context)) {
+                        return Pair.of(criteria.getId(), criteria.getScore(context));
+                    }
+                    return Pair.of(criteria.getId(), -1.0); // negative score to indicate unmatched criteria.
+                })
+                .collect(Collectors.toList());
     }
 
 }

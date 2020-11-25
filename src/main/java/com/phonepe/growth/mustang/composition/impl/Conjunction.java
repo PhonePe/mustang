@@ -30,7 +30,8 @@ public class Conjunction extends Composition {
 
     @Override
     public boolean evaluate(final RequestContext context) {
-        return getPredicates().stream().allMatch(predicate -> predicate.evaluate(context));
+        return getPredicates().stream()
+                .allMatch(predicate -> predicate.evaluate(context));
     }
 
     @Override
