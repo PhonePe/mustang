@@ -118,10 +118,7 @@ public class DNFMatcher {
                 .map(entry -> getMatchingKey(k, entry))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toMap(x -> x,
-                        x -> MutablePair.of(0, map.get(x)),
-                        (oldValue, newValue) -> newValue,
-                        LinkedHashMap::new))
+                .collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
                 .stream()
                 .toArray(Map.Entry[]::new);

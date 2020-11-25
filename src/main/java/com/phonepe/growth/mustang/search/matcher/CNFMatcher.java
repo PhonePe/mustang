@@ -1,9 +1,10 @@
 package com.phonepe.growth.mustang.search.matcher;
 
+import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -27,7 +28,6 @@ import com.phonepe.growth.mustang.search.Query;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
 
 @Data
 @Builder
@@ -108,10 +108,7 @@ public class CNFMatcher {
                 .map(entry -> getMatchingKey(k, entry))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toMap(x -> x,
-                        x -> MutablePair.of(0, map.get(x)),
-                        (oldValue, newValue) -> newValue,
-                        LinkedHashMap::new))
+                .collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
                 .stream()
                 .toArray(Map.Entry[]::new);
