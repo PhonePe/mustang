@@ -1,8 +1,11 @@
 package com.phonepe.growth.mustang.score;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,6 +93,18 @@ public class ScoreTest {
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(engine.score(c2, context) == -1);
         Assert.assertTrue(engine.score(c1, context) == 30);
+
+        final List<Pair<String, Double>> scores = engine.score(Arrays.asList(c1, c2), context);
+        Assert.assertTrue(scores.get(0)
+                .getKey()
+                .equals("C1")
+                && scores.get(0)
+                        .getValue() == 30);
+        Assert.assertTrue(scores.get(1)
+                .getKey()
+                .equals("C2")
+                && scores.get(1)
+                        .getValue() == -1);
     }
 
     @Test
