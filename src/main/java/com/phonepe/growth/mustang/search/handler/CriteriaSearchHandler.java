@@ -14,6 +14,7 @@ import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.matcher.CNFMatcher;
 import com.phonepe.growth.mustang.search.matcher.DNFMatcher;
+import com.phonepe.growth.mustang.search.matcher.Matches;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CriteriaSearchHandler implements CriteriaForm.Visitor<Future<Map<String, Double>>> {
+public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @NotNull
     private final IndexGroup indexGroup;
     @Valid
@@ -31,32 +32,36 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Future<Map<St
 
     public Map<String, Double> handle() {
         return Stream.of(visitDNF(), visitCNF())
-                .map(this::extract)
+                .map(matches -> extract(matches.getProbables()))
                 .flatMap(map -> map.entrySet()
                         .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
     }
 
     @Override
-    public Future<Map<String, Double>> visitDNF() {
-        return indexGroup.getService()
-                .submit(() -> DNFMatcher.builder()
-                        .invertedInex(indexGroup.getDnfInvertedIndex())
-                        .query(query)
-                        .allCriterias(indexGroup.getAllCriterias())
-                        .build()
-                        .getMatches());
+    public Matches visitDNF() {
+        return Matches.builder()
+                .probables(indexGroup.getProcessor()
+                        .submit(() -> DNFMatcher.builder()
+                                .invertedInex(indexGroup.getDnfInvertedIndex())
+                                .query(query)
+                                .allCriterias(indexGroup.getAllCriterias())
+                                .build()
+                                .getMatches()))
+                .build();
     }
 
     @Override
-    public Future<Map<String, Double>> visitCNF() {
-        return indexGroup.getService()
-                .submit(() -> CNFMatcher.builder()
-                        .invertedIndex(indexGroup.getCnfInvertedIndex())
-                        .query(query)
-                        .allCriterias(indexGroup.getAllCriterias())
-                        .build()
-                        .getMatches());
+    public Matches visitCNF() {
+        return Matches.builder()
+                .probables(indexGroup.getProcessor()
+                        .submit(() -> CNFMatcher.builder()
+                                .invertedIndex(indexGroup.getCnfInvertedIndex())
+                                .query(query)
+                                .allCriterias(indexGroup.getAllCriterias())
+                                .build()
+                                .getMatches()))
+                .build();
     }
 
     private Map<String, Double> extract(Future<Map<String, Double>> future) {

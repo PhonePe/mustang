@@ -37,7 +37,7 @@ public class IndexGroup {
             .<DisjunctionPostingEntry>builder()
             .build();
     private final Map<String, Criteria> allCriterias = Maps.newConcurrentMap();
-    private final ExecutorService service = Executors.newCachedThreadPool();
+    private final ExecutorService processor = Executors.newCachedThreadPool();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> cnfKeyFrequency = Maps.newConcurrentMap();
 
