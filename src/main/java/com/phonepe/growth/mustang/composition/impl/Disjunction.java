@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.CompositionVisitor;
@@ -29,14 +29,17 @@ public class Disjunction extends Composition {
     }
 
     @Override
-    public boolean evaluate(EvaluationContext context) {
-        return getPredicates().stream().anyMatch(predicate -> predicate.evaluate(context));
+    public boolean evaluate(RequestContext context) {
+        return getPredicates().stream()
+                .anyMatch(predicate -> predicate.evaluate(context));
     }
 
     @Override
-    public double getScore(EvaluationContext context) {
-        return getPredicates().stream().filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate)).max()
+    public double getScore(RequestContext context) {
+        return getPredicates().stream()
+                .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
+                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate))
+                .max()
                 .orElse(0);
     }
 

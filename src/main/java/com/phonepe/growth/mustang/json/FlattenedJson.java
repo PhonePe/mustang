@@ -32,8 +32,10 @@ public class FlattenedJson {
 
     public Map<String, Object> flatten() {
         try {
-            final Map<String, Object> collect = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node)).entrySet()
-                    .stream().collect(Collectors.toMap(e -> String.format(NORMALISED_KEY_FORMAT, e.getKey()),
+            final Map<String, Object> collect = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node))
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(e -> String.format(NORMALISED_KEY_FORMAT, e.getKey()),
                             Map.Entry::getValue));
             return mapper.readValue(mapper.writeValueAsBytes(collect), TYPE_REF); // for type safety
         } catch (IOException e) {

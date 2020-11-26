@@ -1,7 +1,7 @@
 package com.phonepe.growth.mustang.search.handler;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -9,8 +9,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
+import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.search.Query;
+import com.phonepe.growth.mustang.search.matcher.CNFMatcher;
+import com.phonepe.growth.mustang.search.matcher.DNFMatcher;
+import com.phonepe.growth.mustang.search.matcher.Matches;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,25 +23,53 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class CriteriaSearchHandler implements CriteriaForm.Visitor<Set<String>> {
+public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @NotNull
-    private final IndexGroup index;
+    private final IndexGroup indexGroup;
     @Valid
     @NotNull
     private final Query query;
 
-    public Set<String> handle() {
-        return Stream.of(visitDNF(), visitCNF()).flatMap(Collection::stream).collect(Collectors.toSet());
+    public Map<String, Double> handle() {
+        return Stream.of(visitDNF(), visitCNF())
+                .map(matches -> extract(matches.getProbables()))
+                .flatMap(map -> map.entrySet()
+                        .stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
     }
 
     @Override
-    public Set<String> visitDNF() {
-        return DNFMatcher.builder().invertedInex(index.getDnfInvertedIndex()).query(query).build().getMatches();
+    public Matches visitDNF() {
+        return Matches.builder()
+                .probables(indexGroup.getProcessor()
+                        .submit(() -> DNFMatcher.builder()
+                                .invertedInex(indexGroup.getDnfInvertedIndex())
+                                .query(query)
+                                .allCriterias(indexGroup.getAllCriterias())
+                                .build()
+                                .getMatches()))
+                .build();
     }
 
     @Override
-    public Set<String> visitCNF() {
-        return CNFMatcher.builder().invertedIndex(index.getCnfInvertedIndex()).query(query).build().getMatches();
+    public Matches visitCNF() {
+        return Matches.builder()
+                .probables(indexGroup.getProcessor()
+                        .submit(() -> CNFMatcher.builder()
+                                .invertedIndex(indexGroup.getCnfInvertedIndex())
+                                .query(query)
+                                .allCriterias(indexGroup.getAllCriterias())
+                                .build()
+                                .getMatches()))
+                .build();
+    }
+
+    private Map<String, Double> extract(Future<Map<String, Double>> future) {
+        try {
+            return future.get();
+        } catch (Exception e) {
+            throw MustangException.propagate(e);
+        }
     }
 
 }

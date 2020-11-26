@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.predicate.Predicate;
@@ -28,15 +28,16 @@ public abstract class Composition {
     @Size(min = 2)
     private List<Predicate> predicates;
 
-    public abstract boolean evaluate(EvaluationContext context);
+    public abstract boolean evaluate(RequestContext context);
 
-    public abstract double getScore(EvaluationContext context);
+    public abstract double getScore(RequestContext context);
 
     public abstract <T> T accept(CompositionVisitor<T> visitor);
 
-    public int getWeigthFromContext(EvaluationContext context, Predicate predicate) {
+    public int getWeigthFromContext(RequestContext context, Predicate predicate) {
         try {
-            JsonPath.read(context.getNode().toString(), predicate.getLhs());
+            JsonPath.read(context.getNode()
+                    .toString(), predicate.getLhs());
             return 1;
         } catch (PathNotFoundException e) {
             return 0;

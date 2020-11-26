@@ -20,15 +20,21 @@ public class IndexingFacade {
 
     public void add(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
-        criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
-        indexGroup.getAllCriterias().put(criteria.getId(), criteria);
+        criteria.accept(CriteriaIndexBuilder.builder()
+                .indexGroup(indexGroup)
+                .build());
+        indexGroup.getAllCriterias()
+                .put(criteria.getId(), criteria);
     }
 
     public void add(final String index, final List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
         criterias.forEach(criteria -> {
-            criteria.accept(CriteriaIndexBuilder.builder().indexGroup(indexGroup).build());
-            indexGroup.getAllCriterias().put(criteria.getId(), criteria);
+            criteria.accept(CriteriaIndexBuilder.builder()
+                    .indexGroup(indexGroup)
+                    .build());
+            indexGroup.getAllCriterias()
+                    .put(criteria.getId(), criteria);
         });
     }
 
@@ -43,12 +49,17 @@ public class IndexingFacade {
         if (indexMap.containsKey(index)) {
             return indexMap.get(index);
         }
-        throw MustangException.builder().errorCode(ErrorCode.INDEX_NOT_FOUND).build();
+        throw MustangException.builder()
+                .errorCode(ErrorCode.INDEX_NOT_FOUND)
+                .build();
     }
 
     private IndexGroup get(final String index) {
         if (!indexMap.containsKey(index)) {
-            indexMap.put(index, IndexGroup.builder().name(index).build());
+            indexMap.put(index,
+                    IndexGroup.builder()
+                            .name(index)
+                            .build());
         }
         return indexMap.get(index);
     }

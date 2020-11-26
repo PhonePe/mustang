@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
@@ -25,14 +25,17 @@ public class ExcludedPredicate extends Predicate {
 
     @Builder
     @JsonCreator
-    public ExcludedPredicate(@JsonProperty("lhs") String lhs, @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
-            @JsonProperty("weight") long weight, @JsonProperty("defaultResult") boolean defaultResult, Set<?> values) {
+    public ExcludedPredicate(@JsonProperty("lhs") String lhs,
+            @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
+            @JsonProperty("weight") long weight,
+            @JsonProperty("defaultResult") boolean defaultResult,
+            Set<?> values) {
         super(PredicateType.EXCLUDED, lhs, lhsNotAPath, weight, defaultResult);
         this.values = values;
     }
 
     @Override
-    public boolean evaluate(EvaluationContext context, Object lhsValue) {
+    public boolean evaluate(RequestContext context, Object lhsValue) {
         return !values.contains(lhsValue);
     }
 

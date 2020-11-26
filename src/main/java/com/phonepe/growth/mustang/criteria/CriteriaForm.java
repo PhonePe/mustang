@@ -15,6 +15,7 @@ public enum CriteriaForm {
             return visitor.visitCNF();
         }
     };
+
     public static final String DNF_TEXT = "DNF"; // Disjunctive Normal Form
     public static final String CNF_TEXT = "CNF"; // Conjunctive Normal Form
     @Getter

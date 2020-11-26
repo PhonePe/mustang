@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.phonepe.growth.mustang.common.EvaluationContext;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
 
 import lombok.Builder;
@@ -21,10 +21,12 @@ public class Scanner {
     private List<Criteria> criterias;
     @Valid
     @NotNull
-    private EvaluationContext context;
+    private RequestContext context;
 
     public List<Criteria> scan() {
-        return criterias.stream().filter(criteria -> criteria.evaluate(context)).collect(Collectors.toList());
+        return criterias.stream()
+                .filter(criteria -> criteria.evaluate(context))
+                .collect(Collectors.toList());
     }
 
 }
