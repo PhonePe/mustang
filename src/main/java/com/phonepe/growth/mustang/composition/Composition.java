@@ -16,6 +16,7 @@ import com.phonepe.growth.mustang.predicate.Predicate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +26,7 @@ import lombok.Data;
 public abstract class Composition {
     @NotNull
     private final CompositionType type;
-    @Size(min = 2)
+    @NotEmpty
     private List<Predicate> predicates;
 
     public abstract boolean evaluate(RequestContext context);
