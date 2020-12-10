@@ -89,7 +89,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                             .name(key.getName())
                             .value(key.getValue())
                             .build();
-                    cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger())
+                    cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger(0))
                             .getAndIncrement();
                     return key;
                 })
