@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.phonepe.growth.mustang.exception.MustangException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +19,7 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
@@ -2618,7 +2618,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test
+    @Test(expected = MustangException.class)
     public void testIndexReplacementPositive() throws Exception {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -2660,15 +2660,26 @@ public class SearchTest {
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
 
-        try {
-            searchResults = engine.search("test1",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
-            Assert.assertFalse(true);
-        } catch (MustangException e) {
-            Assert.assertTrue(true);
-        }
+        searchResults = engine.search("test1",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.fail("Should have thrown an exception");
+    }
+
+    @Test(expected = MustangException.class)
+    public void testOnEmptyIndex() throws Exception {
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.fail("Should have thrown an exception");
     }
 
 }
