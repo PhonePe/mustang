@@ -2682,4 +2682,51 @@ public class SearchTest {
         Assert.fail("Should have thrown an exception");
     }
 
+    @Test
+    public void testMultiLevelDNFPositiveMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a.value")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b.value")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n.value")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p.value")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a.value")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n.value")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .build())
+                .build();
+        String str = "{\"a\":{\"value\":\"A1\"},\"b\":{\"value\":\"B3\"},\"n\":{\"value\":0.000000000000003},\"p\":{\"value\":true}}";
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(str))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
 }
