@@ -29,7 +29,7 @@ public class ExcludedPredicate extends Predicate {
             @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
             @JsonProperty("weight") long weight,
             @JsonProperty("defaultResult") boolean defaultResult,
-            Set<?> values) {
+            @JsonProperty("values") Set<?> values) {
         super(PredicateType.EXCLUDED, lhs, lhsNotAPath, weight, defaultResult);
         this.values = values;
     }
