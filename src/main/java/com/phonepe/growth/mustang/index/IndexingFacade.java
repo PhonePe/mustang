@@ -38,19 +38,21 @@ public class IndexingFacade {
         });
     }
 
-    public boolean replace(final String oldIndex, final String newIndex) {
-        boolean result = true;
-        if (indexMap.containsKey(oldIndex) && indexMap.containsKey(newIndex)) {
-            result = indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
-            getIndexGroup(oldIndex).setName(oldIndex);
-            indexMap.remove(newIndex, getIndexGroup(newIndex));
-        } else if (!indexMap.containsKey(oldIndex) && indexMap.containsKey(newIndex)) {
+    public void replace(final String oldIndex, final String newIndex) {
+        final boolean oldIndexExists = indexMap.containsKey(oldIndex);
+        final boolean newIndexExists = indexMap.containsKey(newIndex);
+        if (oldIndexExists && newIndexExists) {
+            if (indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex))) {
+                getIndexGroup(oldIndex).setName(oldIndex);
+                indexMap.remove(newIndex, getIndexGroup(newIndex));
+            }
+        } else if (!oldIndexExists && newIndexExists) {
             indexMap.put(oldIndex, getIndexGroup(newIndex));
             getIndexGroup(oldIndex).setName(oldIndex);
-        } else if (indexMap.containsKey(oldIndex) && !indexMap.containsKey(newIndex)) {
+            indexMap.remove(newIndex, getIndexGroup(newIndex));
+        } else if (oldIndexExists && !newIndexExists) {
             indexMap.remove(oldIndex);
         }
-        return result;
     }
 
     public IndexGroup getIndexGroup(final String index) {
@@ -63,13 +65,10 @@ public class IndexingFacade {
     }
 
     private IndexGroup get(final String index) {
-        if (!indexMap.containsKey(index)) {
-            indexMap.put(index,
-                    IndexGroup.builder()
-                            .name(index)
-                            .build());
-        }
-        return indexMap.get(index);
+        return indexMap.computeIfAbsent(index,
+                x -> IndexGroup.builder()
+                        .name(index)
+                        .build());
     }
 
 }
