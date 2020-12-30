@@ -1,6 +1,8 @@
 package com.phonepe.growth.mustang.index;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import com.phonepe.growth.mustang.exception.MustangException;
 import org.junit.Assert;
@@ -8,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
+import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
@@ -778,6 +782,94 @@ public class IndexTest {
                         .getTable()
                         .get(0)
                         .size());
+    }
+
+    @Test(expected = MustangException.class)
+    public void testIndexReplacement1() {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        engine.index("test", c1);
+        engine.replace("test", "testNew");
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.fail("Search on non-existant index should fail");
+
+    }
+
+    public void testIndexReplacement2() {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        engine.index("testNew", c1);
+        engine.replace("test", "testNew");
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        final Set<String> searchResults = engine.search("testNew",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+    }
+
+    public void testIndexReplacement3() {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        engine.index("test", c1);
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .build())
+                .build();
+        engine.index("testNew", c1);
+        engine.replace("test", "testNew");
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A10");
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.isEmpty());
     }
 
 }

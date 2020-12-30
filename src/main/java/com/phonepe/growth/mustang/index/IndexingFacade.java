@@ -39,9 +39,17 @@ public class IndexingFacade {
     }
 
     public boolean replace(final String oldIndex, final String newIndex) {
-        final boolean result = indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
-        getIndexGroup(oldIndex).setName(oldIndex);
-        indexMap.remove(newIndex, getIndexGroup(newIndex));
+        boolean result = true;
+        if (indexMap.containsKey(oldIndex) && indexMap.containsKey(newIndex)) {
+            result = indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
+            getIndexGroup(oldIndex).setName(oldIndex);
+            indexMap.remove(newIndex, getIndexGroup(newIndex));
+        } else if (!indexMap.containsKey(oldIndex) && indexMap.containsKey(newIndex)) {
+            indexMap.put(oldIndex, getIndexGroup(newIndex));
+            getIndexGroup(oldIndex).setName(oldIndex);
+        } else if (indexMap.containsKey(oldIndex) && !indexMap.containsKey(newIndex)) {
+            indexMap.remove(oldIndex);
+        }
         return result;
     }
 
