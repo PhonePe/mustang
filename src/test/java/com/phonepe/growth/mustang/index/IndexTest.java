@@ -811,6 +811,7 @@ public class IndexTest {
 
     }
 
+    @Test
     public void testIndexReplacement2() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
@@ -829,7 +830,7 @@ public class IndexTest {
         engine.replace("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
-        final Set<String> searchResults = engine.search("testNew",
+        final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
@@ -837,6 +838,7 @@ public class IndexTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
+    @Test
     public void testIndexReplacement3() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
