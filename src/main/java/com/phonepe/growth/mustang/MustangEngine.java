@@ -46,8 +46,8 @@ public class MustangEngine {
         indexingFacde.add(indexName, criterias);
     }
 
-    public synchronized boolean replace(final String oldIndex, final String newIndex) {
-        return indexingFacde.replace(oldIndex, newIndex);
+    public synchronized void replace(final String oldIndex, final String newIndex) {
+        indexingFacde.replace(oldIndex, newIndex);
     }
 
     public Set<String> search(final String indexName, final RequestContext context) {

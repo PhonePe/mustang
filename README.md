@@ -1,4 +1,16 @@
+# Metrics
+
+
+[![Quality Gate Status](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Coverage](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Bugs](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Vulnerabilities](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Reliability Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Security Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Technical Debt](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+
 # Mustang
+
 
 Mustang solves the problem of efficiently indexing Boolean expressions (both Disjunctive Normal Form (DNF) 
 and Conjunctive Normal Form (CNF)) in a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
@@ -23,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 

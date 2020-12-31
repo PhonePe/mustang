@@ -38,11 +38,18 @@ public class IndexingFacade {
         });
     }
 
-    public boolean replace(final String oldIndex, final String newIndex) {
-        final boolean result = indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
-        getIndexGroup(oldIndex).setName(oldIndex);
-        indexMap.remove(newIndex, getIndexGroup(newIndex));
-        return result;
+    public void replace(final String oldIndex, final String newIndex) {
+        if (indexMap.containsKey(newIndex)) {
+            if (indexMap.containsKey(oldIndex)) {
+                indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
+            } else {
+                indexMap.put(oldIndex, getIndexGroup(newIndex));
+            }
+            getIndexGroup(oldIndex).setName(oldIndex);
+            indexMap.remove(newIndex, getIndexGroup(newIndex));
+        } else {
+            indexMap.remove(oldIndex);
+        }
     }
 
     public IndexGroup getIndexGroup(final String index) {
@@ -55,13 +62,10 @@ public class IndexingFacade {
     }
 
     private IndexGroup get(final String index) {
-        if (!indexMap.containsKey(index)) {
-            indexMap.put(index,
-                    IndexGroup.builder()
-                            .name(index)
-                            .build());
-        }
-        return indexMap.get(index);
+        return indexMap.computeIfAbsent(index,
+                x -> IndexGroup.builder()
+                        .name(index)
+                        .build());
     }
 
 }
