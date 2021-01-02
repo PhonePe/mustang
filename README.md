@@ -187,7 +187,7 @@ boolean result = evaluate(criteria, context);
 A repeat indexing of a `Criteria` (with updates) doesn't necessarily replace / re-index the older version of it in the same logical index. A suggested way is to go for the whole index replacement and NOT in parts. So, one can build up a temporary index and replace the updated index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
 
 ```java
-boolean result = replace(oldIndex, newIndex);
+replace(oldIndex, newIndex);
 ```
 
 We plan to bring in support for index updates in future iterations.
