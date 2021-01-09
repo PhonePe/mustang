@@ -203,29 +203,25 @@ public class CNFMatcher {
             final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
             final Integer k,
             final Integer[] counters) {
-        for (int l = 0; l < pLists.length; l++) {
-            if (sameConjunctionCheck(pLists, l)) {
-                /* Ignore entries in the Z posting list */
-                final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(
-                        pLists[l].getValue()
-                                .getValue(),
-                        pLists[l].getValue()
-                                .getKey());
-                if (!disjunctionPostingEntry.isPresent() || disjunctionPostingEntry.get()
-                        .getOrder() == -1) {
-                    continue;
-                }
-                if (PredicateType.EXCLUDED.equals(disjunctionPostingEntry.get()
-                        .getType())) {
-                    counters[disjunctionPostingEntry.get()
-                            .getOrder()]++;
-                } else {
-                    /* Disjunction is satisfied */
-                    counters[disjunctionPostingEntry.get()
-                            .getOrder()] = 1;
-                }
+        for (int l = 0; ((l < pLists.length) && sameConjunctionCheck(pLists, l)); l++) {
+            /* Ignore entries in the Z posting list */
+            final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(
+                    pLists[l].getValue()
+                            .getValue(),
+                    pLists[l].getValue()
+                            .getKey());
+            if (!disjunctionPostingEntry.isPresent() || disjunctionPostingEntry.get()
+                    .getOrder() == -1) {
+                continue;
+            }
+            if (PredicateType.EXCLUDED.equals(disjunctionPostingEntry.get()
+                    .getType())) {
+                counters[disjunctionPostingEntry.get()
+                        .getOrder()]++;
             } else {
-                break;
+                /* Disjunction is satisfied */
+                counters[disjunctionPostingEntry.get()
+                        .getOrder()] = 1;
             }
         }
         if (Arrays.stream(counters)
