@@ -44,8 +44,8 @@ public abstract class Predicate {
         }
     }
 
-    public abstract <T> T accept(PredicateVisitor<T> visitor);
-
     protected abstract boolean evaluate(RequestContext context, Object lhsValue);
+
+    public abstract <T> T accept(PredicateVisitor<T> visitor);
 
 }
