@@ -2,6 +2,7 @@ package com.phonepe.growth.mustang.criteria;
 
 import javax.validation.constraints.NotNull;
 
+import com.phonepe.growth.mustang.debug.DebugResult;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -27,6 +28,8 @@ public abstract class Criteria {
     private String id;
 
     public abstract boolean evaluate(RequestContext context);
+
+    public abstract DebugResult debug(RequestContext context);
 
     public abstract double getScore(RequestContext context);
 

@@ -1,6 +1,7 @@
 package com.phonepe.growth.mustang.composition.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +12,7 @@ import com.phonepe.growth.mustang.composition.CompositionVisitor;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +34,17 @@ public class Disjunction extends Composition {
     public boolean evaluate(RequestContext context) {
         return getPredicates().stream()
                 .anyMatch(predicate -> predicate.evaluate(context));
+    }
+
+    @Override
+    public CompositionDebugResult debug(RequestContext context) {
+        return CompositionDebugResult.builder()
+                .result(evaluate(context))
+                .type(this.getType())
+                .predicateDebugResults(getPredicates().stream()
+                        .map(predicate -> predicate.debug(context))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
