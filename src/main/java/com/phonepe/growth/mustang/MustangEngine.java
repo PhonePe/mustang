@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.phonepe.growth.mustang.traverse.DebugResult;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,6 +70,10 @@ public class MustangEngine {
 
     public boolean evaluate(final Criteria criteria, final RequestContext context) {
         return criteria.evaluate(context);
+    }
+
+    public DebugResult debug(final Criteria criteria, final RequestContext context) {
+        return criteria.debug(context);
     }
 
     public double score(final Criteria criteria, final RequestContext context) {
