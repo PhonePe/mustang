@@ -15,29 +15,27 @@ import com.phonepe.growth.mustang.exception.MustangException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class FlattenedJson {
     private static final String NORMALISED_KEY_FORMAT = "$.%s"; // Normalization.
     private static final TypeReference<Map<String, Object>> TYPE_REF = new TypeReference<Map<String, Object>>() {
     };
     @NotNull
-    private ObjectMapper mapper;
+    private final ObjectMapper mapper;
     @NotNull
-    private JsonNode node;
+    private final JsonNode node;
 
     public Map<String, Object> flatten() {
         try {
-            final Map<String, Object> collect = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node))
+            final Map<String, Object> flattenedJson = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node))
                     .entrySet()
                     .stream()
                     .collect(Collectors.toMap(e -> String.format(NORMALISED_KEY_FORMAT, e.getKey()),
                             Map.Entry::getValue));
-            return mapper.readValue(mapper.writeValueAsBytes(collect), TYPE_REF); // for type safety
+            return mapper.readValue(mapper.writeValueAsBytes(flattenedJson), TYPE_REF); // for type safety
         } catch (IOException e) {
             throw MustangException.propagate(e);
         }
