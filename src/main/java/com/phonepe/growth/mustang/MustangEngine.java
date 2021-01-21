@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.traverse.DebugResult;
+import com.phonepe.growth.mustang.debug.DebugResult;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

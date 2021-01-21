@@ -7,7 +7,7 @@ import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
-import com.phonepe.growth.mustang.traverse.DebugResult;
+import com.phonepe.growth.mustang.debug.DebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,7 +45,8 @@ public class DNFCriteria extends Criteria {
     public DebugResult debug(RequestContext context) {
         return DebugResult.builder()
                 .result(evaluate(context))
-                .form(CriteriaForm.DNF)
+                .id(this.getId())
+                .form(this.getForm())
                 .compositionDebugResults(conjunctions.stream()
                         .map(conjunction -> conjunction.debug(context))
                         .collect(Collectors.toList()))

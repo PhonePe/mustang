@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import com.phonepe.growth.mustang.traverse.DebugResult;
+import com.phonepe.growth.mustang.debug.DebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -48,9 +48,10 @@ public class CNFCriteria extends Criteria {
     public DebugResult debug(RequestContext context) {
         return DebugResult.builder()
                 .result(evaluate(context))
-                .form(CriteriaForm.CNF)
+                .id(this.getId())
+                .form(this.getForm())
                 .compositionDebugResults(disjunctions.stream()
-                        .map(disjunctions -> disjunctions.debug(context))
+                        .map(disjunction -> disjunction.debug(context))
                         .collect(Collectors.toList()))
                 .build();
     }

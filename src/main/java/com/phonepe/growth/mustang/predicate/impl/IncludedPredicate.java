@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.phonepe.growth.mustang.traverse.PredicateDebugResult;
+import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -52,7 +52,7 @@ public class IncludedPredicate extends Predicate {
         }
         return PredicateDebugResult.builder()
                 .result(evaluate(context))
-                .type(PredicateType.INCLUDED)
+                .type(this.getType())
                 .lhs(this.getLhs())
                 .lhsValue(lhsValue)
                 .values(values)

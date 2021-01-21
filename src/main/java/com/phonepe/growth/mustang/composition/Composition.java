@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.traverse.CompositionDebugResult;
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

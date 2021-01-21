@@ -2,7 +2,7 @@ package com.phonepe.growth.mustang.predicate;
 
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.traverse.PredicateDebugResult;
+import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

@@ -12,7 +12,7 @@ import com.phonepe.growth.mustang.composition.CompositionVisitor;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
-import com.phonepe.growth.mustang.traverse.CompositionDebugResult;
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,7 +40,7 @@ public class Disjunction extends Composition {
     public CompositionDebugResult debug(RequestContext context) {
         return CompositionDebugResult.builder()
                 .result(evaluate(context))
-                .type(CompositionType.OR)
+                .type(this.getType())
                 .predicateDebugResults(getPredicates().stream()
                         .map(predicate -> predicate.debug(context))
                         .collect(Collectors.toList()))
