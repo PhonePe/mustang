@@ -3,7 +3,7 @@ package com.phonepe.growth.mustang.predicate.impl;
 import java.util.Set;
 
 import com.jayway.jsonpath.JsonPath;
-import com.phonepe.growth.mustang.traverse.PredicateResult;
+import com.phonepe.growth.mustang.traverse.PredicateDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -42,8 +42,8 @@ public class ExcludedPredicate extends Predicate {
     }
 
     @Override
-    public PredicateResult debug(RequestContext context) {
-        return PredicateResult.builder()
+    public PredicateDebugResult debug(RequestContext context) {
+        return PredicateDebugResult.builder()
                 .result(evaluate(context))
                 .type(PredicateType.EXCLUDED)
                 .lhs(this.getLhs())

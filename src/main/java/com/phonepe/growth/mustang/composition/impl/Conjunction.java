@@ -8,7 +8,7 @@ import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.CompositionVisitor;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.traverse.CompositionResult;
+import com.phonepe.growth.mustang.traverse.CompositionDebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,11 +36,11 @@ public class Conjunction extends Composition {
     }
 
     @Override
-    public CompositionResult debug(RequestContext context) {
-        return CompositionResult.builder()
+    public CompositionDebugResult debug(RequestContext context) {
+        return CompositionDebugResult.builder()
                 .result(evaluate(context))
                 .type(CompositionType.AND)
-                .predicateResults(getPredicates().stream()
+                .predicateDebugResults(getPredicates().stream()
                         .map(predicate -> predicate.debug(context))
                         .collect(Collectors.toList()))
                 .build();

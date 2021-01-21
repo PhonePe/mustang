@@ -11,5 +11,5 @@ import java.util.List;
 public class DebugResult {
     private boolean result;
     private CriteriaForm form;
-    private List<CompositionResult> compositionResults;
+    private List<CompositionDebugResult> compositionDebugResults;
 }

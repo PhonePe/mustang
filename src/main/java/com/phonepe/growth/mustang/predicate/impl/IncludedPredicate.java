@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import com.phonepe.growth.mustang.traverse.PredicateResult;
+import com.phonepe.growth.mustang.traverse.PredicateDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -43,14 +43,14 @@ public class IncludedPredicate extends Predicate {
     }
 
     @Override
-    public PredicateResult debug(RequestContext context) {
+    public PredicateDebugResult debug(RequestContext context) {
         Object lhsValue;
         try {
             lhsValue = this.isLhsNotAPath() ? this.getLhs() : JsonPath.read(context.getNode().toString(), this.getLhs());
         } catch (PathNotFoundException e) {
             lhsValue = null;
         }
-        return PredicateResult.builder()
+        return PredicateDebugResult.builder()
                 .result(evaluate(context))
                 .type(PredicateType.INCLUDED)
                 .lhs(this.getLhs())

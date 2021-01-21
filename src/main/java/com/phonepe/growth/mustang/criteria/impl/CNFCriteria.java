@@ -49,7 +49,7 @@ public class CNFCriteria extends Criteria {
         return DebugResult.builder()
                 .result(evaluate(context))
                 .form(CriteriaForm.CNF)
-                .compositionResults(disjunctions.stream()
+                .compositionDebugResults(disjunctions.stream()
                         .map(disjunctions -> disjunctions.debug(context))
                         .collect(Collectors.toList()))
                 .build();

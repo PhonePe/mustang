@@ -8,8 +8,8 @@ import java.util.List;
 
 @Data
 @Builder
-public class CompositionResult {
+public class CompositionDebugResult {
     private boolean result;
     private CompositionType type;
-    private List<PredicateResult> predicateResults;
+    private List<PredicateDebugResult> predicateDebugResults;
 }

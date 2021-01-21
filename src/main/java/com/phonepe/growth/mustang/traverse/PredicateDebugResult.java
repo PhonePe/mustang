@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Data
 @Builder
-public class PredicateResult {
+public class PredicateDebugResult {
     private boolean result;
     private PredicateType type;
     private String lhs;

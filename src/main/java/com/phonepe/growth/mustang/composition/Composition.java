@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.traverse.CompositionResult;
+import com.phonepe.growth.mustang.traverse.CompositionDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -34,7 +34,7 @@ public abstract class Composition {
 
     public abstract boolean evaluate(RequestContext context);
 
-    public abstract CompositionResult debug(RequestContext context);
+    public abstract CompositionDebugResult debug(RequestContext context);
 
     public abstract double getScore(RequestContext context);
 

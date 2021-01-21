@@ -46,7 +46,7 @@ public class DNFCriteria extends Criteria {
         return DebugResult.builder()
                 .result(evaluate(context))
                 .form(CriteriaForm.DNF)
-                .compositionResults(conjunctions.stream()
+                .compositionDebugResults(conjunctions.stream()
                         .map(conjunction -> conjunction.debug(context))
                         .collect(Collectors.toList()))
                 .build();
