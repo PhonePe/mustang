@@ -12,6 +12,8 @@ build_snapshot:
     - merge_requests
   tags:
     - backend
+  when: manual
+  allow_failure: false
   script:
     - mvn clean install -DskipTests=true
 
