@@ -45,10 +45,10 @@ public abstract class Predicate {
         }
     }
 
+    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
+
     public abstract PredicateDebugResult debug(RequestContext context);
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
-
-    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
 
 }

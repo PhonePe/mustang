@@ -31,7 +31,8 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     private final Query query;
 
     public Map<String, Double> handle() {
-        return Stream.of(visitDNF(), visitCNF())
+        return Stream.of(CriteriaForm.values())
+                .map(cForm -> cForm.accept(this))
                 .map(matches -> extract(matches.getProbables()))
                 .flatMap(map -> map.entrySet()
                         .stream())
