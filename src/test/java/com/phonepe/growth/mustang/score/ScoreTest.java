@@ -392,8 +392,10 @@ public class ScoreTest {
 
         searchResults = engine.search("test", context, 3);
         Assert.assertTrue(searchResults.size() == 2);
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        final String[] searchResultsArr = searchResults.toArray(new String[0]);
+        Assert.assertTrue(searchResultsArr[0].equals("C1"));
+        Assert.assertTrue(searchResultsArr[1].equals("C2"));
+
     }
 
 }
