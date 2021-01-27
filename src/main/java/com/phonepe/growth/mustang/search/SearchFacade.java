@@ -1,6 +1,7 @@
 package com.phonepe.growth.mustang.search;
 
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class SearchFacade {
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .limit(topN)
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
 }
