@@ -28,13 +28,11 @@ public class SearchFacade {
                 .query(query)
                 .build()
                 .handle();
-        if (topN == -1) {
-            return result.keySet();
-        }
+
         return result.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(topN)
+                .limit(topN == -1 ? result.size() : topN)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
