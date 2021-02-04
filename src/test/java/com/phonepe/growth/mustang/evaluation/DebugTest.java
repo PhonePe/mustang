@@ -1,14 +1,9 @@
-package com.phonepe.growth.mustang;
-
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+package com.phonepe.growth.mustang.evaluation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.MustangEngine;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
@@ -17,8 +12,13 @@ import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class EvaluationTest {
+import java.util.Map;
+
+public class DebugTest {
     private final ObjectMapper mapper = new ObjectMapper();
     private MustangEngine engine;
 
@@ -58,10 +58,10 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        Assert.assertTrue(engine.evaluate(c1,
+        Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
     }
 
     @Test
@@ -84,10 +84,10 @@ public class EvaluationTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        Assert.assertFalse(engine.evaluate(c1,
+        Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
 
     }
 
@@ -120,10 +120,10 @@ public class EvaluationTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", false);
 
-        Assert.assertTrue(engine.evaluate(c1,
+        Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
     }
 
     @Test
@@ -146,10 +146,10 @@ public class EvaluationTest {
         testQuery.put("a", "C");
         testQuery.put("n", "7");
 
-        Assert.assertFalse(engine.evaluate(c1,
+        Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
 
     }
 
@@ -172,10 +172,10 @@ public class EvaluationTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("n", "7");
 
-        Assert.assertTrue(engine.evaluate(c1,
+        Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
 
     }
 
@@ -199,10 +199,10 @@ public class EvaluationTest {
         testQuery.put("a", "B"); // Doesn't matter as the predicate setup above already satisfies itself.
         testQuery.put("n", "7");
 
-        Assert.assertTrue(engine.evaluate(c1,
+        Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
 
         Criteria c2 = CNFCriteria.builder()
                 .id("C1")
@@ -214,11 +214,10 @@ public class EvaluationTest {
                                 .build())
                         .build())
                 .build();
-        Assert.assertFalse(engine.evaluate(c2,
+        Assert.assertFalse(engine.debug(c2,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()));
+                        .build()).isResult());
 
     }
-
 }

@@ -1,9 +1,11 @@
 package com.phonepe.growth.mustang.criteria.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.phonepe.growth.mustang.debug.DebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -40,6 +42,18 @@ public class CNFCriteria extends Criteria {
     public boolean evaluate(RequestContext context) {
         return disjunctions.stream()
                 .allMatch(disjunction -> disjunction.evaluate(context));
+    }
+
+    @Override
+    public DebugResult debug(RequestContext context) {
+        return DebugResult.builder()
+                .result(evaluate(context))
+                .id(this.getId())
+                .form(this.getForm())
+                .compositionDebugResults(disjunctions.stream()
+                        .map(disjunction -> disjunction.debug(context))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override

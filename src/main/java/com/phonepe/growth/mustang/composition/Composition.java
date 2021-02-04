@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -32,6 +33,8 @@ public abstract class Composition {
     private List<Predicate> predicates;
 
     public abstract boolean evaluate(RequestContext context);
+
+    public abstract CompositionDebugResult debug(RequestContext context);
 
     public abstract double getScore(RequestContext context);
 

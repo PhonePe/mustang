@@ -1,11 +1,5 @@
 package com.phonepe.growth.mustang.criteria.impl;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
@@ -13,12 +7,17 @@ import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
-
+import com.phonepe.growth.mustang.debug.DebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @ToString(callSuper = true)
@@ -31,7 +30,7 @@ public class DNFCriteria extends Criteria {
     @Builder
     @JsonCreator
     public DNFCriteria(@JsonProperty("id") String id,
-            @JsonProperty("conjunctions") @Singular List<Conjunction> conjunctions) {
+                       @JsonProperty("conjunctions") @Singular List<Conjunction> conjunctions) {
         super(CriteriaForm.DNF, id);
         this.conjunctions = conjunctions;
     }
@@ -40,6 +39,18 @@ public class DNFCriteria extends Criteria {
     public boolean evaluate(RequestContext context) {
         return conjunctions.stream()
                 .anyMatch(conjunction -> conjunction.evaluate(context));
+    }
+
+    @Override
+    public DebugResult debug(RequestContext context) {
+        return DebugResult.builder()
+                .result(evaluate(context))
+                .id(this.getId())
+                .form(this.getForm())
+                .compositionDebugResults(conjunctions.stream()
+                        .map(conjunction -> conjunction.debug(context))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override

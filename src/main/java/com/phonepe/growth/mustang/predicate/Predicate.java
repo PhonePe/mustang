@@ -2,6 +2,7 @@ package com.phonepe.growth.mustang.predicate;
 
 import javax.validation.constraints.NotNull;
 
+import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -45,6 +46,8 @@ public abstract class Predicate {
     }
 
     protected abstract boolean evaluate(RequestContext context, Object lhsValue);
+
+    public abstract PredicateDebugResult debug(RequestContext context);
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
