@@ -6,12 +6,12 @@
 
 	<groupId>com.phonepe.growth</groupId>
 	<artifactId>mustang</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 
 	<parent>
 		<groupId>com.phonepe</groupId>
 		<artifactId>pp-parent-pom</artifactId>
-		<version>0.28</version>
+		<version>0.36</version>
 	</parent>
 	<properties>
 		<jacoco.version>0.8.3</jacoco.version>

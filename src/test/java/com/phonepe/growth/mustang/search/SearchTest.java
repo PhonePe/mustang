@@ -19,6 +19,7 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.tautology.Tautology;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
@@ -2809,6 +2810,26 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
+    }
+    
+    @Test
+    public void testPassThroughCriterias() throws Exception {
+        Criteria c1 = Tautology.getDNFTautology("C1");
+        Criteria c2 = Tautology.getCNFTautology("C2");
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.index("test", c1);
+        engine.index("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
     }
 
 }
