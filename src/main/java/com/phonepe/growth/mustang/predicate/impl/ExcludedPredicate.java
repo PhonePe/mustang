@@ -2,9 +2,10 @@ package com.phonepe.growth.mustang.predicate.impl;
 
 import java.util.Set;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,7 +48,9 @@ public class ExcludedPredicate extends Predicate {
                 .result(evaluate(context))
                 .type(this.getType())
                 .lhs(this.getLhs())
-                .lhsValue(this.isLhsNotAPath() ? this.getLhs() : JsonPath.read(context.getNode().toString(), this.getLhs()))
+                .lhsValue(this.isLhsNotAPath() ? this.getLhs()
+                        : JsonPath.read(context.getNode()
+                                .toString(), this.getLhs()))
                 .values(this.getValues())
                 .build();
     }

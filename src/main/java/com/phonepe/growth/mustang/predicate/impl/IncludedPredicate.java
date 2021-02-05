@@ -2,10 +2,11 @@ package com.phonepe.growth.mustang.predicate.impl;
 
 import java.util.Set;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -46,7 +47,9 @@ public class IncludedPredicate extends Predicate {
     public PredicateDebugResult debug(RequestContext context) {
         Object lhsValue;
         try {
-            lhsValue = this.isLhsNotAPath() ? this.getLhs() : JsonPath.read(context.getNode().toString(), this.getLhs());
+            lhsValue = this.isLhsNotAPath() ? this.getLhs()
+                    : JsonPath.read(context.getNode()
+                            .toString(), this.getLhs());
         } catch (PathNotFoundException e) {
             lhsValue = null;
         }
