@@ -1,5 +1,9 @@
 package com.phonepe.growth.mustang.search;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -7,7 +11,9 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -17,9 +23,10 @@ import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.criteria.tautology.Tautology;
+import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
@@ -2811,11 +2818,11 @@ public class SearchTest {
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
     }
-    
+
     @Test
     public void testPassThroughCriterias() throws Exception {
-        Criteria c1 = Tautology.getDNFTautology("C1");
-        Criteria c2 = Tautology.getCNFTautology("C2");
+        Criteria c1 = TautologicalCriteria.generate(CriteriaForm.CNF, "C1");
+        Criteria c2 = TautologicalCriteria.generate(CriteriaForm.DNF, "C2");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
@@ -2830,6 +2837,35 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
+    }
+
+    @Test(expected = MustangException.class)
+    public void testExceptionDuringQueryNormalisation() throws Exception {
+        final ObjectMapper mapperSpy = spy(mapper);
+        doThrow(IOException.class).when(mapperSpy)
+                .readValue(Matchers.<byte[]>any(), Matchers.<TypeReference<Map<String, Object>>>any());
+        MustangEngine engine = MustangEngine.builder()
+                .mapper(mapperSpy)
+                .build();
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");// positive value
+        testQuery.put("b", "B3"); // negative value
+
+        engine.index("test", c1);
+        engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.fail();
     }
 
 }
