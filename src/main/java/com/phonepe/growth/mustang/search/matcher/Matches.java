@@ -11,6 +11,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Matches {
-    private Future<Map<String, Double>> probables;
+    private final Future<Map<String, Double>> probables;
 
 }

@@ -1,7 +1,6 @@
 package com.phonepe.growth.mustang.search.handler;
 
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -9,7 +8,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
-import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.matcher.CNFMatcher;
@@ -33,7 +31,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     public Map<String, Double> handle() {
         return Stream.of(CriteriaForm.values())
                 .map(cForm -> cForm.accept(this))
-                .map(matches -> extract(matches.getProbables()))
+                .map(matches -> SearchDataExtractor.extract(matches.getProbables()))
                 .flatMap(map -> map.entrySet()
                         .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
@@ -63,14 +61,6 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                                 .build()
                                 .getMatches()))
                 .build();
-    }
-
-    private Map<String, Double> extract(Future<Map<String, Double>> future) {
-        try {
-            return future.get();
-        } catch (Exception e) {
-            throw MustangException.propagate(e);
-        }
     }
 
 }
