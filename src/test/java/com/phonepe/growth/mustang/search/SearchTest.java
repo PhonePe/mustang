@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.phonepe.growth.mustang.search;
 
 import static org.mockito.Mockito.doThrow;
@@ -7,6 +23,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +50,7 @@ import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.search.handler.SearchDataExtractor;
 
 public class SearchTest {
 
@@ -2865,6 +2886,43 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
+        Assert.fail();
+    }
+
+    @Test(expected = MustangException.class)
+    public void testExceptionDuringDataExtraction() throws Exception {
+        final Future<Map<String, Double>> mapperSpy = spy(new Future<Map<String, Double>>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+
+            @Override
+            public Map<String, Double> get() throws InterruptedException, ExecutionException {
+                return null;
+            }
+
+            @Override
+            public Map<String, Double> get(long timeout, TimeUnit unit) throws InterruptedException,
+                    ExecutionException,
+                    TimeoutException {
+                return null;
+            }
+
+        });
+        doThrow(InterruptedException.class).when(mapperSpy)
+                .get();
+        SearchDataExtractor.extract(mapperSpy);
         Assert.fail();
     }
 
