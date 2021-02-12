@@ -14,22 +14,25 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.predicate;
+package com.phonepe.growth.mustang.search.handler;
 
-import lombok.Getter;
+import java.util.Map;
+import java.util.concurrent.Future;
 
-public enum PredicateType {
-    EXCLUDED(PredicateType.EXCLUDED_TEXT),
-    INCLUDED(PredicateType.INCLUDED_TEXT);
+import com.phonepe.growth.mustang.exception.MustangException;
 
-    public static final String EXCLUDED_TEXT = "EXCLUDED";
-    public static final String INCLUDED_TEXT = "INCLUDED";
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-    @Getter
-    private String value;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class SearchDataExtractor {
 
-    private PredicateType(String value) {
-        this.value = value;
+    public static Map<String, Double> extract(final Future<Map<String, Double>> future) {
+        try {
+            return future.get();
+        } catch (Exception e) {
+            throw MustangException.propagate(e);
+        }
     }
 
 }
