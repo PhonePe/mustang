@@ -1,4 +1,4 @@
- image: maven:3-jdk-8
+image: maven:3-jdk-8
 
 .default: &default
   only:
@@ -29,8 +29,6 @@ merge_ready:
   <<: *default_tag
   script:
     - mvn verify -U -Pquality_check
-    - mvn clean verify -U -Pquality_check -Dsonar.pullrequest.key=$CI_MERGE_REQUEST_IID -Dsonar.pullrequest.branch=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME -Dsonar.pullrequest.base=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-
 
 deploy_snapshot:
   stage: deploy
