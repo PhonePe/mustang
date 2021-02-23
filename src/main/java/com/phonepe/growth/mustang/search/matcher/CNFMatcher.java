@@ -55,8 +55,7 @@ public class CNFMatcher {
     public Map<String, Double> getMatches() {
         final Map<String, Double> result = Maps.newHashMap();
         final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table = invertedIndex.getTable();
-        final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) invertedIndex)
-                .getDisjunctionCounters();
+        final Map<Integer, Integer[]> disjunctionCounters = invertedIndex.getDisjunctionCounters();
         final int start = 0;
         final int end = table.keySet()
                 .stream()

@@ -58,7 +58,7 @@ public class DNFIndexer {
     public void index() {
         final DNFInvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
         final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
-        final Set<Integer> activeInternalIds = Sets.newHashSet();
+        final Set<Integer> newIIds = Sets.newHashSet();
 
         IntStream.range(0,
                 criteria.getConjunctions()
@@ -69,7 +69,7 @@ public class DNFIndexer {
                             .get(j);
                     final Integer iId = indexOperation.accept(new IndexOperationMetaExtractor(dnfInvertedIndex,
                             String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteria.getId(), j)));
-                    activeInternalIds.add(iId);
+                    newIIds.add(iId);
 
                     final int kSize = conjunction.getPredicates()
                             .stream()
@@ -115,8 +115,8 @@ public class DNFIndexer {
                     postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
                     indexTable.put(kSize, CriteriaIndexBuilder.compactPostingLists(postingLists));
                 });
-        final Set<Integer> oldIds = dnfInvertedIndex.getActiveIds()
-                .put(criteria.getId(), activeInternalIds);
+        final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
+                .put(criteria.getId(), newIIds);
         // TODO handle cleanup
     }
 

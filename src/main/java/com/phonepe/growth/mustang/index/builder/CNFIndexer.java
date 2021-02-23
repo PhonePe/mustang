@@ -57,12 +57,11 @@ public class CNFIndexer {
         final int disjunctionSize = criteria.getDisjunctions()
                 .size();
         final CNFInvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = indexGroup.getCnfInvertedIndex();
-        final Map<Integer, Integer[]> disjunctionCounters = ((CNFInvertedIndex<DisjunctionPostingEntry>) cnfInvertedIndex)
-                .getDisjunctionCounters();
+        final Map<Integer, Integer[]> disjunctionCounters = cnfInvertedIndex.getDisjunctionCounters();
         final Pair<Boolean, Integer> operationMeta = indexOperation
                 .accept(new IndexOperationMetaExtractor(cnfInvertedIndex, criteria.getId()));
 
-        if (operationMeta.getLeft()) {
+        if (Boolean.TRUE.equals(operationMeta.getLeft())) {
             final Integer internalId = operationMeta.getRight();
             final Integer[] disjunctionCounter = disjunctionCounters.computeIfAbsent(internalId,
                     x -> new Integer[disjunctionSize]);
@@ -81,15 +80,13 @@ public class CNFIndexer {
                         final List<Map<Key, TreeSet<DisjunctionPostingEntry>>> postingLists = disjunction
                                 .getPredicates()
                                 .stream()
-                                .map(predicate -> {
-                                    return predicate.accept(CNFPostingListsExtractor.builder()
-                                            .iId(internalId)
-                                            .eId(criteria.getId())
-                                            .order(i)
-                                            .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap()))
-                                            .cnfKeyFrequency(indexGroup.getCnfKeyFrequency())
-                                            .build());
-                                })
+                                .map(predicate -> predicate.accept(CNFPostingListsExtractor.builder()
+                                        .iId(internalId)
+                                        .eId(criteria.getId())
+                                        .order(i)
+                                        .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap()))
+                                        .cnfKeyFrequency(indexGroup.getCnfKeyFrequency())
+                                        .build()))
                                 .collect(Collectors.toList());
 
                         if (kSize == 0) {
