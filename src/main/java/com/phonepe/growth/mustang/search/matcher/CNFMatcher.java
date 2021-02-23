@@ -16,7 +16,7 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
+import static com.phonepe.growth.mustang.index.builder.CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +35,6 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.predicate.PredicateType;
@@ -49,7 +48,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFMatcher {
-    private final InvertedIndex<DisjunctionPostingEntry> invertedIndex;
+    private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
 
@@ -248,10 +247,17 @@ public class CNFMatcher {
                             .getValue(),
                     pLists[k - 1].getValue()
                             .getKey());
-            disjunctionPostingEntryOptional
-                    .ifPresent(postingEntry -> result.put(postingEntry.getEId(), computeScore(postingEntry.getEId())));
+            disjunctionPostingEntryOptional.ifPresent(postingEntry -> checkAndAdd(result, postingEntry));
         }
         preEmptiveSortCheck(pLists, k);
+    }
+
+    private void checkAndAdd(final Map<String, Double> result, final DisjunctionPostingEntry postingEntry) {
+        // Check to see if the current entry represents criteria's latest version.
+        if (invertedIndex.getInternalIdFromCache(postingEntry.getEId())
+                .equals(postingEntry.getIId())) {
+            result.put(postingEntry.getEId(), computeScore(postingEntry.getEId()));
+        }
     }
 
     private double computeScore(final String cId) {

@@ -27,7 +27,6 @@ import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
@@ -46,10 +45,10 @@ import lombok.NoArgsConstructor;
 public class IndexGroup {
     @NotBlank
     private String name;
-    private final InvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = DNFInvertedIndex
+    private final DNFInvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = DNFInvertedIndex
             .<ConjunctionPostingEntry>builder()
             .build();
-    private final InvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
+    private final CNFInvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
             .<DisjunctionPostingEntry>builder()
             .build();
     private final Map<String, Criteria> allCriterias = Maps.newConcurrentMap();

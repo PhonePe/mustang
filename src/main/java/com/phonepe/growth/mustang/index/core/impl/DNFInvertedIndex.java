@@ -16,6 +16,10 @@
  */
 package com.phonepe.growth.mustang.index.core.impl;
 
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.core.InvertedIndex;
 
@@ -28,9 +32,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class DNFInvertedIndex<T> extends InvertedIndex<T> {
+    private final Map<String, Set<Integer>> activeIds = Maps.newConcurrentMap();
 
     @Builder
     public DNFInvertedIndex() {
         super(CriteriaForm.DNF);
     }
+
 }

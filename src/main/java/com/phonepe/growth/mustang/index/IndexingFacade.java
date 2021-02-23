@@ -24,6 +24,7 @@ import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
+import com.phonepe.growth.mustang.index.builder.CriteriaIndexOperation;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 
 import lombok.Builder;
@@ -38,6 +39,7 @@ public class IndexingFacade {
         final IndexGroup indexGroup = get(index);
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
+                .indexOperation(CriteriaIndexOperation.ADD)
                 .build());
         indexGroup.getAllCriterias()
                 .put(criteria.getId(), criteria);
@@ -48,10 +50,32 @@ public class IndexingFacade {
         criterias.forEach(criteria -> {
             criteria.accept(CriteriaIndexBuilder.builder()
                     .indexGroup(indexGroup)
+                    .indexOperation(CriteriaIndexOperation.ADD)
                     .build());
             indexGroup.getAllCriterias()
                     .put(criteria.getId(), criteria);
         });
+    }
+
+    public void update(final String index, final Criteria criteria) {
+        final IndexGroup indexGroup = get(index);
+        criteria.accept(CriteriaIndexBuilder.builder()
+                .indexGroup(indexGroup)
+                .indexOperation(CriteriaIndexOperation.UPDATE)
+                .build());
+        indexGroup.getAllCriterias()
+                .put(criteria.getId(), criteria);
+    }
+
+    public void delete(final String index, final Criteria criteria) {
+        final IndexGroup indexGroup = get(index);
+        criteria.accept(CriteriaIndexBuilder.builder()
+                .indexGroup(indexGroup)
+                .indexOperation(CriteriaIndexOperation.DELETE)
+                .build());
+        indexGroup.getAllCriterias()
+                .put(criteria.getId(), criteria);
+
     }
 
     public void replace(final String oldIndex, final String newIndex) {
