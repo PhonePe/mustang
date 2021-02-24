@@ -24,8 +24,8 @@ import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
-import com.phonepe.growth.mustang.index.builder.CriteriaIndexOperation;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
 
 import lombok.Builder;
 import lombok.Data;

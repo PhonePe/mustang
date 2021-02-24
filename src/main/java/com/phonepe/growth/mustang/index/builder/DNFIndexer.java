@@ -37,6 +37,7 @@ import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
 import com.phonepe.growth.mustang.index.entry.extractor.DNFPostingListsExtractor;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
 import lombok.Builder;

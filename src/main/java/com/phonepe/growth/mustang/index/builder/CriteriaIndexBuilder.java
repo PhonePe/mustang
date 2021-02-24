@@ -29,6 +29,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
 
 import lombok.Builder;
 import lombok.Data;
