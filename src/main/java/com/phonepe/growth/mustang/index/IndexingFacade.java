@@ -83,16 +83,17 @@ public class IndexingFacade {
         final IndexGroup indexGroup = get(index);
         if (indexGroup.getAllCriterias()
                 .containsKey(criteria.getId())) {
+            criteria.accept(CriteriaIndexBuilder.builder()
+                    .indexGroup(indexGroup)
+                    .operation(IndexOperation.DELETE)
+                    .build());
+            indexGroup.getAllCriterias()
+                    .remove(criteria.getId());
+        } else {
             throw MustangException.builder()
                     .errorCode(ErrorCode.INDEX_NOT_FOUND)
                     .build();
         }
-        criteria.accept(CriteriaIndexBuilder.builder()
-                .indexGroup(indexGroup)
-                .operation(IndexOperation.DELETE)
-                .build());
-        indexGroup.getAllCriterias()
-                .remove(criteria.getId());
     }
 
     public void replace(final String oldIndex, final String newIndex) {
