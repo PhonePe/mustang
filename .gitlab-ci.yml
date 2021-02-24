@@ -1,3 +1,5 @@
+image: maven:3-jdk-8
+
 .default: &default
   only:
     - merge_requests
@@ -14,25 +16,7 @@ stages:
   - merge
   - release
 
-merge_ready:
-  stage: quality
-  only:
-    - merge_requests
-  <<: *default_tag
-  script:
-    - mvn clean verify -U -Pquality_check -Dsonar.pullrequest.key=$CI_MERGE_REQUEST_IID -Dsonar.pullrequest.branch=$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME -Dsonar.pullrequest.base=$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
-  allow_failure: true
-
-post_merge:
-  stage: merge
-  <<: *default_tag
-  script:
-    - mvn clean test -U -Pquality_check
-  only:
-    refs:
-      - develop
-
-build_package:
+build_snapshot:
   stage: build
   <<: *default
   <<: *default_tag
@@ -41,16 +25,23 @@ build_package:
   script:
     - mvn clean package -U -DskipTests=true
 
-deploy_snapshot:
-  stage: deploy
+merge_ready:
+  stage: quality
   <<: *default
   <<: *default_tag
-  when: manual
   script:
-    - mvn deploy -DskipTests=true -Pdocker -Dmaven.install.skip=true
-  allow_failure: false
+    - mvn verify -U -Pquality_check
+
+deploy_snapshot:
+  stage: deploy
+  <<: *default_tag
+  <<: *default
   only:
     - web
+  allow_failure: false
+  script:
+    - mvn deploy -DskipTests=true -Denforcer.skip
+  when: manual
 
 release:
   <<: *default_tag
@@ -61,7 +52,7 @@ release:
     - git pull origin master
     - git checkout develop
     - git pull origin develop
-    - mvn -U -Pdocker jgitflow:release-start jgitflow:release-finish
+    - mvn -U jgitflow:release-start jgitflow:release-finish
     - git push --all
     - git push --tags origin
   when: manual
