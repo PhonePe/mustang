@@ -1578,7 +1578,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testDNFSingleInclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1614,9 +1614,13 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
-        // Index ingestion
-        engine.add("test", c1);
-        Assert.fail("MustangException should have been thrown");
+        try {
+            // Index ingestion
+            engine.add("test", c1);
+            Assert.fail("MustangException should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -1715,7 +1719,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.isEmpty());
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1760,9 +1764,13 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
-        // Index ingestion
-        engine.add("test", c1);
-        Assert.fail("MustangException should have been thrown");
+        try {
+            // Index ingestion
+            engine.add("test", c1);
+            Assert.fail("MustangException should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -1938,7 +1946,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testDNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -2181,7 +2189,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -2226,9 +2234,13 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
-        // Index ingestion
-        engine.add("test", c1);
-        Assert.fail("MustangException should have been thrown");
+        try {
+            // Index ingestion
+            engine.add("test", c1);
+            Assert.fail("MustangException should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -2410,7 +2422,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.isEmpty());
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -2455,9 +2467,13 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
-        // Index ingestion
-        engine.add("test", c1);
-        Assert.fail("MustangException should have been thrown");
+        try {
+            // Index ingestion
+            engine.add("test", c1);
+            Assert.fail("MustangException should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -2958,7 +2974,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testIndexReplacementPositive() throws Exception {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -3000,14 +3016,18 @@ public class SearchTest {
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
 
-        searchResults = engine.search("test1",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
-        Assert.fail("Should have thrown an exception");
+        try {
+            searchResults = engine.search("test1",
+                    RequestContext.builder()
+                            .node(mapper.valueToTree(testQuery))
+                            .build());
+            Assert.fail("Should have thrown an exception");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+        }
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testOnEmptyIndex() throws Exception {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -3015,11 +3035,15 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
-        Assert.fail("Should have thrown an exception");
+        try {
+            engine.search("test",
+                    RequestContext.builder()
+                            .node(mapper.valueToTree(testQuery))
+                            .build());
+            Assert.fail("Should have thrown an exception");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -3171,7 +3195,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C2"));
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testExceptionDuringQueryNormalisation() throws Exception {
         final ObjectMapper mapperSpy = spy(mapper);
         doThrow(IOException.class).when(mapperSpy)
@@ -3193,14 +3217,19 @@ public class SearchTest {
         testQuery.put("b", "B3"); // negative value
 
         engine.add("test", c1);
-        engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
-        Assert.fail();
+
+        try {
+            engine.search("test",
+                    RequestContext.builder()
+                            .node(mapper.valueToTree(testQuery))
+                            .build());
+            Assert.fail("Should have thrown an exception");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INTERNAL_ERROR.equals(e.getErrorCode()));
+        }
     }
 
-    @Test(expected = MustangException.class)
+    @Test
     public void testExceptionDuringDataExtraction() throws Exception {
         final Future<Map<String, Double>> mapperSpy = spy(new Future<Map<String, Double>>() {
             @Override
@@ -3233,8 +3262,12 @@ public class SearchTest {
         });
         doThrow(InterruptedException.class).when(mapperSpy)
                 .get();
-        SearchDataExtractor.extract(mapperSpy);
-        Assert.fail();
+        try {
+            SearchDataExtractor.extract(mapperSpy);
+            Assert.fail("Should have thrown an exception");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INTERNAL_ERROR.equals(e.getErrorCode()));
+        }
     }
 
     @Test
@@ -3254,6 +3287,101 @@ public class SearchTest {
         } catch (MustangException e) {
             Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
         }
+    }
+
+    @Test
+    public void testDNFAddDeleteAdd() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+        testQuery.put("a", "A1");
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        // Remove from index
+        engine.delete("test", c1);
+
+        final Set<String> searchResults2 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults2.isEmpty());
+
+        engine.add("test", c1);
+        // Search Engine call
+        final Set<String> searchResults3 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults3.size());
+        Assert.assertTrue(searchResults3.contains("C1"));
+    }
+
+    @Test
+    public void testCNFAddDeleteAdd() {
+
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        // Remove from index
+        engine.delete("test", c1);
+
+        final Set<String> searchResults2 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults2.isEmpty());
+
+        engine.add("test", c1);
+        // Search Engine call
+        final Set<String> searchResults3 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults3.size());
+        Assert.assertTrue(searchResults3.contains("C1"));
     }
 
 }
