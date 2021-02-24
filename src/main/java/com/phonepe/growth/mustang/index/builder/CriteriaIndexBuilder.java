@@ -29,7 +29,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
-import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
+import com.phonepe.growth.mustang.index.operation.IndexOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -41,14 +41,14 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
     @NotNull
     private IndexGroup indexGroup;
     @NotNull
-    private CriteriaIndexOperation indexOperation;
+    private IndexOperation operation;
 
     @Override
     public Void visit(DNFCriteria dnf) {
         final DNFIndexer dnfIndexer = DNFIndexer.builder()
                 .criteria(dnf)
                 .indexGroup(indexGroup)
-                .indexOperation(indexOperation)
+                .operation(operation)
                 .build();
         dnfIndexer.index();
         return null;
@@ -59,7 +59,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         final CNFIndexer cnfIndexer = CNFIndexer.builder()
                 .criteria(cnf)
                 .indexGroup(indexGroup)
-                .indexOperation(indexOperation)
+                .operation(operation)
                 .build();
         cnfIndexer.index();
         return null;

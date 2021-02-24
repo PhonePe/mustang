@@ -25,7 +25,7 @@ import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
-import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
+import com.phonepe.growth.mustang.index.operation.IndexOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -45,7 +45,7 @@ public class IndexingFacade {
         }
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
-                .indexOperation(CriteriaIndexOperation.ADD)
+                .operation(IndexOperation.ADD)
                 .build());
         indexGroup.getAllCriterias()
                 .put(criteria.getId(), criteria);
@@ -62,7 +62,7 @@ public class IndexingFacade {
             }
             criteria.accept(CriteriaIndexBuilder.builder()
                     .indexGroup(indexGroup)
-                    .indexOperation(CriteriaIndexOperation.ADD)
+                    .operation(IndexOperation.ADD)
                     .build());
             indexGroup.getAllCriterias()
                     .put(criteria.getId(), criteria);
@@ -73,7 +73,7 @@ public class IndexingFacade {
         final IndexGroup indexGroup = get(index);
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
-                .indexOperation(CriteriaIndexOperation.UPDATE)
+                .operation(IndexOperation.UPDATE)
                 .build());
         indexGroup.getAllCriterias()
                 .put(criteria.getId(), criteria);
@@ -83,7 +83,7 @@ public class IndexingFacade {
         final IndexGroup indexGroup = get(index);
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
-                .indexOperation(CriteriaIndexOperation.DELETE)
+                .operation(IndexOperation.DELETE)
                 .build());
         indexGroup.getAllCriterias()
                 .put(criteria.getId(), criteria);

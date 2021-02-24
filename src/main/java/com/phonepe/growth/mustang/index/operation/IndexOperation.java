@@ -20,7 +20,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public enum CriteriaIndexOperation {
+public enum IndexOperation {
     ADD() {
         @Override
         public <T> T accept(Visitor<T> visitor) {

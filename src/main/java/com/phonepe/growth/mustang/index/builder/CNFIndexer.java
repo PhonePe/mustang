@@ -35,7 +35,7 @@ import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.entry.extractor.CNFPostingListsExtractor;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
-import com.phonepe.growth.mustang.index.operation.CriteriaIndexOperation;
+import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
 import lombok.Builder;
@@ -51,14 +51,14 @@ public class CNFIndexer {
     @NotNull
     private final IndexGroup indexGroup;
     @NotNull
-    private final CriteriaIndexOperation indexOperation;
+    private final IndexOperation operation;
 
     public void index() {
         final int disjunctionSize = criteria.getDisjunctions()
                 .size();
         final CNFInvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = indexGroup.getCnfInvertedIndex();
         final Map<Integer, Integer[]> disjunctionCounters = cnfInvertedIndex.getDisjunctionCounters();
-        final Pair<Boolean, Integer> operationMeta = indexOperation
+        final Pair<Boolean, Integer> operationMeta = operation
                 .accept(new IndexOperationMetaExtractor(cnfInvertedIndex, criteria.getId()));
 
         if (Boolean.TRUE.equals(operationMeta.getLeft())) {
@@ -137,7 +137,7 @@ public class CNFIndexer {
                 .sum();
     }
 
-    private static class IndexOperationMetaExtractor implements CriteriaIndexOperation.Visitor<Pair<Boolean, Integer>> {
+    private static class IndexOperationMetaExtractor implements IndexOperation.Visitor<Pair<Boolean, Integer>> {
         private final CNFInvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex;
         private final String criteriaId;
 
