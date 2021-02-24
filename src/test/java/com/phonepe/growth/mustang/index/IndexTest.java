@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -924,6 +925,30 @@ public class IndexTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.isEmpty());
+    }
+
+    @Test
+    public void testDeleteOnNonIndexedCriteria() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        try {
+            engine.delete("test", c1);
+            Assert.fail("Mustang Exception should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+        }
+
     }
 
 }

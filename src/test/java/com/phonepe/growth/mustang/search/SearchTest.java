@@ -47,6 +47,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
+import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
@@ -3234,6 +3235,25 @@ public class SearchTest {
                 .get();
         SearchDataExtractor.extract(mapperSpy);
         Assert.fail();
+    }
+
+    @Test
+    public void testSearchOnNonExistentIndex() throws Exception {
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        try {
+            engine.search("test",
+                    RequestContext.builder()
+                            .node(mapper.valueToTree(testQuery))
+                            .build());
+            Assert.fail("MustangException should have been thrown.");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+        }
     }
 
 }

@@ -81,13 +81,18 @@ public class IndexingFacade {
 
     public void delete(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
+        if (indexGroup.getAllCriterias()
+                .containsKey(criteria.getId())) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_NOT_FOUND)
+                    .build();
+        }
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
                 .operation(IndexOperation.DELETE)
                 .build());
         indexGroup.getAllCriterias()
-                .put(criteria.getId(), criteria);
-
+                .remove(criteria.getId());
     }
 
     public void replace(final String oldIndex, final String newIndex) {

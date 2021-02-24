@@ -17,10 +17,12 @@
 package com.phonepe.growth.mustang.index.core;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -53,5 +55,11 @@ public abstract class InvertedIndex<T> {
                 .add(idCounter.incrementAndGet());
         return idCache.get(externalId)
                 .peek();
+    }
+
+    public List<Integer> removeInternalIdsFromCache(final String externalId) {
+        return idCache.remove(externalId)
+                .stream()
+                .collect(Collectors.toList());
     }
 }
