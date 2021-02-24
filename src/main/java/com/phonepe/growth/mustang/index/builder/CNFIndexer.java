@@ -16,7 +16,6 @@
  */
 package com.phonepe.growth.mustang.index.builder;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class CNFIndexer {
                         }
 
                         postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
-                        indexTable.put(kSize, compactPostingLists(postingLists));
+                        indexTable.put(kSize, CriteriaIndexBuilder.compactPostingLists(postingLists));
                         disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
                     });
         }
@@ -135,18 +134,6 @@ public class CNFIndexer {
                 .filter(predicate -> PredicateType.EXCLUDED.equals(predicate.getType()))
                 .mapToInt(e -> 1)
                 .sum();
-    }
-
-    private <T, S> Map<T, TreeSet<S>> compactPostingLists(List<Map<T, TreeSet<S>>> maps) {
-        final List<Map.Entry<T, TreeSet<S>>> tempResult = maps.stream()
-                .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
-        return tempResult.stream()
-                .collect(Collectors.groupingBy(Map.Entry::getKey,
-                        Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeSet<>(), (s1, s2) -> {
-                            final TreeSet<S> combined = new TreeSet<>(s1);
-                            combined.addAll(s2);
-                            return combined;
-                        }))));
     }
 
     private static class IndexOperationMetaExtractor implements CriteriaIndexOperation.Visitor<Pair<Boolean, Integer>> {

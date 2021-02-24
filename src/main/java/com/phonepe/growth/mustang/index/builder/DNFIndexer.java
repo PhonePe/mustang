@@ -67,9 +67,14 @@ public class DNFIndexer {
                 .forEach(j -> {
                     final Conjunction conjunction = criteria.getConjunctions()
                             .get(j);
-                    final Integer iId = indexOperation.accept(new IndexOperationMetaExtractor(dnfInvertedIndex,
-                            String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteria.getId(), j)));
+                    final Pair<Boolean, Integer> operationMeta = indexOperation
+                            .accept(new IndexOperationMetaExtractor(dnfInvertedIndex,
+                                    String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteria.getId(), j)));
+                    final Integer iId = operationMeta.getRight();
                     newIIds.add(iId);
+                    if (Boolean.FALSE.equals(operationMeta.getLeft())) {
+                        return;
+                    }
 
                     final int kSize = conjunction.getPredicates()
                             .stream()
@@ -120,7 +125,7 @@ public class DNFIndexer {
         // TODO handle cleanup
     }
 
-    private static class IndexOperationMetaExtractor implements CriteriaIndexOperation.Visitor<Integer> {
+    private static class IndexOperationMetaExtractor implements CriteriaIndexOperation.Visitor<Pair<Boolean, Integer>> {
         private final DNFInvertedIndex<ConjunctionPostingEntry> cnfInvertedIndex;
         private final String conjunctionId;
 
@@ -131,19 +136,19 @@ public class DNFIndexer {
         }
 
         @Override
-        public Integer visitAdd() {
-            return cnfInvertedIndex.getInternalIdFromCache(conjunctionId);
+        public Pair<Boolean, Integer> visitAdd() {
+            return Pair.of(true, cnfInvertedIndex.getInternalIdFromCache(conjunctionId));
         }
 
         @Override
-        public Integer visitUpdate() {
-            return cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId);
+        public Pair<Boolean, Integer> visitUpdate() {
+            return Pair.of(true, cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId));
             // TODO initiate cleanup
         }
 
         @Override
-        public Integer visitDelete() {
-            return cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId);
+        public Pair<Boolean, Integer> visitDelete() {
+            return Pair.of(false, cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId));
             // TODO initiate cleanup
         }
     }

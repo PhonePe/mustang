@@ -37,6 +37,12 @@ public class IndexingFacade {
 
     public void add(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
+        if (indexGroup.getAllCriterias()
+                .containsKey(criteria.getId())) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_GENERATION_ERROR)
+                    .build();
+        }
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
                 .indexOperation(CriteriaIndexOperation.ADD)
@@ -48,6 +54,12 @@ public class IndexingFacade {
     public void add(final String index, final List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
         criterias.forEach(criteria -> {
+            if (indexGroup.getAllCriterias()
+                    .containsKey(criteria.getId())) {
+                throw MustangException.builder()
+                        .errorCode(ErrorCode.INDEX_GENERATION_ERROR)
+                        .build();
+            }
             criteria.accept(CriteriaIndexBuilder.builder()
                     .indexGroup(indexGroup)
                     .indexOperation(CriteriaIndexOperation.ADD)

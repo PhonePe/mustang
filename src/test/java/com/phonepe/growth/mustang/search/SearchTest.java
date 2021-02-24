@@ -106,8 +106,8 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -148,7 +148,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -213,9 +213,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         final Set<String> searchResults = engine.search("testsearch",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -282,9 +282,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         final Set<String> searchResults = engine.search("testsearch",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -337,8 +337,8 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", false);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -388,8 +388,8 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("n", 1);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -432,8 +432,8 @@ public class SearchTest {
         testQuery.put("a", "P");
         testQuery.put("n", 8);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -494,8 +494,8 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", false);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -560,9 +560,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         final Set<String> searchResults = engine.search("testsearch",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -616,8 +616,8 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -660,7 +660,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -763,9 +763,9 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
-        engine.index("test", c3);
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -828,7 +828,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -861,7 +861,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
@@ -958,12 +958,12 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
-        engine.index("testsearch", c4);
-        engine.index("testsearch", c5);
-        engine.index("testsearch", c6);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
+        engine.add("testsearch", c4);
+        engine.add("testsearch", c5);
+        engine.add("testsearch", c6);
 
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -1120,12 +1120,12 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
-        engine.index("testsearch", c4);
-        engine.index("testsearch", c5);
-        engine.index("testsearch", c6);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
+        engine.add("testsearch", c4);
+        engine.add("testsearch", c5);
+        engine.add("testsearch", c6);
 
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -1197,9 +1197,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
@@ -1292,9 +1292,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
@@ -1386,9 +1386,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");// Negative value
@@ -1455,9 +1455,9 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
-        engine.index("testsearch", c3);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
@@ -1472,7 +1472,7 @@ public class SearchTest {
         Assert.assertEquals(0, searchResults.size());
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testDNFStoreIntegerAStringInCriteriaQueryTheSameValueAsInteger() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -1509,8 +1509,8 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -1536,7 +1536,7 @@ public class SearchTest {
                 .build();
 
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
@@ -1550,7 +1550,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testDNFSingleExclusionPredicateAndQueryWithNonExclusionIndexData() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -1563,7 +1563,7 @@ public class SearchTest {
                 .build();
 
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
@@ -1577,7 +1577,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test
+    @Test(expected = MustangException.class)
     public void testDNFSingleInclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1591,7 +1591,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
@@ -1603,7 +1603,7 @@ public class SearchTest {
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
-        /* Updated Criteria Builder -set value as FALSE */
+        /* Updated Criteria -set value as FALSE */
         c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -1614,7 +1614,48 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
+        Assert.fail("MustangException should have been thrown");
+    }
+
+    @Test
+    public void testDNFSingleInclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgainAfterUpdate() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        /* Updated Criteria -set value as FALSE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(false))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.update("test", c1);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -1634,11 +1675,46 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults2.size());
-        Assert.assertTrue(searchResults2.contains("C1"));
+        Assert.assertTrue(searchResults2.isEmpty());
     }
 
     @Test
+    public void testDNFSingleInclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgainAfterDelete() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        final Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        // Delete from the index
+        engine.delete("test", c1);
+
+        final Set<String> searchResults2 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults2.isEmpty());
+    }
+
+    @Test(expected = MustangException.class)
     public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1656,7 +1732,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
@@ -1684,7 +1760,57 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
+        Assert.fail("MustangException should have been thrown");
+    }
+
+    @Test
+    public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+        testQuery.put("a", "A1");
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        /* Updated Criteria Builder -set value as FALSE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(false))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.update("test", c1);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -1706,11 +1832,51 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults2.size());
-        Assert.assertTrue(searchResults2.contains("C1"));
+        Assert.assertTrue(searchResults2.isEmpty());
     }
 
-    @Test // TODO -issue reported
+    @Test
+    public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+        testQuery.put("a", "A1");
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        // Remove from index
+        engine.delete("test", c1);
+
+        final Set<String> searchResults2 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults2.isEmpty());
+    }
+
+    @Test
     public void testDNFSingleExclusionPredicateQueryEngineAndUpdateSameCriteriaQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -1724,7 +1890,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
@@ -1747,7 +1913,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c2);
+        engine.add("test", c2);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -1789,7 +1955,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
@@ -1817,7 +1983,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c2);
+        engine.add("test", c2);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -1884,8 +2050,8 @@ public class SearchTest {
         testQuery.put("a", "A1");// positive value
         testQuery.put("b", "B3"); // negative value
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -1894,7 +2060,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testCNFStoreIntegerAStringInCriteriaQueryTheSameValueAsInteger() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
@@ -1931,8 +2097,8 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("n", 6); // Same value as criteria but as Integer
@@ -1944,7 +2110,7 @@ public class SearchTest {
         Assert.assertEquals(1, searchResults.size());
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testCNFOnlyWithExclusionPredicateAndQueryWithNonExclusionIndexData() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
@@ -1969,7 +2135,7 @@ public class SearchTest {
                 .build();
 
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
@@ -2000,7 +2166,7 @@ public class SearchTest {
                 .build();
 
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
@@ -2014,7 +2180,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
-    @Test
+    @Test(expected = MustangException.class)
     public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -2032,7 +2198,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
@@ -2060,7 +2226,58 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
+        Assert.fail("MustangException should have been thrown");
+    }
+
+    @Test
+    public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        /* Updated Criteria Builder -set value as FALSE */
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(false))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.update("test", c1);
+
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -2073,6 +2290,7 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
+
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", true);
@@ -2082,8 +2300,49 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults2.size());
-        Assert.assertTrue(searchResults2.contains("C1"));
+        Assert.assertTrue(searchResults2.isEmpty());
+    }
+
+    @Test
+    public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", true);
+
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        // delete from index
+        engine.delete("test", c1);
+
+        // Search query with new values
+        final Set<String> searchResults2 = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults2.isEmpty());
     }
 
     @Test
@@ -2100,7 +2359,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
@@ -2112,6 +2371,7 @@ public class SearchTest {
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
+        // Re-initialize engine
         engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
@@ -2126,7 +2386,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -2149,7 +2409,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.isEmpty());
     }
 
-    @Test
+    @Test(expected = MustangException.class)
     public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
@@ -2167,7 +2427,7 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
@@ -2195,7 +2455,57 @@ public class SearchTest {
                         .build())
                 .build();
         // Index ingestion
-        engine.index("test", c1);
+        engine.add("test", c1);
+        Assert.fail("MustangException should have been thrown");
+    }
+
+    @Test
+    public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+        Criteria c1;
+        /* Initial Criteria Builder -set value as TRUE */
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.add("test", c1);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("p", false);
+        testQuery.put("a", "A10");
+        // Search Engine call
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        /* Updated Criteria Builder -set value as FALSE */
+        c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(false))
+                                .build())
+                        .build())
+                .build();
+        // Index ingestion
+        engine.update("test", c1);
         /*** validate with older value and new value ***/
         // Request Map - updation
         testQuery.clear();
@@ -2221,7 +2531,7 @@ public class SearchTest {
         Assert.assertTrue(searchResults2.contains("C1"));
     }
 
-    @Test // TODO -issue reported
+    @Test
     public void testDNFWithBlankIncludePredicate() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -2234,7 +2544,7 @@ public class SearchTest {
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", " ");
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Query engine
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
@@ -2257,7 +2567,7 @@ public class SearchTest {
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "!");
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Query engine
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
@@ -2280,7 +2590,7 @@ public class SearchTest {
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", " ");
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Query engine
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
@@ -2324,8 +2634,8 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
 
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -2375,8 +2685,8 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
 
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -2425,8 +2735,8 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
 
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -2477,8 +2787,8 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
 
         // Search query -values not present in both the criteria
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -2527,8 +2837,8 @@ public class SearchTest {
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        engine.index("testsearch", c1);
-        engine.index("testsearch", c2);
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
 
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -2562,7 +2872,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2587,7 +2897,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2613,7 +2923,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2638,7 +2948,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2664,7 +2974,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2680,8 +2990,8 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test1", c1);
-        engine.replace("test", "test1");
+        engine.add("test1", c1);
+        engine.replaceIndex("test", "test1");
         searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2749,8 +3059,8 @@ public class SearchTest {
                 .build();
         String str = "{\"a\":{\"value\":\"A1\"},\"b\":{\"value\":\"B3\"},\"n\":{\"value\":0.000000000000003},\"p\":{\"value\":true}}";
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(str))
@@ -2791,7 +3101,7 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c11);
+        engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2831,7 +3141,7 @@ public class SearchTest {
         testQuery.put("a", "A1");// positive value
         testQuery.put("b", "B3"); // negative value
 
-        engine.index("test", c11);
+        engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2850,8 +3160,8 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
@@ -2881,7 +3191,7 @@ public class SearchTest {
         testQuery.put("a", "A1");// positive value
         testQuery.put("b", "B3"); // negative value
 
-        engine.index("test", c1);
+        engine.add("test", c1);
         engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
