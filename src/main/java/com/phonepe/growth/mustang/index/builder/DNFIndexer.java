@@ -72,53 +72,52 @@ public class DNFIndexer {
                                     String.format(CONJUNCTION_ENTRY_ID_FORMAT, criteria.getId(), j)));
                     final Integer iId = operationMeta.getRight();
                     newIIds.add(iId);
-                    if (Boolean.FALSE.equals(operationMeta.getLeft())) {
-                        return;
+                    if (Boolean.TRUE.equals(operationMeta.getLeft())) {
+                        final int kSize = conjunction.getPredicates()
+                                .stream()
+                                .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
+                                .mapToInt(e -> 1)
+                                .sum();
+
+                        final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction
+                                .getPredicates()
+                                .stream()
+                                .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
+                                        .iId(iId)
+                                        .eId(criteria.getId())
+                                        .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
+                                        .build()))
+                                .collect(Collectors.toList());
+
+                        if (kSize == 0) {
+                            // ZERO size handling
+                            final Key key = Key.builder()
+                                    .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY)
+                                    .value(0)
+                                    .upperBoundScore(0)
+                                    .build();
+                            final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
+                                    .flatMap(m -> m.entrySet()
+                                            .stream())
+                                    .map(Map.Entry::getValue)
+                                    .flatMap(TreeSet::stream)
+                                    .distinct()
+                                    .map(entry -> ConjunctionPostingEntry.builder()
+                                            .iId(entry.getIId())
+                                            .eId(entry.getEId())
+                                            .type(PredicateType.INCLUDED)
+                                            .score(0)
+                                            .build())
+                                    .distinct()
+                                    .map(entry -> Pair.of(key, entry))
+                                    .collect(Collectors.groupingBy(Pair::getKey,
+                                            Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+                            postingLists.add(map);
+                        }
+
+                        postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
+                        indexTable.put(kSize, CriteriaIndexBuilder.compactPostingLists(postingLists));
                     }
-
-                    final int kSize = conjunction.getPredicates()
-                            .stream()
-                            .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                            .mapToInt(e -> 1)
-                            .sum();
-
-                    final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction.getPredicates()
-                            .stream()
-                            .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
-                                    .iId(iId)
-                                    .eId(criteria.getId())
-                                    .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
-                                    .build()))
-                            .collect(Collectors.toList());
-
-                    if (kSize == 0) {
-                        // ZERO size handling
-                        final Key key = Key.builder()
-                                .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY)
-                                .value(0)
-                                .upperBoundScore(0)
-                                .build();
-                        final Map<Key, TreeSet<ConjunctionPostingEntry>> map = postingLists.stream()
-                                .flatMap(m -> m.entrySet()
-                                        .stream())
-                                .map(Map.Entry::getValue)
-                                .flatMap(TreeSet::stream)
-                                .distinct()
-                                .map(entry -> ConjunctionPostingEntry.builder()
-                                        .iId(entry.getIId())
-                                        .eId(entry.getEId())
-                                        .type(PredicateType.INCLUDED)
-                                        .score(0)
-                                        .build())
-                                .distinct()
-                                .map(entry -> Pair.of(key, entry))
-                                .collect(Collectors.groupingBy(Pair::getKey,
-                                        Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
-                        postingLists.add(map);
-                    }
-
-                    postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
-                    indexTable.put(kSize, CriteriaIndexBuilder.compactPostingLists(postingLists));
                 });
         final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
                 .put(criteria.getId(), newIIds);
