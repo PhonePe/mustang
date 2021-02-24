@@ -21,7 +21,7 @@ build_snapshot:
   <<: *default
   <<: *default_tag
   script:
-    - mvn verify -U -Pquality_check
+    - mvn clean package -U -DskipTests=true
 
 merge_ready:
   stage: quality
@@ -34,8 +34,6 @@ deploy_snapshot:
   stage: deploy
   <<: *default_tag
   <<: *default
-  only:
-    - web
   allow_failure: false
   script:
     - mvn deploy -DskipTests=true -Denforcer.skip
