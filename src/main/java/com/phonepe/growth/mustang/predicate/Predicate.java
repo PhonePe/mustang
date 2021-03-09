@@ -16,10 +16,9 @@
  */
 package com.phonepe.growth.mustang.predicate;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.debug.PredicateDebugResult;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 

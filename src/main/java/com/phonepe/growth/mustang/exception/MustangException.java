@@ -22,12 +22,18 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class MustangException extends RuntimeException {
 
     private static final long serialVersionUID = -4278856680596761879L;
     private final ErrorCode errorCode;
+
+    @Builder
+    public MustangException(ErrorCode errorCode) {
+        super();
+        this.errorCode = errorCode;
+    }
 
     @Builder
     public MustangException(ErrorCode errorCode, String message, Throwable cause) {
@@ -45,6 +51,10 @@ public class MustangException extends RuntimeException {
         } else if (throwable.getCause() instanceof MustangException) {
             return (MustangException) throwable.getCause();
         }
-        return new MustangException(ErrorCode.INTERNAL_ERROR, message, throwable);
+        return MustangException.builder()
+                .errorCode(ErrorCode.INTERNAL_ERROR)
+                .message(message)
+                .cause(throwable)
+                .build();
     }
 }

@@ -55,15 +55,23 @@ public class MustangEngine {
             .indexingFacade(indexingFacde)
             .build();
 
-    public synchronized void index(final String indexName, final Criteria criteria) {
+    public synchronized void add(final String indexName, final Criteria criteria) {
         indexingFacde.add(indexName, criteria);
     }
 
-    public synchronized void index(final String indexName, final List<Criteria> criterias) {
+    public synchronized void add(final String indexName, final List<Criteria> criterias) {
         indexingFacde.add(indexName, criterias);
     }
 
-    public synchronized void replace(final String oldIndex, final String newIndex) {
+    public synchronized void update(final String indexName, final Criteria criteria) {
+        indexingFacde.update(indexName, criteria);
+    }
+
+    public synchronized void delete(final String indexName, final Criteria criteria) {
+        indexingFacde.delete(indexName, criteria);
+    }
+
+    public synchronized void replaceIndex(final String oldIndex, final String newIndex) {
         indexingFacde.replace(oldIndex, newIndex);
     }
 

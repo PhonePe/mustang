@@ -100,8 +100,8 @@ public class ScoreTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build();
@@ -159,7 +159,7 @@ public class ScoreTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.index("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build();
@@ -217,8 +217,8 @@ public class ScoreTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", false);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build();
@@ -266,8 +266,8 @@ public class ScoreTest {
         testQuery.put("a", "P");
         testQuery.put("n", 8);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
+        engine.add("test", c1);
+        engine.add("test", c2);
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build();
@@ -387,9 +387,9 @@ public class ScoreTest {
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
 
-        engine.index("test", c1);
-        engine.index("test", c2);
-        engine.index("test", c3);
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build();

@@ -16,7 +16,7 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import static com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;
+import static com.phonepe.growth.mustang.index.builder.DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEY;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,8 +35,8 @@ import org.apache.commons.lang3.tuple.MutablePair;
 import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
-import com.phonepe.growth.mustang.index.core.InvertedIndex;
 import com.phonepe.growth.mustang.index.core.Key;
+import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.search.Query;
 
@@ -49,7 +49,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class DNFMatcher {
 
-    private final InvertedIndex<ConjunctionPostingEntry> invertedInex;
+    private final DNFInvertedIndex<ConjunctionPostingEntry> invertedInex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
 
@@ -102,10 +102,7 @@ public class DNFMatcher {
                                 continue; // continue to next while loop iteration
                             } else {
                                 /* conjunction is fully satisfied */
-                                result.put(conjunctionPostingEntry.get()
-                                        .getEId(),
-                                        computeScore(conjunctionPostingEntry.get()
-                                                .getEId()));
+                                checkAndAdd(result, conjunctionPostingEntry.get());
                             }
                             /* nextID is the smallest possible ID after current ID */
                             nextID = pLists[k - 1].getValue()
@@ -118,9 +115,16 @@ public class DNFMatcher {
                         skipTo(k, pLists, nextID);
                     }
                 });
-
         return result;
+    }
 
+    private void checkAndAdd(final Map<String, Double> result, final ConjunctionPostingEntry postingEntry) {
+        // Check to see if the current entry is part of criteria's latest version.
+        if (invertedInex.getActiveIds()
+                .get(postingEntry.getEId())
+                .contains(postingEntry.getIId())) {
+            result.put(postingEntry.getEId(), computeScore(postingEntry.getEId()));
+        }
     }
 
     @SuppressWarnings("unchecked")

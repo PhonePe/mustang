@@ -16,10 +16,9 @@
  */
 package com.phonepe.growth.mustang.criteria;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.debug.DebugResult;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -27,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.debug.DebugResult;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

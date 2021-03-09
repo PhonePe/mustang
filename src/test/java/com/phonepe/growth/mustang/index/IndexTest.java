@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,7 +76,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Indexing Size assertion
         Assert.assertEquals(1,
                 engine.getIndexingFacde()
@@ -107,7 +108,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         // Indexing Size assertion
         Assert.assertEquals(1,
                 engine.getIndexingFacde()
@@ -148,7 +149,7 @@ public class IndexTest {
                         .build())
                 .build();
         Criteria c2 = DNFCriteria.builder()
-                .id("C1")
+                .id("C2")
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
@@ -169,7 +170,7 @@ public class IndexTest {
                         .build())
                 .build();
         Criteria c3 = DNFCriteria.builder()
-                .id("C1")
+                .id("C3")
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
@@ -182,7 +183,7 @@ public class IndexTest {
                         .build())
                 .build();
         Criteria c4 = DNFCriteria.builder()
-                .id("C1")
+                .id("C4")
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
@@ -202,7 +203,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", Arrays.asList(c1, c2, c3, c4));
+        engine.add("test", Arrays.asList(c1, c2, c3, c4));
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
 
@@ -297,6 +298,42 @@ public class IndexTest {
                 .containsKey(aKey));
     }
 
+    @Test(expected = MustangException.class)
+    public void testDnfIndexingWithMultiplePredicateWithSameId() {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        engine.add("test", Arrays.asList(c1, c2));
+        Assert.fail("MustangException should have been thrown");
+    }
+
     @Test
     public void testCnfIndexing() {
         Criteria c1 = CNFCriteria.builder()
@@ -348,7 +385,7 @@ public class IndexTest {
                 .id("C2")
                 .disjunctions(Arrays.asList(d1, d2))
                 .build();
-        engine.index("test", Arrays.asList(c1, c2));
+        engine.add("test", Arrays.asList(c1, c2));
         // Indexing Size assertion
         Assert.assertEquals(1,
                 engine.getIndexingFacde()
@@ -394,7 +431,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         final Key key = Key.builder()
@@ -509,7 +546,7 @@ public class IndexTest {
                 .id("C4")
                 .disjunctions(Arrays.asList(d1, d2, d3))
                 .build();
-        engine.index("test", Arrays.asList(c1, c2, c3, c4));
+        engine.add("test", Arrays.asList(c1, c2, c3, c4));
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
 
@@ -632,7 +669,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         Assert.assertEquals(1,
@@ -657,7 +694,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         Assert.assertEquals(1,
@@ -687,7 +724,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         Assert.assertEquals(1,
@@ -712,7 +749,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         // Check value in DNF index
@@ -743,7 +780,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         // Check value in DNF index
@@ -779,7 +816,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
 
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
@@ -815,8 +852,8 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
-        engine.replace("test", "testNew");
+        engine.add("test", c1);
+        engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         engine.search("test",
@@ -842,8 +879,8 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("testNew", c1);
-        engine.replace("test", "testNew");
+        engine.add("testNew", c1);
+        engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
         final Set<String> searchResults = engine.search("test",
@@ -869,7 +906,7 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("test", c1);
+        engine.add("test", c1);
         c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()
@@ -879,8 +916,8 @@ public class IndexTest {
                                 .build())
                         .build())
                 .build();
-        engine.index("testNew", c1);
-        engine.replace("test", "testNew");
+        engine.add("testNew", c1);
+        engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
         final Set<String> searchResults = engine.search("test",
@@ -888,6 +925,30 @@ public class IndexTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.isEmpty());
+    }
+
+    @Test
+    public void testDeleteOnNonIndexedCriteria() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A10", "A20"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+        try {
+            engine.delete("test", c1);
+            Assert.fail("Mustang Exception should have been thrown");
+        } catch (MustangException e) {
+            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+        }
+
     }
 
 }
