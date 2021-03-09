@@ -120,9 +120,12 @@ public class DNFIndexer {
                         indexTable.put(kSize, CriteriaIndexBuilder.compactPostingLists(postingLists));
                     }
                 });
-        final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
-                .put(criteria.getId(), newIIds);
+
         // TODO handle cleanup
+        // final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
+        // .put(criteria.getId(), newIIds);
+        dnfInvertedIndex.getActiveIds()
+                .put(criteria.getId(), newIIds);
     }
 
     private static class IndexOperationMetaExtractor implements IndexOperation.Visitor<Pair<Boolean, Integer>> {
@@ -143,13 +146,11 @@ public class DNFIndexer {
         @Override
         public Pair<Boolean, Integer> visitUpdate() {
             return Pair.of(true, cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId));
-            // TODO initiate cleanup
         }
 
         @Override
         public Pair<Boolean, Integer> visitDelete() {
             return Pair.of(false, cnfInvertedIndex.getNextInternalIdFromCache(conjunctionId));
-            // TODO initiate cleanup
         }
     }
 

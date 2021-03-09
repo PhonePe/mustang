@@ -18,15 +18,14 @@ package com.phonepe.growth.mustang.predicate.impl;
 
 import java.util.Set;
 
-import javax.validation.constraints.NotEmpty;
-
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
-import com.phonepe.growth.mustang.debug.PredicateDebugResult;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;

@@ -60,9 +60,9 @@ public class CNFIndexer {
         final Map<Integer, Integer[]> disjunctionCounters = cnfInvertedIndex.getDisjunctionCounters();
         final Pair<Boolean, Integer> operationMeta = operation
                 .accept(new IndexOperationMetaExtractor(cnfInvertedIndex, criteria.getId()));
+        final Integer internalId = operationMeta.getRight();
 
         if (Boolean.TRUE.equals(operationMeta.getLeft())) {
-            final Integer internalId = operationMeta.getRight();
             final Integer[] disjunctionCounter = disjunctionCounters.computeIfAbsent(internalId,
                     x -> new Integer[disjunctionSize]);
             final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
@@ -121,6 +121,8 @@ public class CNFIndexer {
                         disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
                     });
         }
+
+        // TODO handle cleanup
     }
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {
@@ -155,13 +157,11 @@ public class CNFIndexer {
         @Override
         public Pair<Boolean, Integer> visitUpdate() {
             return Pair.of(true, cnfInvertedIndex.getNextInternalIdFromCache(criteriaId));
-            // TODO initiate cleanup
         }
 
         @Override
         public Pair<Boolean, Integer> visitDelete() {
             return Pair.of(false, cnfInvertedIndex.getNextInternalIdFromCache(criteriaId));
-            // TODO initiate cleanup
         }
     }
 
