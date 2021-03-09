@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>1.0.7</version>
+  <version>1.0.10</version>
 </dependency>
 ```
 
@@ -112,7 +112,7 @@ Criteria cnf = CNFCriteria.builder()
 Index a single criteria
 
 ```java
-engine.index("index_name", criteria)
+engine.add("index_name", criteria)
 ```
 
 OR 
@@ -120,7 +120,7 @@ OR
 Multiple criteria(s) at once.
 
 ```java
-engine.index("index_name", Arrays.asList(criteria1, criteria2, ...));
+engine.add("index_name", Arrays.asList(criteria1, criteria2, ...));
 ```
 
 #### Searching criteria(s) matching an assignment
@@ -164,6 +164,34 @@ Scores of different `Criteria` are defined as below :
 
 - Score of a `DNFCriteria` is defined as the maximum of the scores of the conjunctions.
 - Score of a `CNFCriteria` is defined as sum of the scores of the disjunctions.
+
+
+#### Updating an already indexed Criteria
+
+Update the already indexed criteria.
+
+```java
+engine.update("index_name", criteria)
+```
+
+PS :
+- `update` is NOT limited to only already indexed `criteria`. If `criteria` is not already indexed, behavior will be akin to `add`.
+- Successive `add` operations to index a given `criteria` (identified by `criteriaId`) are not be allowed.
+- For changes in any Criteria thats already indexed to reflect in the index, `update` is the way to go.
+- Post the `update` operation, for all practical purposes, only the newer version of `criteria` will be considered for searches.
+
+
+#### Deleting an already indexed Criteria
+
+Delete an already indexed criteria.
+
+```java
+engine.delete("index_name", criteria)
+```
+
+PS :
+- `delete` is limited to only already indexed `criteria`.
+- Post the `delete` operation, for all practical purposes, deleted `criteria` will not be considered for searches.
 
 
 #### Support for scanning

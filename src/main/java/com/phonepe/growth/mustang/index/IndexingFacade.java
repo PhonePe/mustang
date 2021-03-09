@@ -25,6 +25,7 @@ import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CriteriaIndexBuilder;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.index.operation.IndexOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -36,8 +37,15 @@ public class IndexingFacade {
 
     public void add(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
+        if (indexGroup.getAllCriterias()
+                .containsKey(criteria.getId())) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_GENERATION_ERROR)
+                    .build();
+        }
         criteria.accept(CriteriaIndexBuilder.builder()
                 .indexGroup(indexGroup)
+                .operation(IndexOperation.ADD)
                 .build());
         indexGroup.getAllCriterias()
                 .put(criteria.getId(), criteria);
@@ -46,12 +54,46 @@ public class IndexingFacade {
     public void add(final String index, final List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
         criterias.forEach(criteria -> {
+            if (indexGroup.getAllCriterias()
+                    .containsKey(criteria.getId())) {
+                throw MustangException.builder()
+                        .errorCode(ErrorCode.INDEX_GENERATION_ERROR)
+                        .build();
+            }
             criteria.accept(CriteriaIndexBuilder.builder()
                     .indexGroup(indexGroup)
+                    .operation(IndexOperation.ADD)
                     .build());
             indexGroup.getAllCriterias()
                     .put(criteria.getId(), criteria);
         });
+    }
+
+    public void update(final String index, final Criteria criteria) {
+        final IndexGroup indexGroup = get(index);
+        criteria.accept(CriteriaIndexBuilder.builder()
+                .indexGroup(indexGroup)
+                .operation(IndexOperation.UPDATE)
+                .build());
+        indexGroup.getAllCriterias()
+                .put(criteria.getId(), criteria);
+    }
+
+    public void delete(final String index, final Criteria criteria) {
+        final IndexGroup indexGroup = get(index);
+        if (indexGroup.getAllCriterias()
+                .containsKey(criteria.getId())) {
+            criteria.accept(CriteriaIndexBuilder.builder()
+                    .indexGroup(indexGroup)
+                    .operation(IndexOperation.DELETE)
+                    .build());
+            indexGroup.getAllCriterias()
+                    .remove(criteria.getId());
+        } else {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_NOT_FOUND)
+                    .build();
+        }
     }
 
     public void replace(final String oldIndex, final String newIndex) {
