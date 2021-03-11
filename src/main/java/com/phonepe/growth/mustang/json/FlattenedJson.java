@@ -18,7 +18,6 @@ package com.phonepe.growth.mustang.json;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -26,6 +25,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.json.flattener.JsonFlattener;
+import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.exception.MustangException;
 
 import lombok.AllArgsConstructor;
@@ -46,12 +46,14 @@ public class FlattenedJson {
 
     public Map<String, Object> flatten() {
         try {
-            final Map<String, Object> flattenedJson = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node))
-                    .entrySet()
-                    .stream()
-                    .collect(Collectors.toMap(e -> String.format(NORMALISED_KEY_FORMAT, e.getKey()),
-                            Map.Entry::getValue));
-            return mapper.readValue(mapper.writeValueAsBytes(flattenedJson), TYPE_REF); // for type safety
+            final Map<String, Object> flattenedJson = JsonFlattener.flattenAsMap(mapper.writeValueAsString(node));
+
+            // toMap doesn't handle null values well
+            final Map<String, Object> normalisedJson = Maps.newHashMap();
+            for (Map.Entry<String, Object> entry : flattenedJson.entrySet()) {
+                normalisedJson.put(String.format(NORMALISED_KEY_FORMAT, entry.getKey()), entry.getValue());
+            }
+            return mapper.readValue(mapper.writeValueAsBytes(normalisedJson), TYPE_REF); // for type safety
         } catch (IOException e) {
             throw MustangException.propagate(e);
         }
