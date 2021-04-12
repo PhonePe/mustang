@@ -38,6 +38,7 @@ public abstract class InvertedIndex<T> {
     private final AtomicInteger idCounter = new AtomicInteger(0);
     private final Map<Integer, Map<Key, TreeSet<T>>> table = Maps.newConcurrentMap();
     private final Map<String, PriorityQueue<Integer>> idCache = Maps.newConcurrentMap();
+    private final Map<Integer, TreeSet<Integer>> linkages = Maps.newConcurrentMap();
 
     public Integer getInternalIdFromCache(final String externalId) {
         return idCache.computeIfAbsent(externalId, x -> {

@@ -80,6 +80,10 @@ public class DNFIndexer {
                                 .mapToInt(e -> 1)
                                 .sum();
 
+                        dnfInvertedIndex.getLinkages()
+                                .computeIfAbsent(kSize, x -> Sets.newTreeSet())
+                                .add(iId);
+
                         final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction
                                 .getPredicates()
                                 .stream()

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -49,13 +50,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class DNFMatcher {
 
-    private final DNFInvertedIndex<ConjunctionPostingEntry> invertedInex;
+    private final DNFInvertedIndex<ConjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
 
     public Map<String, Double> getMatches() {
         final Map<String, Double> result = Maps.newHashMap();
-        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = invertedInex.getTable();
+        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = invertedIndex.getTable();
         final int start = 0;
         final int end = Math.min(query.getAssigment()
                 .size(),
@@ -68,10 +69,13 @@ public class DNFMatcher {
                 .map(i -> end - i + start)
                 .boxed()
                 .forEach(k -> {
+                    final TreeSet<Integer> links = invertedIndex.getLinkages()
+                            .get(k);
                     final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
                             table,
                             k);
                     initializeCurrentEntriesDNF(pLists);
+
                     /* Processing k = 0 and k = 1 are identical */
                     if (k == 0) {
                         k = 1;
@@ -105,8 +109,12 @@ public class DNFMatcher {
                                 checkAndAdd(result, conjunctionPostingEntry.get());
                             }
                             /* nextID is the smallest possible ID after current ID */
-                            nextID = pLists[k - 1].getValue()
-                                    .getKey() + 1;
+                            nextID = getNextHigherId(k,
+                                    pLists,
+                                    links,
+                                    pLists[k - 1].getValue()
+                                            .getKey());
+
                         } else {
                             /* Skip first k-1 posting lists */
                             nextID = pLists[k - 1].getValue()
@@ -116,15 +124,6 @@ public class DNFMatcher {
                     }
                 });
         return result;
-    }
-
-    private void checkAndAdd(final Map<String, Double> result, final ConjunctionPostingEntry postingEntry) {
-        // Check to see if the current entry is part of criteria's latest version.
-        if (invertedInex.getActiveIds()
-                .get(postingEntry.getEId())
-                .contains(postingEntry.getIId())) {
-            result.put(postingEntry.getEId(), computeScore(postingEntry.getEId()));
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -259,6 +258,35 @@ public class DNFMatcher {
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesDNF(pLists);
         }
+    }
+
+    private void checkAndAdd(final Map<String, Double> result, final ConjunctionPostingEntry postingEntry) {
+        // Check to see if the current entry is part of criteria's latest version.
+        if (invertedIndex.getActiveIds()
+                .get(postingEntry.getEId())
+                .contains(postingEntry.getIId())) {
+            result.put(postingEntry.getEId(), computeScore(postingEntry.getEId()));
+        }
+    }
+
+    private int getNextHigherId(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final TreeSet<Integer> links,
+            final Integer internalId) {
+        final NavigableSet<Integer> nextIds = links.tailSet(internalId, false);
+        final Optional<Integer> nextId = nextIds.stream()
+                .sequential()
+                .map(id -> {
+                    skipTo(k, pLists, id);
+                    if (canContinue(pLists, k)) {
+                        return Optional.of(id);
+                    }
+                    return Optional.empty();
+                })
+                .filter(Optional::isPresent)
+                .map(o -> (Integer) o.get())
+                .findFirst();
+        return nextId.orElse(internalId + 1);
     }
 
     private double computeScore(final String cId) {
