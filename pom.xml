@@ -4,7 +4,7 @@
 
 	<groupId>com.phonepe.growth</groupId>
 	<artifactId>mustang</artifactId>
-	<version>1.0.13-SNAPSHOT</version>
+	<version>1.0.14-SNAPSHOT</version>
 
 	<parent>
 		<groupId>com.phonepe</groupId>
