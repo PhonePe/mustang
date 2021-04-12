@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
@@ -71,6 +72,10 @@ public class CNFIndexer {
                     .filter(disjunction -> !isDisjunctionWithExcludedPredicate(disjunction))
                     .mapToInt(e -> 1)
                     .sum();
+
+            cnfInvertedIndex.getLinkages()
+                    .computeIfAbsent(kSize, x -> Sets.newTreeSet())
+                    .add(internalId);
 
             IntStream.range(0, disjunctionSize)
                     .boxed()

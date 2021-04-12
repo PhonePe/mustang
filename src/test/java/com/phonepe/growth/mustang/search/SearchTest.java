@@ -3341,7 +3341,6 @@ public class SearchTest {
 
     @Test
     public void testCNFAddDeleteAdd() {
-
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()
@@ -3382,6 +3381,226 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults3.size());
         Assert.assertTrue(searchResults3.contains("C1"));
+    }
+
+    @Test
+    public void testDNFNextHigherFixCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.operatorId")
+                                .values(Sets.newHashSet("AIRTELPRE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c4 = DNFCriteria.builder()
+                .id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c5 = DNFCriteria.builder()
+                .id("C5")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c6 = DNFCriteria.builder()
+                .id("C6")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        String str = "{\"context\":{\"categoryId\":\"MOBILE\",\"subCategoryId\":\"PREPAID\",\"operatorId\":\"AIRTELPRE\",\"rechargeCircle\":\"KK\",\"rechargePlanType\":\"AIRTELPRE_TALKTIME\",\"rechargeNumber\":\"XXYXXXYXZZ\",\"mode\":\"RECHARGE\"}}";
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        engine.add("test", c5);
+        engine.add("test", c6);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(str))
+                        .build());
+        Assert.assertEquals(5, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+        Assert.assertTrue(searchResults.contains("C3"));
+        Assert.assertFalse(searchResults.contains("C4"));
+        Assert.assertTrue(searchResults.contains("C5"));
+        Assert.assertTrue(searchResults.contains("C6"));
+    }
+
+    @Test
+    public void testCNFNextHigherFixCheck() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.operatorId")
+                                .values(Sets.newHashSet("AIRTELPRE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c4 = CNFCriteria.builder()
+                .id("C4")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c5 = CNFCriteria.builder()
+                .id("C5")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c6 = CNFCriteria.builder()
+                .id("C6")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("RECHARGE"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.categoryId")
+                                .values(Sets.newHashSet("MOBILE"))
+                                .build())
+                        .build())
+                .build();
+
+        String str = "{\"context\":{\"categoryId\":\"MOBILE\",\"subCategoryId\":\"PREPAID\",\"operatorId\":\"AIRTELPRE\",\"rechargeCircle\":\"KK\",\"rechargePlanType\":\"AIRTELPRE_TALKTIME\",\"rechargeNumber\":\"XXYXXXYXZZ\",\"mode\":\"RECHARGE\"}}";
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        engine.add("test", c5);
+        engine.add("test", c6);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(str))
+                        .build());
+        Assert.assertEquals(5, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+        Assert.assertTrue(searchResults.contains("C3"));
+        Assert.assertFalse(searchResults.contains("C4"));
+        Assert.assertTrue(searchResults.contains("C5"));
+        Assert.assertTrue(searchResults.contains("C6"));
     }
 
 }

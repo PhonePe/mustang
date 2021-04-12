@@ -58,7 +58,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
         return Matches.builder()
                 .probables(indexGroup.getProcessor()
                         .submit(() -> DNFMatcher.builder()
-                                .invertedInex(indexGroup.getDnfInvertedIndex())
+                                .invertedIndex(indexGroup.getDnfInvertedIndex())
                                 .query(query)
                                 .allCriterias(indexGroup.getAllCriterias())
                                 .build()
