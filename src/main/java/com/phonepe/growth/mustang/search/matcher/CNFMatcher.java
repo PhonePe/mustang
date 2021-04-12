@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NavigableSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -66,6 +67,8 @@ public class CNFMatcher {
                 .map(i -> end - i + start)
                 .boxed()
                 .forEach(k -> {
+                    final TreeSet<Integer> links = invertedIndex.getLinkages()
+                            .get(k);
                     final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists = getPostingListsCNF(
                             table,
                             k);
@@ -97,8 +100,12 @@ public class CNFMatcher {
                             disjunctionEvaluationCheck(result, pLists, k, counters);
 
                             /* nextID is the smallest possible ID after current ID */
-                            nextID = pLists[k - 1].getValue()
-                                    .getKey() + 1;
+                            nextID = getNextHigherId(k,
+                                    pLists,
+                                    links,
+                                    pLists[k - 1].getValue()
+                                            .getKey());
+
                         } else {
                             /* Skip first k-1 posting lists */
                             nextID = pLists[k - 1].getValue()
@@ -271,6 +278,27 @@ public class CNFMatcher {
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesCNF(pLists);
         }
+    }
+
+    private int getNextHigherId(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final TreeSet<Integer> links,
+            final Integer iId) {
+        final NavigableSet<Integer> nextIds = links.tailSet(iId, false);
+        final Optional<Integer> nextId = nextIds.stream()
+                .sequential()
+                .map(id -> {
+                    skipTo(k, pLists, id);
+                    if (canContinue(pLists, k)) {
+                        return Optional.of(id);
+                    }
+                    return Optional.empty();
+                })
+                .filter(Optional::isPresent)
+                .map(o -> (Integer) o.get())
+                .findFirst();
+        return nextId.orElse(iId + 1);
+
     }
 
     private Integer[] getCounters(final Map<Integer, Integer[]> disjunctionCounters, final int iId) {
