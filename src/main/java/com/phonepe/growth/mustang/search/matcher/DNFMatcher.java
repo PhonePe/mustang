@@ -117,8 +117,12 @@ public class DNFMatcher {
 
                         } else {
                             /* Skip first k-1 posting lists */
-                            nextID = pLists[k - 1].getValue()
-                                    .getKey();
+                            nextID = getNextId(k,
+                                    pLists,
+                                    links,
+                                    pLists[k - 1].getValue()
+                                            .getKey(),
+                                    nextID);
                         }
                         skipTo(k, pLists, nextID);
                     }
@@ -287,6 +291,17 @@ public class DNFMatcher {
                 .map(o -> (Integer) o.get())
                 .findFirst();
         return nextId.orElse(internalId + 1);
+    }
+
+    private int getNextId(final int k,
+            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final TreeSet<Integer> links,
+            final Integer internalId,
+            final int nextId) {
+        if (nextId != internalId) {
+            return internalId;
+        }
+        return getNextHigherId(k, pLists, links, internalId);
     }
 
     private double computeScore(final String cId) {
