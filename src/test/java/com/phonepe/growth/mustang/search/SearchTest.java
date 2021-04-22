@@ -3603,4 +3603,150 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C6"));
     }
 
+    @Test
+    public void testDNFNextIdFixCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("ACCOUNT", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("ACCOUNT"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c4 = DNFCriteria.builder()
+                .id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        String str = "{\"userId\":\"U1606242357267228261941\",\"merchantId\":\"FXM\",\"totalTransactionAmount\":1000000,\"context\":{\"receiverContactType\":\"PHONE\",\"receiverContactId\":\"9990705923\",\"mode\":\"PEER_TO_PEER\"}}";
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(str))
+                        .build());
+        Assert.assertEquals(3, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+        Assert.assertFalse(searchResults.contains("C3"));
+        Assert.assertTrue(searchResults.contains("C4"));
+    }
+
+    @Test
+    public void testCNFNextIdFixCheck() throws Exception {
+
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("ACCOUNT", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("ACCOUNT"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c4 = CNFCriteria.builder()
+                .id("C4")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.mode")
+                                .values(Sets.newHashSet("PEER_TO_PEER"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.context.receiverContactType")
+                                .values(Sets.newHashSet("VPA", "PHONE"))
+                                .build())
+                        .build())
+                .build();
+
+        String str = "{\"userId\":\"U1606242357267228261941\",\"merchantId\":\"FXM\",\"totalTransactionAmount\":1000000,\"context\":{\"receiverContactType\":\"PHONE\",\"receiverContactId\":\"9990705923\",\"mode\":\"PEER_TO_PEER\"}}";
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(str))
+                        .build());
+        Assert.assertEquals(3, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+        Assert.assertFalse(searchResults.contains("C3"));
+        Assert.assertTrue(searchResults.contains("C4"));
+
+    }
+
 }
