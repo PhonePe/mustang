@@ -30,6 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.IndexingFacade;
+import com.phonepe.growth.mustang.ratify.RatificationResult;
+import com.phonepe.growth.mustang.ratify.Ratifier;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.QueryBuilder;
@@ -117,6 +119,15 @@ public class MustangEngine {
                     return Pair.of(criteria.getId(), -1.0); // negative score to indicate unmatched criteria.
                 })
                 .collect(Collectors.toList());
+    }
+
+    public RatificationResult ratify(final String indexName) {
+        return Ratifier.builder()
+                .mapper(mapper)
+                .indexingFacade(indexingFacde)
+                .indexName(indexName)
+                .build()
+                .ratify();
     }
 
 }
