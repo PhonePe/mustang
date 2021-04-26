@@ -24,7 +24,9 @@ public class RatificationResult {
                     combinations,
                     timeTaken);
         }
-        return String.format("** [[ Ratification identified below anamolies for index {%s} in %s ms ]] **\n%s",
+        return String.format("** [[ Ratification identified {%s/%s} anamolies for index {%s} in %s ms ]] **\n%s",
+                anamolyDetails.size(),
+                combinations,
                 indexName,
                 timeTaken,
                 anamolyDetails);
