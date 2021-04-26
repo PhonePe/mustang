@@ -3382,11 +3382,6 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults3.size());
         Assert.assertTrue(searchResults3.contains("C1"));
-
-        final RatificationResult ratificationResult = engine.ratify("test");
-        Assert.assertTrue(ratificationResult.isRatified());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
     }
 
     @Test
@@ -3613,10 +3608,6 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C5"));
         Assert.assertTrue(searchResults.contains("C6"));
 
-        final RatificationResult ratificationResult = engine.ratify("test");
-        Assert.assertTrue(ratificationResult.isRatified());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
     }
 
     @Test
