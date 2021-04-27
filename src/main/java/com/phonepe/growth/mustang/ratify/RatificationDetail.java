@@ -15,9 +15,4 @@ public class RatificationDetail {
     private RequestContext context;
     private Set<String> expected;
     private Set<String> actual;
-
-    @Override
-    public String toString() {
-        return String.format("Context - %s, Expected - %s, Actual - %s", context.getNode(), expected, actual);
-    }
 }
