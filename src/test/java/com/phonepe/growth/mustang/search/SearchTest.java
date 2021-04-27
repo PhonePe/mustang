@@ -115,6 +115,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -156,6 +161,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
 
     }
 
@@ -211,10 +221,7 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("n", 0.300000000003);
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
-                .build();
+
         engine.add("testsearch", c1);
         engine.add("testsearch", c2);
         engine.add("testsearch", c3);
@@ -226,6 +233,11 @@ public class SearchTest {
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
+
+        final RatificationResult ratificationResult = engine.ratify("testsearch");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -280,10 +292,7 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("n", 0.300000000003);
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
-                .build();
+
         engine.add("testsearch", c1);
         engine.add("testsearch", c2);
         engine.add("testsearch", c3);
@@ -295,6 +304,11 @@ public class SearchTest {
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
+
+        final RatificationResult ratificationResult = engine.ratify("testsearch");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -669,6 +683,11 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.isEmpty());
 
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
+
     }
 
     @Test
@@ -981,6 +1000,11 @@ public class SearchTest {
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C4"));
         Assert.assertTrue(searchResults.contains("C5"));
+
+        final RatificationResult ratificationResult = engine.ratify("testsearch");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1401,6 +1425,11 @@ public class SearchTest {
                         .build());
         // Assertion
         Assert.assertEquals(0, searchResults.size());
+
+        final RatificationResult ratificationResult = engine.ratify("testsearch");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1472,6 +1501,11 @@ public class SearchTest {
                         .build());
         // Assertion
         Assert.assertEquals(0, searchResults.size());
+
+        final RatificationResult ratificationResult = engine.ratify("testsearch");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1523,6 +1557,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1550,6 +1589,11 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1577,6 +1621,11 @@ public class SearchTest {
         // issue
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1682,6 +1731,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults2.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1718,6 +1772,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults2.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1843,6 +1902,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults2.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1884,6 +1948,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults2.isEmpty());
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -1945,6 +2014,11 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -2570,6 +2644,11 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -2593,6 +2672,11 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -2615,6 +2699,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.size() == 0);
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     // CNF & DNF caases
@@ -2922,6 +3011,11 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -3017,6 +3111,11 @@ public class SearchTest {
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
 
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
+
         try {
             searchResults = engine.search("test1",
                     RequestContext.builder()
@@ -3092,6 +3191,11 @@ public class SearchTest {
                         .node(mapper.readTree(str))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -3118,7 +3222,7 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false}]}]}",
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -3133,6 +3237,11 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -3159,7 +3268,7 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false}]}]}",
+                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":0,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
 
@@ -3194,6 +3303,11 @@ public class SearchTest {
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
+
+        final RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -3321,6 +3435,11 @@ public class SearchTest {
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
+        RatificationResult ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
+
         // Remove from index
         engine.delete("test", c1);
 
@@ -3338,6 +3457,11 @@ public class SearchTest {
                         .build());
         Assert.assertEquals(1, searchResults3.size());
         Assert.assertTrue(searchResults3.contains("C1"));
+
+        ratificationResult = engine.ratify("test");
+        Assert.assertTrue(ratificationResult.isRatified());
+        Assert.assertTrue(ratificationResult.getAnamolyDetails()
+                .isEmpty());
     }
 
     @Test
@@ -3607,7 +3731,6 @@ public class SearchTest {
         Assert.assertFalse(searchResults.contains("C4"));
         Assert.assertTrue(searchResults.contains("C5"));
         Assert.assertTrue(searchResults.contains("C6"));
-
     }
 
     @Test
