@@ -49,7 +49,8 @@ public class ExcludedPredicate extends Predicate {
             @JsonProperty("weight") long weight,
             @JsonProperty("defaultResult") Boolean defaultResult,
             @JsonProperty("values") Set<?> values) {
-        super(PredicateType.EXCLUDED, lhs, lhsNotAPath, weight, Objects.nonNull(defaultResult) ? defaultResult : true);
+        super(PredicateType.EXCLUDED, lhs, lhsNotAPath, weight,
+                Objects.nonNull(defaultResult) ? defaultResult : Boolean.TRUE);
         this.values = values;
     }
 

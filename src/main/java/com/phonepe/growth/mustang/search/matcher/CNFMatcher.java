@@ -325,7 +325,7 @@ public class CNFMatcher {
     private void skipTo(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
             final int nextID) {
-        IntStream.rangeClosed(0, k)
+        IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
                 .filter(l -> l < pLists.length)
                 .forEach(l -> pLists[l].getValue()

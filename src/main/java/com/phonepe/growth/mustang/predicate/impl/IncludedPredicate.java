@@ -50,7 +50,8 @@ public class IncludedPredicate extends Predicate {
             @JsonProperty("weight") long weight,
             @JsonProperty("defaultResult") Boolean defaultResult,
             @JsonProperty("values") Set<?> values) {
-        super(PredicateType.INCLUDED, lhs, lhsNotAPath, weight, Objects.nonNull(defaultResult) ? defaultResult : false);
+        super(PredicateType.INCLUDED, lhs, lhsNotAPath, weight,
+                Objects.nonNull(defaultResult) ? defaultResult : Boolean.FALSE);
         this.values = values;
     }
 
