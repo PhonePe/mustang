@@ -21,12 +21,13 @@ public class RatificationResult {
     @Override
     public String toString() {
         if (ratified) {
-            return String.format("***[[ Successfully ratified the index {%s} across %s combinations in %s ms]]***",
+            return String.format("===[[ Successfully ratified the index - %s across %s combinations in %s ms]]===",
                     indexName,
                     combinations,
                     timeTaken);
         }
-        return String.format("** [[ Ratification identified {%s/%s} anamolies for index {%s} in %s ms ]] **%n%s",
+        return String.format(
+                "===[[ Ratification identified - %s anamolies out of %s combinations for index - %s in %s ms ]]===%n%s",
                 anamolyDetails.size(),
                 combinations,
                 indexName,

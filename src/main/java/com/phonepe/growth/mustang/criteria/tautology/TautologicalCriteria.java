@@ -47,7 +47,6 @@ public final class TautologicalCriteria {
                                 .predicate(ExcludedPredicate.builder()
                                         .lhs(String.format(KEY_FORMAT, randomSalt))
                                         .values(Sets.newHashSet(randomSalt))
-                                        .defaultResult(true)
                                         .build())
                                 .build())
                         .build();
@@ -61,7 +60,6 @@ public final class TautologicalCriteria {
                                 .predicate(ExcludedPredicate.builder()
                                         .lhs(String.format(KEY_FORMAT, randomSalt))
                                         .values(Sets.newHashSet(randomSalt))
-                                        .defaultResult(true)
                                         .build())
                                 .build())
                         .build();

@@ -4061,6 +4061,8 @@ public class SearchTest {
         Assert.assertTrue(ratificationResult.isRatified());
         Assert.assertTrue(ratificationResult.getAnamolyDetails()
                 .isEmpty());
+        Assert.assertTrue(ratificationResult.toString()
+                .matches("===\\[\\[ Successfully ratified the index - test across 7 combinations in .* ms]]==="));
 
     }
 
