@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>1.0.14</version>
+  <version>1.0.16</version>
 </dependency>
 ```
 
@@ -210,13 +210,24 @@ A specific `Criteria` can also be evaluated against a given `context` to pull ou
 boolean result = evaluate(criteria, context);
 ```
 
-#### NOTES
+#### Index Replacement
 
-A repeat indexing of a `Criteria` (with updates) doesn't necessarily replace / re-index the older version of it in the same logical index. A suggested way is to go for the whole index replacement and NOT in parts. So, one can build up a temporary index and replace the updated index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
+At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
 
 ```java
 replace(oldIndex, newIndex);
 ```
 
-We plan to bring in support for index updates in future iterations.
+
+#### Index Ratification
+
+Ratification of an index is a predicatble way of identifying anomalies in search results wrt the given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are suspect.
+
+```java
+RatificationResult result = engine.ratify(indexName);
+```
+
+
+
+
 
