@@ -125,9 +125,11 @@ public class DNFIndexer {
                     }
                 });
 
-        // TODO handle cleanup
-        // final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
-        // .put(criteria.getId(), newIIds);
+        /*
+         * ---------------------------- TODO handle cleanup ---------------------------
+         * final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
+         * .put(criteria.getId(), newIIds);
+         */
         dnfInvertedIndex.getActiveIds()
                 .put(criteria.getId(), newIIds);
     }

@@ -244,7 +244,7 @@ public class DNFMatcher {
     private void conjunctionRejectionSkip(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
-        IntStream.rangeClosed(0, k)
+        IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
                 .filter(l -> l < pLists.length)
                 .filter(l -> pLists[l].getValue()
@@ -312,7 +312,7 @@ public class DNFMatcher {
     private void skipTo(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
             int nextID) {
-        IntStream.rangeClosed(0, k)
+        IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
                 .filter(l -> l < pLists.length)
                 .forEach(l -> pLists[l].getValue()

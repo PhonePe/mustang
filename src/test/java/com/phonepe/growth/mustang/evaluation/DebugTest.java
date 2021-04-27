@@ -77,7 +77,8 @@ public class DebugTest {
         Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
     }
 
     @Test
@@ -103,7 +104,8 @@ public class DebugTest {
         Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
 
     }
 
@@ -139,7 +141,8 @@ public class DebugTest {
         Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
     }
 
     @Test
@@ -165,19 +168,19 @@ public class DebugTest {
         Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
 
     }
 
     @Test
-    public void testPredicateWithDefaultValue() throws Exception {
+    public void testPredicateWithAbsentPath() throws Exception {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
                                 .values(Sets.newHashSet("A", "B"))
-                                .defaultResult(true) // responsible for making this predicate satisfy
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
@@ -186,12 +189,38 @@ public class DebugTest {
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
-        testQuery.put("n", "7");
+        testQuery.put("n", "7"); // path $.a is not being given explicitly
 
-        Assert.assertTrue(engine.debug(c1,
+        Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
+
+    }
+
+    @Test
+    public void testCriteriaHavingPredicateWithAbsentPath() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A", "B"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", "7"); // path $.a is not being given explicitly
+
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
 
     }
 
@@ -218,7 +247,8 @@ public class DebugTest {
         Assert.assertTrue(engine.debug(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
 
         Criteria c2 = CNFCriteria.builder()
                 .id("C1")
@@ -233,7 +263,8 @@ public class DebugTest {
         Assert.assertFalse(engine.debug(c2,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
-                        .build()).isResult());
+                        .build())
+                .isResult());
 
     }
 }
