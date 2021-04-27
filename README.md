@@ -212,7 +212,7 @@ boolean result = evaluate(criteria, context);
 
 #### Index Replacement
 
-At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace the updated index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
+At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
 
 ```java
 replace(oldIndex, newIndex);
