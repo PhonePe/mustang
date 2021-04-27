@@ -80,7 +80,7 @@ public class Ratifier {
                 .ratified(secondaryDetails.isEmpty() && primaryDetails.isEmpty())
                 .combinations(subSetCombinations.size() + cartesianProductCombinations.size())
                 .anamolyDetails(Sets.union(secondaryDetails, primaryDetails))
-                .timeTaken(System.currentTimeMillis() - startTime)
+                .timeTakenMs(System.currentTimeMillis() - startTime)
                 .indexName(indexName)
                 .build();
     }
