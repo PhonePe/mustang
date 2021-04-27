@@ -21,6 +21,8 @@ import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.IndexingFacade;
+import com.phonepe.growth.mustang.index.builder.CNFIndexer;
+import com.phonepe.growth.mustang.index.builder.DNFIndexer;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.scan.Scanner;
@@ -65,12 +67,12 @@ public class Ratifier {
                 .collect(Collectors.toSet());
 
         final Set<RatificationDetail> primaryDetails = cartesianProductCombinations.stream()
-                .map(combination -> validate(allCriterias, allKeys, keyIndex, combination))
+                .map(combination -> validate(allCriterias, keyIndex, combination))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         final Set<RatificationDetail> secondaryDetails = subSetCombinations.stream()
-                .map(combination -> validate(allCriterias, allKeys, keyIndex, combination))
+                .map(combination -> validate(allCriterias, keyIndex, combination))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
@@ -84,7 +86,6 @@ public class Ratifier {
     }
 
     private RatificationDetail validate(final Map<String, Criteria> allCriterias,
-            final Set<Key> allKeys,
             final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex,
             final Collection<Integer> combination) {
         final Map<String, Object> assigment = combination.stream()
@@ -117,15 +118,19 @@ public class Ratifier {
                 .getTable()
                 .values()
                 .stream()
-                .map(x -> x.keySet())
+                .map(Map::keySet)
                 .flatMap(Set::stream)
+                .filter(key -> !key.getName()
+                        .equals(DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEY))
                 .collect(Collectors.toSet());
         final Set<Key> cnfKeys = index.getCnfInvertedIndex()
                 .getTable()
                 .values()
                 .stream()
-                .map(x -> x.keySet())
+                .map(Map::keySet)
                 .flatMap(Set::stream)
+                .filter(key -> !key.getName()
+                        .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY))
                 .collect(Collectors.toSet());
         return Stream.concat(dnfKeys.stream(), cnfKeys.stream())
                 .distinct()
@@ -180,7 +185,7 @@ public class Ratifier {
         return Scanner.builder()
                 .criterias(allCriterias.entrySet()
                         .stream()
-                        .map(x -> x.getValue())
+                        .map(Map.Entry::getValue)
                         .collect(Collectors.toList()))
                 .context(query.getContext())
                 .build()

@@ -18,6 +18,6 @@ public class RatificationDetail {
 
     @Override
     public String toString() {
-        return String.format("Context - %s, Expected - %s, Actual - %s", context, expected, actual);
+        return String.format("Context - %s, Expected - %s, Actual - %s", context.getNode(), expected, actual);
     }
 }
