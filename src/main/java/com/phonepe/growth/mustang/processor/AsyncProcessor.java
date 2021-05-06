@@ -14,21 +14,26 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.ratify;
+package com.phonepe.growth.mustang.processor;
 
-import java.util.Set;
+import com.google.common.eventbus.EventBus;
+import com.phonepe.growth.mustang.handler.impl.RatificationRequestHandler;
 
-import com.phonepe.growth.mustang.common.RequestContext;
+public class AsyncProcessor {
+    private static final AsyncProcessor instance = new AsyncProcessor();
+    private final EventBus eventBus;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+    private AsyncProcessor() {
+        eventBus = new EventBus();
+        eventBus.register(new RatificationRequestHandler());
+    }
 
-@Data
-@Builder
-@AllArgsConstructor
-public class RatificationDetail {
-    private RequestContext context;
-    private Set<String> expected;
-    private Set<String> actual;
+    public static AsyncProcessor getInstance() {
+        return instance;
+    }
+
+    public <T> void process(final T message) {
+        eventBus.post(message);
+    }
+
 }

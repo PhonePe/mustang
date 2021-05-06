@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
 </dependency>
 ```
 
@@ -43,7 +43,7 @@ on the number of advertisements that can be shown on a given page and only the â
 
 Mustang allows indexing Boolean Expressions in high-dimensional multi-valued attribute space.
 
-`Criteria` represents the boolean expressions in one of the two normalized forms.
+	`Criteria` represents the boolean expressions in one of the two normalized forms.
 
 - DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
 
@@ -221,10 +221,11 @@ replace(oldIndex, newIndex);
 
 #### Index Ratification
 
-Ratification of an index is a predicatble way of identifying anomalies in search results wrt the given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are suspect.
+Ratification is a predicatble way of identifying anomalies in search results for a given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are SUSPECT.
 
 ```java
-RatificationResult result = engine.ratify(indexName);
+engine.ratify(indexName); // This triggers the ratification process in the background
+RatificationResult result = engine.getRatificationResult(indexName); // Check back the results after a while
 ```
 
 
