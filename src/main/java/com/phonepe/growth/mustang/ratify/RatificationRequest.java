@@ -14,10 +14,18 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.processor;
+package com.phonepe.growth.mustang.ratify;
 
-public interface IMessageHandler<T> {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phonepe.growth.mustang.index.group.IndexGroup;
 
-    public void handle(final T message);
+import lombok.Builder;
+import lombok.Data;
 
+@Data
+@Builder
+public class RatificationRequest {
+    private final ObjectMapper mapper;
+    private final IndexGroup indexGroup;
+    private final long requestedAt;
 }

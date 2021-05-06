@@ -31,7 +31,7 @@ import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.debug.DebugResult;
 import com.phonepe.growth.mustang.index.IndexingFacade;
 import com.phonepe.growth.mustang.processor.AsyncProcessor;
-import com.phonepe.growth.mustang.processor.impl.RatificationRequest;
+import com.phonepe.growth.mustang.ratify.RatificationRequest;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Query;

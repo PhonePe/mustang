@@ -14,14 +14,15 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.processor.impl;
+package com.phonepe.growth.mustang.handler.impl;
 
 import com.google.common.eventbus.Subscribe;
-import com.phonepe.growth.mustang.processor.IMessageHandler;
+import com.phonepe.growth.mustang.handler.ITaskHandler;
+import com.phonepe.growth.mustang.ratify.RatificationRequest;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 import com.phonepe.growth.mustang.ratify.Ratifier;
 
-public class RatificationRequestHandler implements IMessageHandler<RatificationRequest> {
+public class RatificationRequestHandler implements ITaskHandler<RatificationRequest> {
 
     @Override
     @Subscribe
