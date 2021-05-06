@@ -23,15 +23,16 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.phonepe.growth.mustang.debug.DebugResult;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.growth.mustang.debug.DebugResult;
 import com.phonepe.growth.mustang.index.IndexingFacade;
+import com.phonepe.growth.mustang.processor.AsyncProcessor;
+import com.phonepe.growth.mustang.processor.impl.RatificationRequest;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
-import com.phonepe.growth.mustang.ratify.Ratifier;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.QueryBuilder;
@@ -56,6 +57,7 @@ public class MustangEngine {
     private final SearchFacade searchFacade = SearchFacade.builder()
             .indexingFacade(indexingFacde)
             .build();
+    private final AsyncProcessor processor = AsyncProcessor.getInstance();
 
     public synchronized void add(final String indexName, final Criteria criteria) {
         indexingFacde.add(indexName, criteria);
@@ -121,13 +123,16 @@ public class MustangEngine {
                 .collect(Collectors.toList());
     }
 
-    public RatificationResult ratify(final String indexName) {
-        return Ratifier.builder()
+    public void ratify(final String indexName) {
+        processor.process(RatificationRequest.builder()
                 .mapper(mapper)
-                .indexingFacade(indexingFacde)
-                .indexName(indexName)
-                .build()
-                .ratify();
+                .indexGroup(indexingFacde.getIndexGroup(indexName))
+                .build());
+    }
+
+    public RatificationResult getRatificationResult(final String indexName) {
+        return indexingFacde.getIndexGroup(indexName)
+                .getRatificationResult();
     }
 
 }

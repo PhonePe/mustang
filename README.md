@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>1.0.16</version>
+  <version>1.0.17</version>
 </dependency>
 ```
 
@@ -43,7 +43,7 @@ on the number of advertisements that can be shown on a given page and only the â
 
 Mustang allows indexing Boolean Expressions in high-dimensional multi-valued attribute space.
 
-`Criteria` represents the boolean expressions in one of the two normalized forms.
+	`Criteria` represents the boolean expressions in one of the two normalized forms.
 
 - DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
 
@@ -125,7 +125,7 @@ engine.add("index_name", Arrays.asList(criteria1, criteria2, ...));
 
 #### Searching criteria(s) matching an assignment
 
-An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
+	An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
 
 Example : `JsonNode event = { "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
 
@@ -146,7 +146,7 @@ which returns a set of id(s) of all matching criteria(s).
 
 #### Searching TOP N criteria(s) matching an assignment
 
-We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
+	We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
 These are then leveraged to sort rank the top N criteria.
 
 Score of a criteria - `E` reflects its relevance wrt to an assignment - `S`.
@@ -168,7 +168,7 @@ Scores of different `Criteria` are defined as below :
 
 #### Updating an already indexed Criteria
 
-Update the already indexed criteria.
+	Update the already indexed criteria.
 
 ```java
 engine.update("index_name", criteria)
@@ -183,7 +183,7 @@ PS :
 
 #### Deleting an already indexed Criteria
 
-Delete an already indexed criteria.
+	Delete an already indexed criteria.
 
 ```java
 engine.delete("index_name", criteria)
@@ -196,7 +196,7 @@ PS :
 
 #### Support for scanning
 
-Mustang provides support for scanning a list of `Criteria` against a `context` and arriving at the satisfying ones.
+	Mustang provides support for scanning a list of `Criteria` against a `context` and arriving at the satisfying ones.
 
 ```java
 List<Criteria> matchingCriterias = engine.scan(criterias, context);
@@ -204,7 +204,7 @@ List<Criteria> matchingCriterias = engine.scan(criterias, context);
 
 #### Support for evaluating a specific criteria
 
-A specific `Criteria` can also be evaluated against a given `context` to pull out the result.
+	A specific `Criteria` can also be evaluated against a given `context` to pull out the result.
 
 ```java
 boolean result = evaluate(criteria, context);
@@ -212,7 +212,7 @@ boolean result = evaluate(criteria, context);
 
 #### Index Replacement
 
-At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
+	At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
 
 ```java
 replace(oldIndex, newIndex);
@@ -221,10 +221,11 @@ replace(oldIndex, newIndex);
 
 #### Index Ratification
 
-Ratification of an index is a predicatble way of identifying anomalies in search results wrt the given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are suspect.
+	Ratification is a predicatble way of identifying anomalies in search results for a given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are SUSPECT.
 
 ```java
-RatificationResult result = engine.ratify(indexName);
+engine.ratify(indexName); // This triggers the ratification process in the background
+RatificationResult result = engine.getRatificationResult(indexName); // Check back the results after a while
 ```
 
 

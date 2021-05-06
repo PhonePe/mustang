@@ -14,21 +14,10 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.ratify;
+package com.phonepe.growth.mustang.processor;
 
-import java.util.Set;
+public interface IMessageHandler<T> {
 
-import com.phonepe.growth.mustang.common.RequestContext;
+    public void handle(final T message);
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
-@Data
-@Builder
-@AllArgsConstructor
-public class RatificationDetail {
-    private RequestContext context;
-    private Set<String> expected;
-    private Set<String> actual;
 }
