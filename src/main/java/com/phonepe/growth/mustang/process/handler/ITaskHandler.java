@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.handler;
+package com.phonepe.growth.mustang.process.handler;
 
 public interface ITaskHandler<T> {
 

@@ -101,7 +101,7 @@ public class CNFIndexer {
                                     .value(0)
                                     .upperBoundScore(0)
                                     .build();
-                            final Map<Key, TreeSet<DisjunctionPostingEntry>> map = postingLists.stream()
+                            final Map<Key, TreeSet<DisjunctionPostingEntry>> zPostingLists = postingLists.stream()
                                     .flatMap(m -> m.entrySet()
                                             .stream())
                                     .map(Map.Entry::getValue)
@@ -118,7 +118,7 @@ public class CNFIndexer {
                                     .map(entry -> Pair.of(key, entry))
                                     .collect(Collectors.groupingBy(Pair::getKey,
                                             Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
-                            postingLists.add(map);
+                            postingLists.add(zPostingLists);
                         }
 
                         postingLists.add(indexTable.getOrDefault(kSize, Collections.emptyMap()));
