@@ -30,6 +30,7 @@ import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
+import com.phonepe.growth.mustang.ratify.RatificationResult;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,5 +56,5 @@ public class IndexGroup {
     private final ExecutorService processor = Executors.newCachedThreadPool();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> cnfKeyFrequency = Maps.newConcurrentMap();
-
+    private RatificationResult ratificationResult;
 }

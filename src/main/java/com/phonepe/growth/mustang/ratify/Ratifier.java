@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.phonepe.growth.mustang.ratify;
 
 import java.io.IOException;
@@ -20,7 +36,6 @@ import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.MustangException;
-import com.phonepe.growth.mustang.index.IndexingFacade;
 import com.phonepe.growth.mustang.index.builder.CNFIndexer;
 import com.phonepe.growth.mustang.index.builder.DNFIndexer;
 import com.phonepe.growth.mustang.index.core.Key;
@@ -37,18 +52,16 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Ratifier {
-    private ObjectMapper mapper;
-    private IndexingFacade indexingFacade;
-    private String indexName;
+    private final ObjectMapper mapper;
+    private final IndexGroup indexGroup;
+    private final long requestedAt;
 
     public RatificationResult ratify() {
         final long startTime = System.currentTimeMillis();
 
-        final IndexGroup index = indexingFacade.getIndexGroup(indexName);
+        final Map<String, Criteria> allCriterias = indexGroup.getAllCriterias();
 
-        final Map<String, Criteria> allCriterias = index.getAllCriterias();
-
-        final Set<Key> allKeys = getAllKeys(index);
+        final Set<Key> allKeys = getAllKeys(indexGroup);
         final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex = buildIndex(allKeys);
         final Map<String, Set<Integer>> keyGroups = groupKeys(allKeys, keyIndex);
 
@@ -77,11 +90,16 @@ public class Ratifier {
                 .collect(Collectors.toSet());
 
         return RatificationResult.builder()
-                .ratified(secondaryDetails.isEmpty() && primaryDetails.isEmpty())
-                .combinations(subSetCombinations.size() + cartesianProductCombinations.size())
-                .anamolyDetails(Sets.union(secondaryDetails, primaryDetails))
+                .status(secondaryDetails.isEmpty() && primaryDetails.isEmpty())
+                .combinations(RatificationResult.Combinations.builder()
+                        .totalCount(cartesianProductCombinations.size() + subSetCombinations.size())
+                        .cpCount(cartesianProductCombinations.size())
+                        .ssCount(subSetCombinations.size())
+                        .build())
+                .anamolyDetails(Sets.union(primaryDetails, secondaryDetails))
                 .timeTakenMs(System.currentTimeMillis() - startTime)
-                .indexName(indexName)
+                .requestedAt(requestedAt)
+                .ratifiedAt(System.currentTimeMillis())
                 .build();
     }
 
@@ -174,7 +192,7 @@ public class Ratifier {
 
     private Set<String> getSearchResults(final Query query) {
         return CriteriaSearchHandler.builder()
-                .indexGroup(indexingFacade.getIndexGroup(indexName))
+                .indexGroup(indexGroup)
                 .query(query)
                 .build()
                 .handle()

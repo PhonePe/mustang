@@ -16,19 +16,16 @@
  */
 package com.phonepe.growth.mustang.ratify;
 
-import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phonepe.growth.mustang.index.group.IndexGroup;
 
-import com.phonepe.growth.mustang.common.RequestContext;
-
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-@AllArgsConstructor
-public class RatificationDetail {
-    private RequestContext context;
-    private Set<String> expected;
-    private Set<String> actual;
+public class RatificationRequest {
+    private final ObjectMapper mapper;
+    private final IndexGroup indexGroup;
+    private final long requestedAt;
 }
