@@ -141,7 +141,13 @@ And search it in the required index -
 Set<String> searchResults = engine.search("index_name",context);
 ```
 
-which returns a set of id(s) of all matching criteria(s).
+which returns a set of id(s) of all matching criteria(s) in an ordered manner (More on this in the topN section).
+
+At times, an ordered list is not required, in which case, we can skip the scoring part as below.
+
+``` java
+Set<String> searchResults = engine.search("index_name",context, false);
+```
 
 
 #### Searching TOP N criteria(s) matching an assignment
