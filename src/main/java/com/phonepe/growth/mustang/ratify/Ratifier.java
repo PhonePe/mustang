@@ -194,6 +194,7 @@ public class Ratifier {
         return CriteriaSearchHandler.builder()
                 .indexGroup(indexGroup)
                 .query(query)
+                .score(false)
                 .build()
                 .handle()
                 .keySet();
