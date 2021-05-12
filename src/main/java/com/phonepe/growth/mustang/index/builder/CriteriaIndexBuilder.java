@@ -29,6 +29,8 @@ import javax.validation.constraints.NotNull;
 import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.tautology.CNFTautologicalCriteria;
+import com.phonepe.growth.mustang.criteria.tautology.DNFTautologicalCriteria;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 
@@ -46,23 +48,33 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(DNFCriteria dnf) {
-        final DNFIndexer dnfIndexer = DNFIndexer.builder()
-                .criteria(dnf)
-                .indexGroup(indexGroup)
-                .operation(operation)
-                .build();
-        dnfIndexer.index();
+        if (dnf instanceof DNFTautologicalCriteria) {
+            indexGroup.getTautologicalCriterias()
+                    .put(dnf.getId(), dnf);
+        } else {
+            final DNFIndexer dnfIndexer = DNFIndexer.builder()
+                    .criteria(dnf)
+                    .indexGroup(indexGroup)
+                    .operation(operation)
+                    .build();
+            dnfIndexer.index();
+        }
         return null;
     }
 
     @Override
     public Void visit(CNFCriteria cnf) {
-        final CNFIndexer cnfIndexer = CNFIndexer.builder()
-                .criteria(cnf)
-                .indexGroup(indexGroup)
-                .operation(operation)
-                .build();
-        cnfIndexer.index();
+        if (cnf instanceof CNFTautologicalCriteria) {
+            indexGroup.getTautologicalCriterias()
+                    .put(cnf.getId(), cnf);
+        } else {
+            final CNFIndexer cnfIndexer = CNFIndexer.builder()
+                    .criteria(cnf)
+                    .indexGroup(indexGroup)
+                    .operation(operation)
+                    .build();
+            cnfIndexer.index();
+        }
         return null;
     }
 

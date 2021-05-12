@@ -46,39 +46,45 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     private final boolean score;
 
     public Map<String, Double> handle() {
-        return Stream.of(CriteriaForm.values())
+        final Map<String, Double> searchResults = Stream.of(CriteriaForm.values())
                 .map(cForm -> cForm.accept(this))
-                .map(matches -> SearchDataExtractor.extract(matches.getProbables()))
+                .map(Matches::getProbables)
                 .flatMap(map -> map.entrySet()
                         .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
+        final Map<String, Double> tautologicalResults = indexGroup.getTautologicalCriterias()
+                .keySet()
+                .stream()
+                .collect(Collectors.toMap(x -> x, x -> 0.0));
+        return Stream.of(searchResults, tautologicalResults)
+                .flatMap(map -> map.entrySet()
+                        .stream())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> o));
     }
 
     @Override
     public Matches visitDNF() {
         return Matches.builder()
-                .probables(indexGroup.getProcessor()
-                        .submit(() -> DNFMatcher.builder()
-                                .invertedIndex(indexGroup.getDnfInvertedIndex())
-                                .query(query)
-                                .allCriterias(indexGroup.getAllCriterias())
-                                .score(score)
-                                .build()
-                                .getMatches()))
+                .probables(DNFMatcher.builder()
+                        .invertedIndex(indexGroup.getDnfInvertedIndex())
+                        .query(query)
+                        .allCriterias(indexGroup.getAllCriterias())
+                        .score(score)
+                        .build()
+                        .getMatches())
                 .build();
     }
 
     @Override
     public Matches visitCNF() {
         return Matches.builder()
-                .probables(indexGroup.getProcessor()
-                        .submit(() -> CNFMatcher.builder()
-                                .invertedIndex(indexGroup.getCnfInvertedIndex())
-                                .query(query)
-                                .allCriterias(indexGroup.getAllCriterias())
-                                .score(score)
-                                .build()
-                                .getMatches()))
+                .probables(CNFMatcher.builder()
+                        .invertedIndex(indexGroup.getCnfInvertedIndex())
+                        .query(query)
+                        .allCriterias(indexGroup.getAllCriterias())
+                        .score(score)
+                        .build()
+                        .getMatches())
                 .build();
     }
 

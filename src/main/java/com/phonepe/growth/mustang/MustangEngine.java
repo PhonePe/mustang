@@ -93,12 +93,18 @@ public class MustangEngine {
         return searchFacade.search(indexName, query, -1, score);
     }
 
-    public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
+    public Set<String> scan(final String indexName, final RequestContext context) {
         return Scanner.builder()
-                .criterias(criterias)
+                .indexGroup(indexingFacde.getIndexGroup(indexName))
                 .context(context)
                 .build()
                 .scan();
+    }
+
+    public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
+        return criterias.stream()
+                .filter(criteria -> criteria.evaluate(context))
+                .collect(Collectors.toList());
     }
 
     public boolean evaluate(final Criteria criteria, final RequestContext context) {

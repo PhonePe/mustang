@@ -118,7 +118,7 @@ public class Ratifier {
                 .context(context)
                 .build();
         final Set<String> searchResults = getSearchResults(query);
-        final Set<String> scanResults = getScanResults(allCriterias, query);
+        final Set<String> scanResults = getScanResults(query);
         final boolean result = Sets.symmetricDifference(searchResults, scanResults)
                 .isEmpty();
         if (!result) {
@@ -200,18 +200,12 @@ public class Ratifier {
                 .keySet();
     }
 
-    private Set<String> getScanResults(final Map<String, Criteria> allCriterias, final Query query) {
+    private Set<String> getScanResults(final Query query) {
         return Scanner.builder()
-                .criterias(allCriterias.entrySet()
-                        .stream()
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toList()))
+                .indexGroup(indexGroup)
                 .context(query.getContext())
                 .build()
-                .scan()
-                .stream()
-                .map(Criteria::getId)
-                .collect(Collectors.toSet());
+                .scan();
     }
 
 }

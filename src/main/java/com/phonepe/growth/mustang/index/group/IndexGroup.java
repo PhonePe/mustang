@@ -17,8 +17,6 @@
 package com.phonepe.growth.mustang.index.group;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -53,7 +51,7 @@ public class IndexGroup {
             .<DisjunctionPostingEntry>builder()
             .build();
     private final Map<String, Criteria> allCriterias = Maps.newConcurrentMap();
-    private final ExecutorService processor = Executors.newCachedThreadPool();
+    private final Map<String, Criteria> tautologicalCriterias = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> cnfKeyFrequency = Maps.newConcurrentMap();
     private RatificationResult ratificationResult;

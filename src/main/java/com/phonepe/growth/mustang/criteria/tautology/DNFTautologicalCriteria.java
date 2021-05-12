@@ -14,25 +14,22 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.search.handler;
+package com.phonepe.growth.mustang.criteria.tautology;
 
-import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.Collections;
 
-import com.phonepe.growth.mustang.exception.MustangException;
+import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SearchDataExtractor {
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class DNFTautologicalCriteria extends DNFCriteria {
 
-    public static Map<String, Double> extract(final Future<Map<String, Double>> future) {
-        try {
-            return future.get();
-        } catch (Exception e) {
-            throw MustangException.propagate(e);
-        }
+    public DNFTautologicalCriteria(final String id) {
+        super(id, Collections.emptyList());
     }
-
 }
