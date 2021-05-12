@@ -58,6 +58,7 @@ public class CNFMatcher {
     private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
+    private final boolean score;
 
     public Map<String, Double> getMatches() {
         final Map<String, Double> result = Maps.newHashMap();
@@ -273,8 +274,11 @@ public class CNFMatcher {
     }
 
     private double computeScore(final String cId) {
-        return allCriterias.get(cId)
-                .getScore(query.getContext());
+        if (score) {
+            return allCriterias.get(cId)
+                    .getScore(query.getContext());
+        }
+        return 0;
     }
 
     private void preEmptiveSortCheck(

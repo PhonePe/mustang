@@ -3844,7 +3844,8 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(str))
-                        .build());
+                        .build(),
+                false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -3960,7 +3961,8 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(str))
-                        .build());
+                        .build(),
+                false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4042,7 +4044,8 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(str))
-                        .build());
+                        .build(),
+                false);
         Assert.assertEquals(3, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4119,7 +4122,8 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(str))
-                        .build());
+                        .build(),
+                false);
         Assert.assertEquals(3, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));

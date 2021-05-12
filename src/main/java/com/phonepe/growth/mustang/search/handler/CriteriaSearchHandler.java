@@ -43,6 +43,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @Valid
     @NotNull
     private final Query query;
+    private final boolean score;
 
     public Map<String, Double> handle() {
         return Stream.of(CriteriaForm.values())
@@ -61,6 +62,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                                 .invertedIndex(indexGroup.getDnfInvertedIndex())
                                 .query(query)
                                 .allCriterias(indexGroup.getAllCriterias())
+                                .score(score)
                                 .build()
                                 .getMatches()))
                 .build();
@@ -74,6 +76,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                                 .invertedIndex(indexGroup.getCnfInvertedIndex())
                                 .query(query)
                                 .allCriterias(indexGroup.getAllCriterias())
+                                .score(score)
                                 .build()
                                 .getMatches()))
                 .build();
