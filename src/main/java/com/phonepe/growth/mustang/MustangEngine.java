@@ -127,6 +127,7 @@ public class MustangEngine {
         processor.process(RatificationRequest.builder()
                 .mapper(mapper)
                 .indexGroup(indexingFacde.getIndexGroup(indexName))
+                .requestedAt(System.currentTimeMillis())
                 .build());
     }
 
