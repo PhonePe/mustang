@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.scan;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +51,7 @@ public class Scanner {
         return Stream.of(scanResults,
                 indexGroup.getTautologicalCriterias()
                         .values())
-                .flatMap(x -> x.stream())
+                .flatMap(Collection::stream)
                 .map(Criteria::getId)
                 .collect(Collectors.toSet());
     }
