@@ -17,6 +17,8 @@
 package com.phonepe.growth.mustang.index.builder;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +29,7 @@ import java.util.stream.IntStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
@@ -48,6 +51,18 @@ import lombok.Data;
 public class DNFIndexer {
     public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
+    private static final Comparator<TreeSet<ConjunctionPostingEntry>> ID_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.first()
+                    .getIId(),
+                    e2.first()
+                            .getIId(),
+                    true));
+    private static final Comparator<TreeSet<ConjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.first()
+                    .getType(),
+                    e2.first()
+                            .getType(),
+                    true));
     @NotNull
     private final DNFCriteria criteria;
     @Valid
@@ -132,6 +147,23 @@ public class DNFIndexer {
          */
         dnfInvertedIndex.getActiveIds()
                 .put(criteria.getId(), newIIds);
+
+        // Keep the index sorted.
+        indexTable.entrySet()
+                .forEach(x -> {
+                    sortPostingLists(x.getValue());
+                });
+    }
+
+    private void sortPostingLists(Map<Key, TreeSet<ConjunctionPostingEntry>> map) {
+        map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)))
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new));
+
     }
 
     private static class IndexOperationMetaExtractor implements IndexOperation.Visitor<Pair<Boolean, Integer>> {

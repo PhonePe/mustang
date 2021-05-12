@@ -17,6 +17,8 @@
 package com.phonepe.growth.mustang.index.builder;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -26,6 +28,7 @@ import java.util.stream.IntStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
@@ -46,6 +49,18 @@ import lombok.Data;
 @Builder
 public class CNFIndexer {
     public static final String ZERO_SIZE_DISJUNCTION_ENTRY_KEY = "ZZZ";
+    private static final Comparator<TreeSet<DisjunctionPostingEntry>> ID_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.first()
+                    .getIId(),
+                    e2.first()
+                            .getIId(),
+                    true));
+    private static final Comparator<TreeSet<DisjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.first()
+                    .getType(),
+                    e2.first()
+                            .getType(),
+                    true));
     @NotNull
     private final CNFCriteria criteria;
     @Valid
@@ -62,11 +77,11 @@ public class CNFIndexer {
         final Pair<Boolean, Integer> operationMeta = operation
                 .accept(new IndexOperationMetaExtractor(cnfInvertedIndex, criteria.getId()));
         final Integer internalId = operationMeta.getRight();
+        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
 
         if (Boolean.TRUE.equals(operationMeta.getLeft())) {
             final Integer[] disjunctionCounter = disjunctionCounters.computeIfAbsent(internalId,
                     x -> new Integer[disjunctionSize]);
-            final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> indexTable = cnfInvertedIndex.getTable();
             final int kSize = criteria.getDisjunctions()
                     .stream()
                     .filter(disjunction -> !isDisjunctionWithExcludedPredicate(disjunction))
@@ -128,6 +143,22 @@ public class CNFIndexer {
         }
 
         // TODO handle cleanup
+
+        // Keep the index sorted.
+        indexTable.entrySet()
+                .forEach(x -> {
+                    sortPostingLists(x.getValue());
+                });
+    }
+
+    private void sortPostingLists(Map<Key, TreeSet<DisjunctionPostingEntry>> map) {
+        map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)))
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (oldValue, newValue) -> oldValue,
+                        LinkedHashMap::new));
     }
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {

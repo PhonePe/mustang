@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.index.entry.extractor;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -111,6 +112,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                 })
                 .map(key -> Pair.of(key, postingEntry))
                 .collect(Collectors.groupingBy(Pair::getKey,
+                        LinkedHashMap::new,
                         Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }
 }
