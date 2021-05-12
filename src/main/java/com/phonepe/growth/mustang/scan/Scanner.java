@@ -16,16 +16,19 @@
  */
 package com.phonepe.growth.mustang.scan;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.growth.mustang.index.group.IndexGroup;
 
 import lombok.Builder;
 import lombok.Data;
@@ -33,16 +36,24 @@ import lombok.Data;
 @Data
 @Builder
 public class Scanner {
-    @NotEmpty
-    private List<Criteria> criterias;
+    private IndexGroup indexGroup;
     @Valid
     @NotNull
     private RequestContext context;
 
-    public List<Criteria> scan() {
-        return criterias.stream()
+    public Set<String> scan() {
+        final List<Criteria> scanResults = indexGroup.getAllCriterias()
+                .entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
                 .filter(criteria -> criteria.evaluate(context))
                 .collect(Collectors.toList());
+        return Stream.of(scanResults,
+                indexGroup.getTautologicalCriterias()
+                        .values())
+                .flatMap(Collection::stream)
+                .map(Criteria::getId)
+                .collect(Collectors.toSet());
     }
 
 }

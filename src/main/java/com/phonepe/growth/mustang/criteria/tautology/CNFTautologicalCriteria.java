@@ -14,18 +14,23 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.search.matcher;
+package com.phonepe.growth.mustang.criteria.tautology;
 
-import java.util.Map;
+import java.util.Collections;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-@Builder
-@AllArgsConstructor
-public class Matches {
-    private final Map<String, Double> probables;
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class CNFTautologicalCriteria extends CNFCriteria {
+
+    public CNFTautologicalCriteria(final String id) {
+        super(id, Collections.emptyList());
+    }
 
 }

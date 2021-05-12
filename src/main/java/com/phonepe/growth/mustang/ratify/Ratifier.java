@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.json.unflattener.JsonUnflattener;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CNFIndexer;
 import com.phonepe.growth.mustang.index.builder.DNFIndexer;
@@ -59,8 +58,6 @@ public class Ratifier {
     public RatificationResult ratify() {
         final long startTime = System.currentTimeMillis();
 
-        final Map<String, Criteria> allCriterias = indexGroup.getAllCriterias();
-
         final Set<Key> allKeys = getAllKeys(indexGroup);
         final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex = buildIndex(allKeys);
         final Map<String, Set<Integer>> keyGroups = groupKeys(allKeys, keyIndex);
@@ -80,12 +77,12 @@ public class Ratifier {
                 .collect(Collectors.toSet());
 
         final Set<RatificationDetail> primaryDetails = cartesianProductCombinations.stream()
-                .map(combination -> validate(allCriterias, keyIndex, combination))
+                .map(combination -> validate(keyIndex, combination))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
         final Set<RatificationDetail> secondaryDetails = subSetCombinations.stream()
-                .map(combination -> validate(allCriterias, keyIndex, combination))
+                .map(combination -> validate(keyIndex, combination))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
@@ -103,8 +100,7 @@ public class Ratifier {
                 .build();
     }
 
-    private RatificationDetail validate(final Map<String, Criteria> allCriterias,
-            final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex,
+    private RatificationDetail validate(final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex,
             final Collection<Integer> combination) {
         final Map<String, Object> assigment = combination.stream()
                 .map(i -> keyIndex.getLeft()
@@ -118,7 +114,7 @@ public class Ratifier {
                 .context(context)
                 .build();
         final Set<String> searchResults = getSearchResults(query);
-        final Set<String> scanResults = getScanResults(allCriterias, query);
+        final Set<String> scanResults = getScanResults(query);
         final boolean result = Sets.symmetricDifference(searchResults, scanResults)
                 .isEmpty();
         if (!result) {
@@ -200,18 +196,12 @@ public class Ratifier {
                 .keySet();
     }
 
-    private Set<String> getScanResults(final Map<String, Criteria> allCriterias, final Query query) {
+    private Set<String> getScanResults(final Query query) {
         return Scanner.builder()
-                .criterias(allCriterias.entrySet()
-                        .stream()
-                        .map(Map.Entry::getValue)
-                        .collect(Collectors.toList()))
+                .indexGroup(indexGroup)
                 .context(query.getContext())
                 .build()
-                .scan()
-                .stream()
-                .map(Criteria::getId)
-                .collect(Collectors.toSet());
+                .scan();
     }
 
 }
