@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.index.builder;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -70,6 +71,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
                 .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream()
                 .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        LinkedHashMap::new,
                         Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeSet<>(), (s1, s2) -> {
                             final TreeSet<S> combined = new TreeSet<>(s1);
                             combined.addAll(s2);

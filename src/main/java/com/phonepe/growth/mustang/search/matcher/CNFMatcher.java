@@ -49,6 +49,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFMatcher {
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> ID_COMPARATOR = (
+            e1,
+            e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> TYPE_COMPARATOR = (
+            e1,
+            e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
     private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
@@ -123,6 +129,34 @@ public class CNFMatcher {
 
     }
 
+    private static Integer getIdSafely(final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
+        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getIId() : null;
+    }
+
+    private static PredicateType getTypeSafely(
+            final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
+        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getType() : null;
+    }
+
+    private static Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(final Set<DisjunctionPostingEntry> set,
+            final Integer iId) {
+        return set.stream()
+                .filter(x -> x.getIId()
+                        .equals(iId))
+                .findFirst();
+
+    }
+
     @SuppressWarnings("unchecked")
     private Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] getPostingListsCNF(
             final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table,
@@ -169,41 +203,9 @@ public class CNFMatcher {
                         .getKey()).isPresent();
     }
 
-    private Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(final Set<DisjunctionPostingEntry> set,
-            final Integer iId) {
-        return set.stream()
-                .filter(x -> x.getIId()
-                        .equals(iId))
-                .findFirst();
-
-    }
-
     private void sortByCurrentEntriesCNF(
             final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
-        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> idComparator = (e1,
-                e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
-        final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> typeComparator = (e1,
-                e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
-        Arrays.sort(pLists, idComparator.thenComparing(typeComparator));
-    }
-
-    private Integer getIdSafely(final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
-        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
-                .getValue(),
-                entry.getValue()
-                        .getKey());
-        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
-                .getIId() : null;
-    }
-
-    private PredicateType getTypeSafely(
-            final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
-        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
-                .getValue(),
-                entry.getValue()
-                        .getKey());
-        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
-                .getType() : null;
+        Arrays.sort(pLists, ID_COMPARATOR.thenComparing(TYPE_COMPARATOR));
     }
 
     private boolean sameConjunctionCheck(

@@ -17,7 +17,7 @@
 package com.phonepe.growth.mustang.processor;
 
 import com.google.common.eventbus.EventBus;
-import com.phonepe.growth.mustang.handler.impl.RatificationRequestHandler;
+import com.phonepe.growth.mustang.process.handler.impl.RatificationRequestHandler;
 
 public class AsyncProcessor {
     private static final AsyncProcessor instance = new AsyncProcessor();

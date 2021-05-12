@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.index.entry.extractor;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -74,6 +75,7 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                                 .score(0)
                                 .build()))
                 .collect(Collectors.groupingBy(Pair::getKey,
+                        LinkedHashMap::new,
                         Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
     }
 }
