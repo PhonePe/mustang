@@ -38,12 +38,16 @@ public class SearchFacade {
     @NotNull
     private final IndexingFacade indexingFacade;
 
-    public Set<String> search(final String indexName, final Query query, final int topN) {
+    public Set<String> search(final String indexName, final Query query, final int topN, final boolean score) {
         final Map<String, Double> result = CriteriaSearchHandler.builder()
                 .indexGroup(indexingFacade.getIndexGroup(indexName))
                 .query(query)
+                .score(score)
                 .build()
                 .handle();
+        if (!score) {
+            return result.keySet();
+        }
 
         return result.entrySet()
                 .stream()
