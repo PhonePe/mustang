@@ -33,10 +33,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TautologicalCriteria {
     private static final String KEY_FORMAT = "$.%s";
+    private final static String RANDOM_SALT = UUID.randomUUID()
+            .toString();
 
     public static final Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
-        final String randomSalt = UUID.randomUUID()
-                .toString();
         return criteriaForm.accept(new CriteriaForm.Visitor<Criteria>() {
 
             @Override
@@ -45,8 +45,8 @@ public final class TautologicalCriteria {
                         .id(criteriaId)
                         .conjunction(Conjunction.builder()
                                 .predicate(ExcludedPredicate.builder()
-                                        .lhs(String.format(KEY_FORMAT, randomSalt))
-                                        .values(Sets.newHashSet(randomSalt))
+                                        .lhs(String.format(KEY_FORMAT, RANDOM_SALT))
+                                        .values(Sets.newHashSet(RANDOM_SALT))
                                         .build())
                                 .build())
                         .build();
@@ -58,8 +58,8 @@ public final class TautologicalCriteria {
                         .id(criteriaId)
                         .disjunction(Disjunction.builder()
                                 .predicate(ExcludedPredicate.builder()
-                                        .lhs(String.format(KEY_FORMAT, randomSalt))
-                                        .values(Sets.newHashSet(randomSalt))
+                                        .lhs(String.format(KEY_FORMAT, RANDOM_SALT))
+                                        .values(Sets.newHashSet(RANDOM_SALT))
                                         .build())
                                 .build())
                         .build();
