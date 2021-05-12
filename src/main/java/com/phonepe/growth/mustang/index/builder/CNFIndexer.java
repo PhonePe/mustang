@@ -146,9 +146,7 @@ public class CNFIndexer {
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> {
-                    sortPostingLists(x.getValue());
-                });
+                .forEach(x -> sortPostingLists(x.getValue()));
     }
 
     private void sortPostingLists(Map<Key, TreeSet<DisjunctionPostingEntry>> map) {

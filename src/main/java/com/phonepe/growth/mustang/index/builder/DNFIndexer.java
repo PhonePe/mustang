@@ -150,9 +150,7 @@ public class DNFIndexer {
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> {
-                    sortPostingLists(x.getValue());
-                });
+                .forEach(x -> sortPostingLists(x.getValue()));
     }
 
     private void sortPostingLists(Map<Key, TreeSet<ConjunctionPostingEntry>> map) {
