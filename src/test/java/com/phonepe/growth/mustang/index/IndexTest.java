@@ -241,7 +241,8 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .get(key)
-                .first()
+                .firstEntry()
+                .getValue()
                 .getEId()
                 .equals("C1"));
 
@@ -584,7 +585,8 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .get(key)
-                .first()
+                .firstEntry()
+                .getValue()
                 .getEId()
                 .equals("C2"));
 

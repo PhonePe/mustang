@@ -19,7 +19,7 @@ package com.phonepe.growth.mustang.index.entry.extractor;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -39,22 +39,22 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeSet<ConjunctionPostingEntry>>> {
+public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> {
     private final Integer iId;
     private final String eId;
     private final Map<Key, AtomicInteger> dnfKeyFrequency;
 
     @Override
-    public Map<Key, TreeSet<ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
+    public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
         return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
     }
 
     @Override
-    public Map<Key, TreeSet<ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
+    public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
         return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
     }
 
-    private Map<Key, TreeSet<ConjunctionPostingEntry>> extractPostingLists(PredicateType pType,
+    private Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> extractPostingLists(PredicateType pType,
             String lhs,
             Set<?> values) {
         return values.stream()
@@ -76,6 +76,7 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeS
                                 .build()))
                 .collect(Collectors.groupingBy(Pair::getKey,
                         LinkedHashMap::new,
-                        Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+                        Collectors.mapping(Pair::getValue,
+                                Collectors.toMap(x -> x.getIId(), x -> x, (x1, x2) -> x2, TreeMap::new))));
     }
 }

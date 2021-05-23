@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.Optional;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,12 +49,15 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFMatcher {
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> ID_COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> ID_COMPARATOR = (
             e1,
             e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>> TYPE_COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> TYPE_COMPARATOR = (
             e1,
             e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> ORDER_COMPARATOR = (
+            e1,
+            e2) -> (ObjectUtils.compare(getOrderSafely(e1), getOrderSafely(e2), true));
     private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
@@ -62,7 +65,7 @@ public class CNFMatcher {
 
     public Map<String, Double> getMatches() {
         final Map<String, Double> result = Maps.newHashMap();
-        final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table = invertedIndex.getTable();
+        final Map<Integer, Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> table = invertedIndex.getTable();
         final Map<Integer, Integer[]> disjunctionCounters = invertedIndex.getDisjunctionCounters();
         final int start = 0;
         final int end = table.keySet()
@@ -76,7 +79,7 @@ public class CNFMatcher {
                 .forEach(k -> {
                     final TreeSet<Integer> links = invertedIndex.getLinkages()
                             .get(k);
-                    final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists = getPostingListsCNF(
+                    final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists = getPostingListsCNF(
                             table,
                             k);
                     initializeCurrentEntriesCNF(pLists);
@@ -130,7 +133,8 @@ public class CNFMatcher {
 
     }
 
-    private static Integer getIdSafely(final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
+    private static Integer getIdSafely(
+            final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
         final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
@@ -140,7 +144,7 @@ public class CNFMatcher {
     }
 
     private static PredicateType getTypeSafely(
-            final Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>> entry) {
+            final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
         final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
@@ -149,20 +153,27 @@ public class CNFMatcher {
                 .getType() : null;
     }
 
-    private static Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(final Set<DisjunctionPostingEntry> set,
-            final Integer iId) {
-        return set.stream()
-                .filter(x -> x.getIId()
-                        .equals(iId))
-                .findFirst();
+    private static Integer getOrderSafely(
+            Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
+        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getOrder() : Integer.MAX_VALUE;
+    }
 
+    private static Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(
+            final TreeMap<Integer, DisjunctionPostingEntry> map,
+            final Integer iId) {
+        return Optional.ofNullable(map.get(iId));
     }
 
     @SuppressWarnings("unchecked")
-    private Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] getPostingListsCNF(
-            final Map<Integer, Map<Key, TreeSet<DisjunctionPostingEntry>>> table,
+    private Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] getPostingListsCNF(
+            final Map<Integer, Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> table,
             final int k) {
-        final Map<Key, TreeSet<DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+        final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
         return map.entrySet()
                 .stream()
                 .map(entry -> getMatchingKey(k, entry))
@@ -174,7 +185,8 @@ public class CNFMatcher {
                 .toArray(Map.Entry[]::new);
     }
 
-    private Optional<Key> getMatchingKey(final int k, final Entry<Key, TreeSet<DisjunctionPostingEntry>> entry) {
+    private Optional<Key> getMatchingKey(final int k,
+            final Entry<Key, TreeMap<Integer, DisjunctionPostingEntry>> entry) {
         final Key key = entry.getKey();
         if (key.getValue()
                 .equals(query.getAssigment()
@@ -187,16 +199,18 @@ public class CNFMatcher {
     }
 
     private void initializeCurrentEntriesCNF(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists) {
         Arrays.stream(pLists)
                 .forEach(pList -> pList.getValue()
                         .setLeft(pList.getValue()
                                 .getRight()
-                                .first()
+                                .firstEntry()
+                                .getValue()
                                 .getIId()));
     }
 
-    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+    private boolean canContinue(
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final int k) {
         return getDisjunctionPostingEntry(pLists[k - 1].getValue()
                 .getValue(),
@@ -205,12 +219,14 @@ public class CNFMatcher {
     }
 
     private void sortByCurrentEntriesCNF(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists) {
-        Arrays.sort(pLists, ID_COMPARATOR.thenComparing(TYPE_COMPARATOR));
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists) {
+        Arrays.sort(pLists,
+                ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)
+                        .thenComparing(ORDER_COMPARATOR));
     }
 
     private boolean sameConjunctionCheck(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final Integer k) {
         if (getDisjunctionPostingEntry(pLists[0].getValue()
                 .getValue(),
@@ -229,7 +245,7 @@ public class CNFMatcher {
     }
 
     private void disjunctionEvaluationCheck(final Map<String, Double> result,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final Integer k,
             final Integer[] counters) {
         for (int l = 0; ((l < pLists.length) && sameConjunctionCheck(pLists, l)); l++) {
@@ -282,7 +298,7 @@ public class CNFMatcher {
     }
 
     private void preEmptiveSortCheck(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final Integer k) {
         // preemptive sort if possible to continue
         if (!canContinue(pLists, k)) {
@@ -291,7 +307,7 @@ public class CNFMatcher {
     }
 
     private int getNextHigherId(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final TreeSet<Integer> links,
             final Integer iId) {
         final NavigableSet<Integer> nextIds = links.tailSet(iId, false);
@@ -312,7 +328,7 @@ public class CNFMatcher {
     }
 
     private int getNextId(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final TreeSet<Integer> links,
             final Integer internalId,
             final int nextId) {
@@ -329,7 +345,7 @@ public class CNFMatcher {
     }
 
     private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<DisjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final int nextID) {
         IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()

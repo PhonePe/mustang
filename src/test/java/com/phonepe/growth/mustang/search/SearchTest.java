@@ -18,6 +18,8 @@ package com.phonepe.growth.mustang.search;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -110,12 +112,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -156,14 +159,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -227,15 +228,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         /* Assertions for multiple matches */
-        Assert.assertEquals(2, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1","C2"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -299,15 +298,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         /* Assertions for multiple matches */
-        Assert.assertEquals(2, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1","C2"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -358,14 +355,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -415,15 +411,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 2);
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1","C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -465,14 +459,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -533,14 +525,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -607,16 +598,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         /* Assertions for multiple matches */
-        Assert.assertEquals(3, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
-        Assert.assertTrue(searchResults.contains("C3"));
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, containsInAnyOrder("C1","C2","C3"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -667,15 +655,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 2);
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1","C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -716,14 +702,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -827,15 +811,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 2);
-        Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(searchResults.contains("C2"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1","C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -896,14 +878,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -942,14 +922,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1051,15 +1030,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(2, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C4"));
-        Assert.assertTrue(searchResults.contains("C5"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C4","C5"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1218,16 +1195,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(3, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C3"));
-        Assert.assertTrue(searchResults.contains("C4"));
-        Assert.assertTrue(searchResults.contains("C5"));
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, contains("C3","C4","C5"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1298,13 +1272,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(3, searchResults.size());
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, containsInAnyOrder("C1","C2","C3"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1399,13 +1373,13 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(3, searchResults.size());
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, containsInAnyOrder("C1","C2","C3"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1427,7 +1401,7 @@ public class SearchTest {
                     e.getErrorCode()
                             .toString());
         }
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
     }
 
     // DNF cases
@@ -1497,13 +1471,12 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(0, searchResults.size());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1574,13 +1547,12 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        Assert.assertEquals(0, searchResults.size());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1631,13 +1603,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1663,14 +1634,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1695,15 +1665,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        // issue
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1729,14 +1697,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         /* Updated Criteria -set value as FALSE */
         c1 = DNFCriteria.builder()
@@ -1780,8 +1747,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         /* Updated Criteria -set value as FALSE */
         c1 = DNFCriteria.builder()
@@ -1814,13 +1781,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults2.isEmpty());
+        assertThat(searchResults2, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1846,8 +1812,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         // Delete from the index
         engine.delete("test", c1);
@@ -1860,9 +1826,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -1893,14 +1858,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         /* Updated Criteria Builder -set value as FALSE */
         c1 = DNFCriteria.builder()
@@ -1953,8 +1917,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
         c1 = DNFCriteria.builder()
@@ -1982,8 +1946,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults1.size());
-        Assert.assertTrue(searchResults1.contains("C1"));
+        assertThat(searchResults1, hasSize(1));
+        assertThat(searchResults1, contains("C1"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", true);
@@ -1993,13 +1957,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults2.isEmpty());
+        assertThat(searchResults2, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2030,8 +1993,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         // Remove from index
         engine.delete("test", c1);
@@ -2040,13 +2003,12 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults2.isEmpty());
+        assertThat(searchResults2, is(empty()));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2072,8 +2034,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
         Criteria c2 = DNFCriteria.builder()
@@ -2096,8 +2058,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults1.size());
-        Assert.assertTrue(searchResults1.contains("C2"));
+        assertThat(searchResults1, hasSize(1));
+        assertThat(searchResults1, contains("C2"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
@@ -2106,14 +2068,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults2.size());
-        Assert.assertTrue(searchResults2.contains("C1"));
+        assertThat(searchResults2, hasSize(1));
+        assertThat(searchResults2, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2144,8 +2105,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         /* Updated Criteria Builder -set value as FALSE */
         Criteria c2 = DNFCriteria.builder()
@@ -2173,8 +2134,9 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults1.size());
-        Assert.assertTrue(searchResults1.contains("C2"));
+        assertThat(searchResults1, hasSize(1));
+        assertThat(searchResults1, contains("C2"));
+        
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
@@ -2184,14 +2146,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults2.size());
-        Assert.assertTrue(searchResults2.contains("C1"));
+        assertThat(searchResults2, hasSize(1));
+        assertThat(searchResults2, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     // CNF cases
@@ -2241,14 +2202,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2298,13 +2258,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
+        assertThat(searchResults, hasSize(1)); // TODO
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2346,14 +2306,14 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
 
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+        
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2379,14 +2339,13 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertEquals(1, searchResults.size());
-        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2422,9 +2381,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         /* Updated Criteria Builder -set value as FALSE */
         c1 = CNFCriteria.builder()
@@ -2523,9 +2481,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2571,9 +2528,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2641,9 +2597,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2679,9 +2634,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         /* Updated Criteria Builder -set value as FALSE */
         c1 = CNFCriteria.builder()
@@ -2779,9 +2733,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2808,9 +2761,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2837,9 +2789,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2865,9 +2816,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     // CNF & DNF caases
@@ -2923,9 +2873,8 @@ public class SearchTest {
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -2978,10 +2927,8 @@ public class SearchTest {
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3035,10 +2982,8 @@ public class SearchTest {
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3092,10 +3037,8 @@ public class SearchTest {
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3151,9 +3094,8 @@ public class SearchTest {
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3182,9 +3124,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3214,9 +3155,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3245,9 +3185,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3277,9 +3216,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3326,9 +3264,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         try {
             searchResults = engine.search("test1",
@@ -3408,9 +3345,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3455,9 +3391,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3502,9 +3437,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3528,9 +3462,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3619,9 +3552,8 @@ public class SearchTest {
 
         engine.ratify("test");
         RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         // Remove from index
         engine.delete("test", c1);
@@ -3643,9 +3575,8 @@ public class SearchTest {
 
         engine.ratify("test");
         ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3693,9 +3624,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3810,9 +3740,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -3927,9 +3856,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -4008,9 +3936,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
     @Test
@@ -4086,10 +4013,8 @@ public class SearchTest {
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
-        Assert.assertTrue(ratificationResult.getStatus());
-        Assert.assertTrue(ratificationResult.getAnamolyDetails()
-                .isEmpty());
-
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
 }
