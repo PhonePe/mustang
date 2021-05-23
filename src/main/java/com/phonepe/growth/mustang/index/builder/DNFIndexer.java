@@ -140,7 +140,7 @@ public class DNFIndexer {
                                     .map(entry -> Pair.of(key, entry))
                                     .collect(Collectors.groupingBy(Pair::getKey,
                                             Collectors.mapping(Pair::getValue,
-                                                    Collectors.toMap(x -> x.getIId(),
+                                                    Collectors.toMap(ConjunctionPostingEntry::getIId,
                                                             x -> x,
                                                             (x1, x2) -> x2,
                                                             TreeMap::new))));

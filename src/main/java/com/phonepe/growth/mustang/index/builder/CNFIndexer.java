@@ -146,7 +146,7 @@ public class CNFIndexer {
                                     .map(entry -> Pair.of(key, entry))
                                     .collect(Collectors.groupingBy(Pair::getKey,
                                             Collectors.mapping(Pair::getValue,
-                                                    Collectors.toMap(x -> x.getIId(),
+                                                    Collectors.toMap(DisjunctionPostingEntry::getIId,
                                                             x -> x,
                                                             (x1, x2) -> x2,
                                                             TreeMap::new))));
@@ -163,10 +163,7 @@ public class CNFIndexer {
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> {
-                    indexTable.put(x.getKey(), sortPostingLists(x.getValue()));
-                });
-        indexTable.get("");
+                .forEach(x -> indexTable.put(x.getKey(), sortPostingLists(x.getValue())));
     }
 
     private LinkedHashMap<Key, TreeMap<Integer, DisjunctionPostingEntry>> sortPostingLists(

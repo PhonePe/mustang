@@ -116,6 +116,9 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                 .collect(Collectors.groupingBy(Pair::getKey,
                         LinkedHashMap::new,
                         Collectors.mapping(Pair::getValue,
-                                Collectors.toMap(x -> x.getIId(), x -> x, (x1, x2) -> x2, TreeMap::new))));
+                                Collectors.toMap(DisjunctionPostingEntry::getIId,
+                                        x -> x,
+                                        (x1, x2) -> x2,
+                                        TreeMap::new))));
     }
 }
