@@ -135,9 +135,14 @@ public class MustangEngine {
     }
 
     public void ratify(final String indexName) {
+        ratify(indexName, true);
+    }
+
+    public void ratify(final String indexName, final boolean fullFledged) {
         processor.process(RatificationRequest.builder()
                 .mapper(mapper)
                 .indexGroup(indexingFacde.getIndexGroup(indexName))
+                .fullFledged(fullFledged)
                 .requestedAt(System.currentTimeMillis())
                 .build());
     }

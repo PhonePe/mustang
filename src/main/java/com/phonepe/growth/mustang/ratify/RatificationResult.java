@@ -31,6 +31,7 @@ public class RatificationResult {
     private final Set<RatificationDetail> anamolyDetails;
     private final long timeTakenMs;
     private final long requestedAt;
+    private final boolean fullFledgedRun;
     private final long ratifiedAt;
 
     @Data

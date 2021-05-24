@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.ratify;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,6 +54,7 @@ import lombok.Data;
 public class Ratifier {
     private final ObjectMapper mapper;
     private final IndexGroup indexGroup;
+    private final boolean fullFledged;
     private final long requestedAt;
 
     public RatificationResult ratify() {
@@ -67,14 +69,14 @@ public class Ratifier {
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList()));
 
-        final Set<Set<Integer>> subSetCombinations = IntStream.range(1,
+        final Set<Set<Integer>> subSetCombinations = fullFledged ? IntStream.range(1,
                 keyGroups.values()
                         .size())
                 .boxed()
                 .map(i -> Sets.combinations(keyIndex.getKey()
                         .keySet(), i))
                 .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toSet()) : Collections.emptySet();
 
         final Set<RatificationDetail> primaryDetails = cartesianProductCombinations.stream()
                 .map(combination -> validate(keyIndex, combination))
@@ -96,6 +98,7 @@ public class Ratifier {
                 .anamolyDetails(Sets.union(primaryDetails, secondaryDetails))
                 .timeTakenMs(System.currentTimeMillis() - startTime)
                 .requestedAt(requestedAt)
+                .fullFledgedRun(fullFledged)
                 .ratifiedAt(System.currentTimeMillis())
                 .build();
     }

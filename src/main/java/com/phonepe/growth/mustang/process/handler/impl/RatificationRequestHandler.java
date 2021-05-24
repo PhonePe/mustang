@@ -43,6 +43,7 @@ public class RatificationRequestHandler implements ITaskHandler<RatificationRequ
             final RatificationResult result = Ratifier.builder()
                     .mapper(message.getMapper())
                     .indexGroup(message.getIndexGroup())
+                    .fullFledged(message.isFullFledged())
                     .requestedAt(message.getRequestedAt())
                     .build()
                     .ratify();
