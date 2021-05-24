@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -51,16 +51,20 @@ import lombok.Data;
 public class DNFIndexer {
     public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
-    private static final Comparator<TreeSet<ConjunctionPostingEntry>> ID_COMPARATOR = (e1,
-            e2) -> (ObjectUtils.compare(e1.first()
+    private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> ID_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.firstEntry()
+                    .getValue()
                     .getIId(),
-                    e2.first()
+                    e2.firstEntry()
+                            .getValue()
                             .getIId(),
                     true));
-    private static final Comparator<TreeSet<ConjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
-            e2) -> (ObjectUtils.compare(e1.first()
+    private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
+            e2) -> (ObjectUtils.compare(e1.firstEntry()
+                    .getValue()
                     .getType(),
-                    e2.first()
+                    e2.firstEntry()
+                            .getValue()
                             .getType(),
                     true));
     @NotNull
@@ -73,7 +77,8 @@ public class DNFIndexer {
 
     public void index() {
         final DNFInvertedIndex<ConjunctionPostingEntry> dnfInvertedIndex = indexGroup.getDnfInvertedIndex();
-        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex.getTable();
+        final Map<Integer, Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> indexTable = dnfInvertedIndex
+                .getTable();
         final Set<Integer> newIIds = Sets.newHashSet();
 
         IntStream.range(0,
@@ -99,7 +104,7 @@ public class DNFIndexer {
                                 .computeIfAbsent(kSize, x -> Sets.newTreeSet())
                                 .add(iId);
 
-                        final List<Map<Key, TreeSet<ConjunctionPostingEntry>>> postingLists = conjunction
+                        final List<Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> postingLists = conjunction
                                 .getPredicates()
                                 .stream()
                                 .map(predicate -> predicate.accept(DNFPostingListsExtractor.builder()
@@ -116,11 +121,14 @@ public class DNFIndexer {
                                     .value(0)
                                     .upperBoundScore(0)
                                     .build();
-                            final Map<Key, TreeSet<ConjunctionPostingEntry>> zPostingLists = postingLists.stream()
+                            final Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> zPostingLists = postingLists
+                                    .stream()
                                     .flatMap(m -> m.entrySet()
                                             .stream())
                                     .map(Map.Entry::getValue)
-                                    .flatMap(TreeSet::stream)
+                                    .flatMap(x -> x.entrySet()
+                                            .stream())
+                                    .map(Map.Entry::getValue)
                                     .distinct()
                                     .map(entry -> ConjunctionPostingEntry.builder()
                                             .iId(entry.getIId())
@@ -131,7 +139,11 @@ public class DNFIndexer {
                                     .distinct()
                                     .map(entry -> Pair.of(key, entry))
                                     .collect(Collectors.groupingBy(Pair::getKey,
-                                            Collectors.mapping(Pair::getValue, Collectors.toCollection(TreeSet::new))));
+                                            Collectors.mapping(Pair::getValue,
+                                                    Collectors.toMap(ConjunctionPostingEntry::getIId,
+                                                            x -> x,
+                                                            (x1, x2) -> x2,
+                                                            TreeMap::new))));
                             postingLists.add(zPostingLists);
                         }
 
@@ -153,7 +165,7 @@ public class DNFIndexer {
                 .forEach(x -> sortPostingLists(x.getValue()));
     }
 
-    private void sortPostingLists(Map<Key, TreeSet<ConjunctionPostingEntry>> map) {
+    private void sortPostingLists(Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> map) {
         map.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)))

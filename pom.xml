@@ -4,7 +4,7 @@
 
 	<groupId>com.phonepe.growth</groupId>
 	<artifactId>mustang</artifactId>
-	<version>1.0.21</version>
+	<version>1.0.22</version>
 
 	<parent>
 		<groupId>com.phonepe</groupId>
@@ -119,6 +119,12 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.10.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

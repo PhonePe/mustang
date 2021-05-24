@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -78,15 +78,15 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         return null;
     }
 
-    public static <T, S> Map<T, TreeSet<S>> compactPostingLists(List<Map<T, TreeSet<S>>> maps) {
-        final List<Map.Entry<T, TreeSet<S>>> tempResult = maps.stream()
+    public static <T, S> Map<T, TreeMap<Integer, S>> compactPostingLists(List<Map<T, TreeMap<Integer, S>>> maps) {
+        final List<Map.Entry<T, TreeMap<Integer, S>>> tempResult = maps.stream()
                 .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream()
                 .collect(Collectors.groupingBy(Map.Entry::getKey,
                         LinkedHashMap::new,
-                        Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeSet<>(), (s1, s2) -> {
-                            final TreeSet<S> combined = new TreeSet<>(s1);
-                            combined.addAll(s2);
+                        Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
+                            final TreeMap<Integer, S> combined = new TreeMap<>(s1);
+                            combined.putAll(s2);
                             return combined;
                         }))));
     }

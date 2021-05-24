@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.Optional;
-import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,10 +49,10 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DNFMatcher {
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> ID_COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> ID_COMPARATOR = (
             e1,
             e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>> TYPE_COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> TYPE_COMPARATOR = (
             e1,
             e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
     private final DNFInvertedIndex<ConjunctionPostingEntry> invertedIndex;
@@ -62,7 +62,7 @@ public class DNFMatcher {
 
     public Map<String, Double> getMatches() {
         final Map<String, Double> result = Maps.newHashMap();
-        final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table = invertedIndex.getTable();
+        final Map<Integer, Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> table = invertedIndex.getTable();
         final int start = 0;
         final int end = Math.min(query.getAssigment()
                 .size(),
@@ -77,7 +77,7 @@ public class DNFMatcher {
                 .forEach(k -> {
                     final TreeSet<Integer> links = invertedIndex.getLinkages()
                             .get(k);
-                    final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
+                    final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists = getPostingListsDNF(
                             table,
                             k);
                     initializeCurrentEntriesDNF(pLists);
@@ -136,7 +136,8 @@ public class DNFMatcher {
         return result;
     }
 
-    private static Integer getIdSafely(final Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
+    private static Integer getIdSafely(
+            final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>> entry) {
         final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
@@ -149,7 +150,7 @@ public class DNFMatcher {
     }
 
     private static PredicateType getTypeSafely(
-            final Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>> entry) {
+            final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>> entry) {
         final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
@@ -161,19 +162,17 @@ public class DNFMatcher {
         return null;
     }
 
-    private static Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(Set<ConjunctionPostingEntry> set,
+    private static Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(
+            TreeMap<Integer, ConjunctionPostingEntry> map,
             Integer iId) {
-        return set.stream()
-                .filter(x -> x.getIId()
-                        .equals(iId))
-                .findFirst();
+        return Optional.ofNullable(map.get(iId));
     }
 
     @SuppressWarnings("unchecked")
-    private Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] getPostingListsDNF(
-            final Map<Integer, Map<Key, TreeSet<ConjunctionPostingEntry>>> table,
+    private Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] getPostingListsDNF(
+            final Map<Integer, Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> table,
             final int k) {
-        final Map<Key, TreeSet<ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
+        final Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
         return map.entrySet()
                 .stream()
                 .map(entry -> getMatchingKey(k, entry))
@@ -185,7 +184,8 @@ public class DNFMatcher {
                 .toArray(Map.Entry[]::new);
     }
 
-    private Optional<Key> getMatchingKey(final int k, final Entry<Key, TreeSet<ConjunctionPostingEntry>> entry) {
+    private Optional<Key> getMatchingKey(final int k,
+            final Entry<Key, TreeMap<Integer, ConjunctionPostingEntry>> entry) {
         final Key key = entry.getKey();
         if (key.getValue()
                 .equals(query.getAssigment()
@@ -198,16 +198,18 @@ public class DNFMatcher {
     }
 
     private void initializeCurrentEntriesDNF(
-            Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+            Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists) {
         Arrays.stream(pLists)
                 .forEach(pList -> pList.getValue()
                         .setLeft(pList.getValue()
                                 .getRight()
-                                .first()
+                                .firstEntry()
+                                .getValue()
                                 .getIId()));
     }
 
-    private boolean canContinue(final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+    private boolean canContinue(
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final int k) {
         return getConjunctionPostingEntry(pLists[k - 1].getValue()
                 .getValue(),
@@ -221,12 +223,12 @@ public class DNFMatcher {
     }
 
     private void sortByCurrentEntriesDNF(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists) {
         Arrays.sort(pLists, ID_COMPARATOR.thenComparing(TYPE_COMPARATOR));
     }
 
     private boolean sameConjunctionCheck(
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final Integer k) {
         if (getConjunctionPostingEntry(pLists[0].getValue()
                 .getValue(),
@@ -245,7 +247,7 @@ public class DNFMatcher {
     }
 
     private void conjunctionRejectionSkip(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final Integer rejectId) {
         IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
@@ -260,7 +262,7 @@ public class DNFMatcher {
     }
 
     private void preEmptiveSortCheck(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists) {
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists) {
         // preemptive sort if possible to continue
         if (!canContinue(pLists, k)) {
             sortByCurrentEntriesDNF(pLists);
@@ -277,7 +279,7 @@ public class DNFMatcher {
     }
 
     private int getNextHigherId(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final TreeSet<Integer> links,
             final Integer internalId) {
         final NavigableSet<Integer> nextIds = links.tailSet(internalId, false);
@@ -297,7 +299,7 @@ public class DNFMatcher {
     }
 
     private int getNextId(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final TreeSet<Integer> links,
             final Integer internalId,
             final int nextId) {
@@ -316,7 +318,7 @@ public class DNFMatcher {
     }
 
     private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeSet<ConjunctionPostingEntry>>>[] pLists,
+            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final int nextID) {
         IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
