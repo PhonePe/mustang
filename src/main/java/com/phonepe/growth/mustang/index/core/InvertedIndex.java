@@ -19,6 +19,7 @@ package com.phonepe.growth.mustang.index.core;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +37,7 @@ public abstract class InvertedIndex<T> {
     @NotNull
     private final CriteriaForm form;
     private final AtomicInteger idCounter = new AtomicInteger(0);
-    private final Map<Integer, Map<Key, TreeSet<T>>> table = Maps.newConcurrentMap();
+    private final Map<Integer, Map<Key, TreeMap<Integer, T>>> table = Maps.newConcurrentMap();
     private final Map<String, PriorityQueue<Integer>> idCache = Maps.newConcurrentMap();
     private final Map<Integer, TreeSet<Integer>> linkages = Maps.newConcurrentMap();
 
