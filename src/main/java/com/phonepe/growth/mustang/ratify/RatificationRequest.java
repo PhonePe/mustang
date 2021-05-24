@@ -27,5 +27,6 @@ import lombok.Data;
 public class RatificationRequest {
     private final ObjectMapper mapper;
     private final IndexGroup indexGroup;
+    private final boolean fullFledged;
     private final long requestedAt;
 }

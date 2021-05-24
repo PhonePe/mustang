@@ -2005,7 +2005,7 @@ public class SearchTest {
                         .build());
         assertThat(searchResults2, is(empty()));
 
-        engine.ratify("test");
+        engine.ratify("test", false);
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
