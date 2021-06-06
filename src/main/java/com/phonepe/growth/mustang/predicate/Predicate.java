@@ -45,7 +45,7 @@ public abstract class Predicate {
     @NotBlank
     private String lhs;
     private boolean lhsNotAPath;
-    private long weight;
+    private Long weight;
     private boolean defaultResult;
 
     public boolean evaluate(RequestContext context) {

@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.predicate.impl;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -46,9 +47,9 @@ public class IncludedPredicate extends Predicate {
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
             @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
-            @JsonProperty("weight") long weight,
+            @JsonProperty("weight") Long weight,
             @JsonProperty("values") Set<?> values) {
-        super(PredicateType.INCLUDED, lhs, lhsNotAPath, weight, Boolean.FALSE);
+        super(PredicateType.INCLUDED, lhs, lhsNotAPath, Objects.isNull(weight) ? 1 : weight, Boolean.FALSE);
         this.values = values;
     }
 
