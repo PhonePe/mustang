@@ -163,7 +163,11 @@ public class CNFIndexer {
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> indexTable.put(x.getKey(), sortPostingLists(x.getValue())));
+                .forEach(x -> {
+                    final LinkedHashMap<Key, TreeMap<Integer, DisjunctionPostingEntry>> sortedPostingLists = sortPostingLists(
+                            x.getValue());
+                    x.setValue(sortedPostingLists);
+                });
     }
 
     private LinkedHashMap<Key, TreeMap<Integer, DisjunctionPostingEntry>> sortPostingLists(
