@@ -49,12 +49,9 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DNFMatcher {
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> ID_COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> COMPARATOR = (
             e1,
-            e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> TYPE_COMPARATOR = (
-            e1,
-            e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
+            e2) -> (ObjectUtils.compare(getPostingEntry(e1), getPostingEntry(e2), true));
     private final DNFInvertedIndex<ConjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
@@ -136,30 +133,13 @@ public class DNFMatcher {
         return result;
     }
 
-    private static Integer getIdSafely(
+    private static ConjunctionPostingEntry getPostingEntry(
             final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>> entry) {
         final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        if (conjunctionPostingEntry.isPresent()) {
-            return conjunctionPostingEntry.get()
-                    .getIId();
-        }
-        return null;
-    }
-
-    private static PredicateType getTypeSafely(
-            final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>> entry) {
-        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
-                .getValue(),
-                entry.getValue()
-                        .getKey());
-        if (conjunctionPostingEntry.isPresent()) {
-            return conjunctionPostingEntry.get()
-                    .getType();
-        }
-        return null;
+        return conjunctionPostingEntry.orElse(null);
     }
 
     private static Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(
@@ -224,7 +204,7 @@ public class DNFMatcher {
 
     private void sortByCurrentEntriesDNF(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists) {
-        Arrays.sort(pLists, ID_COMPARATOR.thenComparing(TYPE_COMPARATOR));
+        Arrays.sort(pLists, COMPARATOR);
     }
 
     private boolean sameConjunctionCheck(
