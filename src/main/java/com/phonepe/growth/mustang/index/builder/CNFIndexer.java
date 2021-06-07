@@ -49,27 +49,11 @@ import lombok.Data;
 @Builder
 public class CNFIndexer {
     public static final String ZERO_SIZE_DISJUNCTION_ENTRY_KEY = "ZZZ";
-    private static final Comparator<TreeMap<Integer, DisjunctionPostingEntry>> ID_COMPARATOR = (e1,
+    private static final Comparator<TreeMap<Integer, DisjunctionPostingEntry>> COMPARATOR = (e1,
             e2) -> (ObjectUtils.compare(e1.firstEntry()
-                    .getValue()
-                    .getIId(),
+                    .getValue(),
                     e2.firstEntry()
-                            .getValue()
-                            .getIId()));
-    private static final Comparator<TreeMap<Integer, DisjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
-            e2) -> (ObjectUtils.compare(e1.firstEntry()
-                    .getValue()
-                    .getType(),
-                    e2.firstEntry()
-                            .getValue()
-                            .getType()));
-    private static final Comparator<TreeMap<Integer, DisjunctionPostingEntry>> ORDER_COMPARATOR = (e1,
-            e2) -> (ObjectUtils.compare(e1.firstEntry()
-                    .getValue()
-                    .getOrder(),
-                    e2.firstEntry()
-                            .getValue()
-                            .getOrder()));
+                            .getValue()));
     @NotNull
     private final CNFCriteria criteria;
     @Valid
@@ -148,7 +132,7 @@ public class CNFIndexer {
                                             Collectors.mapping(Pair::getValue,
                                                     Collectors.toMap(DisjunctionPostingEntry::getIId,
                                                             x -> x,
-                                                            (x1, x2) -> x2,
+                                                            (o, n) -> n,
                                                             TreeMap::new))));
                             postingLists.add(zPostingLists);
                         }
@@ -158,8 +142,6 @@ public class CNFIndexer {
                         disjunctionCounter[i] = getExcludedPredicateCountFromDisjunction(disjunction);
                     });
         }
-
-        // TODO handle cleanup
 
         // Keep the index sorted.
         indexTable.entrySet()
@@ -174,8 +156,7 @@ public class CNFIndexer {
             Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
         return map.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)
-                        .thenComparing(ORDER_COMPARATOR)))
+                .sorted(Map.Entry.comparingByValue(COMPARATOR))
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue,
