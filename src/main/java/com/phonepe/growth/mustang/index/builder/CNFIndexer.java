@@ -53,7 +53,8 @@ public class CNFIndexer {
             e2) -> (ObjectUtils.compare(e1.firstEntry()
                     .getValue(),
                     e2.firstEntry()
-                            .getValue()));
+                            .getValue(),
+                    true));
     @NotNull
     private final CNFCriteria criteria;
     @Valid
@@ -157,10 +158,7 @@ public class CNFIndexer {
         return map.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(COMPARATOR))
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> n, LinkedHashMap::new));
     }
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {
