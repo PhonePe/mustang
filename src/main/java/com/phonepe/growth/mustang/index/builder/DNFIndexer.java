@@ -132,7 +132,7 @@ public class DNFIndexer {
                                             Collectors.mapping(Pair::getValue,
                                                     Collectors.toMap(ConjunctionPostingEntry::getIId,
                                                             x -> x,
-                                                            (x1, x2) -> x2,
+                                                            (o, n) -> n,
                                                             TreeMap::new))));
                             postingLists.add(zPostingLists);
                         }
