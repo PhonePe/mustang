@@ -147,11 +147,7 @@ public class DNFIndexer {
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> {
-                    final LinkedHashMap<Key, TreeMap<Integer, ConjunctionPostingEntry>> sortedPostingLists = sortPostingLists(
-                            x.getValue());
-                    x.setValue(sortedPostingLists);
-                });
+                .forEach(x -> x.setValue(sortPostingLists(x.getValue())));
     }
 
     private LinkedHashMap<Key, TreeMap<Integer, ConjunctionPostingEntry>> sortPostingLists(
