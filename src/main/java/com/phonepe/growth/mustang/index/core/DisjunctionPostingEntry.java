@@ -33,7 +33,7 @@ public class DisjunctionPostingEntry implements Comparable<DisjunctionPostingEnt
     private Integer iId;
     private String eId;
     private PredicateType type;
-    private Integer order;
+    private int order;
     private long score;
 
     @Override
@@ -42,10 +42,6 @@ public class DisjunctionPostingEntry implements Comparable<DisjunctionPostingEnt
         if (idc != 0) {
             return idc;
         }
-        final int tc = type.compareTo(o.getType());
-        if (tc != 0) {
-            return tc;
-        }
-        return order.compareTo(o.getOrder());
+        return type.compareTo(o.getType());
     }
 }

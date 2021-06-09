@@ -92,7 +92,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .sequential()
                             .filter(key -> {
                                 counter.incrementAndGet();
-                                return Sets.newTreeSet(postingLists.get(key)
+                                return !Sets.newTreeSet(postingLists.get(key)
                                         .values())
                                         .contains(postingEntry);
                             })

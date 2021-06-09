@@ -49,9 +49,15 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFMatcher {
-    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> COMPARATOR = (
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> ID_COMPARATOR = (
             e1,
-            e2) -> (ObjectUtils.compare(getPostingEntry(e1), getPostingEntry(e2), true));
+            e2) -> (ObjectUtils.compare(getIdSafely(e1), getIdSafely(e2), true));
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> TYPE_COMPARATOR = (
+            e1,
+            e2) -> (ObjectUtils.compare(getTypeSafely(e1), getTypeSafely(e2), true));
+    private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>> ORDER_COMPARATOR = (
+            e1,
+            e2) -> (ObjectUtils.compare(getOrderSafely(e1), getOrderSafely(e2), true));
     private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
@@ -127,13 +133,34 @@ public class CNFMatcher {
 
     }
 
-    private static DisjunctionPostingEntry getPostingEntry(
+    private static Integer getIdSafely(
             final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
         final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        return disjunctionPostingEntry.orElse(null);
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getIId() : null;
+    }
+
+    private static PredicateType getTypeSafely(
+            final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
+        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getType() : null;
+    }
+
+    private static Integer getOrderSafely(
+            Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
+        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+                .getValue(),
+                entry.getValue()
+                        .getKey());
+        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
+                .getOrder() : Integer.MAX_VALUE;
     }
 
     private static Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(
@@ -193,7 +220,9 @@ public class CNFMatcher {
 
     private void sortByCurrentEntriesCNF(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists) {
-        Arrays.sort(pLists, COMPARATOR);
+        Arrays.sort(pLists,
+                ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)
+                        .thenComparing(ORDER_COMPARATOR));
     }
 
     private boolean sameConjunctionCheck(
