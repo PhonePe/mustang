@@ -108,7 +108,7 @@ public class Ratifier {
         final Map<String, Object> assigment = combination.stream()
                 .map(i -> keyIndex.getLeft()
                         .get(i))
-                .collect(Collectors.toMap(Key::getName, Key::getValue, (x1, x2) -> x2));
+                .collect(Collectors.toMap(Key::getName, Key::getValue, (o, n) -> n));
         final RequestContext context = RequestContext.builder()
                 .node(getJsonNodeFromAssignment(assigment))
                 .build();
