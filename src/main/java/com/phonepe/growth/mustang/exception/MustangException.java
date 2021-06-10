@@ -30,12 +30,6 @@ public class MustangException extends RuntimeException {
     private final ErrorCode errorCode;
 
     @Builder
-    public MustangException(ErrorCode errorCode) {
-        super();
-        this.errorCode = errorCode;
-    }
-
-    @Builder
     public MustangException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
         this.errorCode = errorCode;

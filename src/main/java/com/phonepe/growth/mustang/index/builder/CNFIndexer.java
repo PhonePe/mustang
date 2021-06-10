@@ -148,7 +148,7 @@ public class CNFIndexer {
                                             Collectors.mapping(Pair::getValue,
                                                     Collectors.toMap(DisjunctionPostingEntry::getIId,
                                                             x -> x,
-                                                            (x1, x2) -> x2,
+                                                            (o, n) -> n,
                                                             TreeMap::new))));
                             postingLists.add(zPostingLists);
                         }
@@ -159,11 +159,9 @@ public class CNFIndexer {
                     });
         }
 
-        // TODO handle cleanup
-
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> indexTable.put(x.getKey(), sortPostingLists(x.getValue())));
+                .forEach(x -> x.setValue(sortPostingLists(x.getValue())));
     }
 
     private LinkedHashMap<Key, TreeMap<Integer, DisjunctionPostingEntry>> sortPostingLists(
@@ -172,10 +170,7 @@ public class CNFIndexer {
                 .stream()
                 .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)
                         .thenComparing(ORDER_COMPARATOR)))
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> n, LinkedHashMap::new));
     }
 
     private boolean isDisjunctionWithExcludedPredicate(Disjunction disjunction) {

@@ -51,21 +51,11 @@ import lombok.Data;
 public class DNFIndexer {
     public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
-    private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> ID_COMPARATOR = (e1,
+    private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> POSTING_ENTRY_COMPARATOR = (e1,
             e2) -> (ObjectUtils.compare(e1.firstEntry()
-                    .getValue()
-                    .getIId(),
+                    .getValue(),
                     e2.firstEntry()
-                            .getValue()
-                            .getIId(),
-                    true));
-    private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> TYPE_COMPARATOR = (e1,
-            e2) -> (ObjectUtils.compare(e1.firstEntry()
-                    .getValue()
-                    .getType(),
-                    e2.firstEntry()
-                            .getValue()
-                            .getType(),
+                            .getValue(),
                     true));
     @NotNull
     private final DNFCriteria criteria;
@@ -142,7 +132,7 @@ public class DNFIndexer {
                                             Collectors.mapping(Pair::getValue,
                                                     Collectors.toMap(ConjunctionPostingEntry::getIId,
                                                             x -> x,
-                                                            (x1, x2) -> x2,
+                                                            (o, n) -> n,
                                                             TreeMap::new))));
                             postingLists.add(zPostingLists);
                         }
@@ -152,27 +142,20 @@ public class DNFIndexer {
                     }
                 });
 
-        /*
-         * ---------------------------- TODO handle cleanup ---------------------------
-         * final Set<Integer> oldIIds = dnfInvertedIndex.getActiveIds()
-         * .put(criteria.getId(), newIIds);
-         */
         dnfInvertedIndex.getActiveIds()
                 .put(criteria.getId(), newIIds);
 
         // Keep the index sorted.
         indexTable.entrySet()
-                .forEach(x -> sortPostingLists(x.getValue()));
+                .forEach(x -> x.setValue(sortPostingLists(x.getValue())));
     }
 
-    private void sortPostingLists(Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> map) {
-        map.entrySet()
+    private LinkedHashMap<Key, TreeMap<Integer, ConjunctionPostingEntry>> sortPostingLists(
+            Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> map) {
+        return map.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(ID_COMPARATOR.thenComparing(TYPE_COMPARATOR)))
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (oldValue, newValue) -> oldValue,
-                        LinkedHashMap::new));
+                .sorted(Map.Entry.comparingByValue(POSTING_ENTRY_COMPARATOR))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> n, LinkedHashMap::new));
 
     }
 
