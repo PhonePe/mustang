@@ -23,10 +23,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
@@ -41,40 +38,21 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class IncludedPredicate extends Predicate {
     @NotEmpty
-    private Set<?> values;
+    private Set<Object> values;
 
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
             @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
             @JsonProperty("weight") Long weight,
-            @JsonProperty("values") Set<?> values) {
+            @JsonProperty("values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, lhsNotAPath, Objects.isNull(weight) ? 1 : weight, Boolean.FALSE);
         this.values = values;
     }
 
     @Override
-    protected boolean evaluate(RequestContext context, Object lhsValue) {
+    public boolean evaluate(final RequestContext context, final Object lhsValue) {
         return values.contains(lhsValue);
-    }
-
-    @Override
-    public PredicateDebugResult debug(RequestContext context) {
-        Object lhsValue;
-        try {
-            lhsValue = this.isLhsNotAPath() ? this.getLhs()
-                    : JsonPath.read(context.getNode()
-                            .toString(), this.getLhs());
-        } catch (PathNotFoundException e) {
-            lhsValue = null;
-        }
-        return PredicateDebugResult.builder()
-                .result(evaluate(context))
-                .type(this.getType())
-                .lhs(this.getLhs())
-                .lhsValue(lhsValue)
-                .values(values)
-                .build();
     }
 
     @Override
