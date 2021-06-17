@@ -50,6 +50,24 @@ public abstract class Predicate {
     private Long weight;
     private boolean defaultResult;
 
+    protected Object fetchValue(final RequestContext context) {
+        if (lhsNotAPath) {
+            return lhs;
+        }
+        try {
+            return JsonPath.read(context.getNode()
+                    .toString(), lhs);
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+    }
+
+    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
+
+    public abstract Set<?> getValues();
+
+    public abstract <T> T accept(PredicateVisitor<T> visitor);
+
     public boolean evaluate(RequestContext context) {
         if (lhsNotAPath) {
             return evaluate(context, lhs);
@@ -72,23 +90,5 @@ public abstract class Predicate {
                 .values(getValues())
                 .build();
     }
-
-    protected Object fetchValue(final RequestContext context) {
-        if (lhsNotAPath) {
-            return lhs;
-        }
-        try {
-            return JsonPath.read(context.getNode()
-                    .toString(), lhs);
-        } catch (PathNotFoundException e) {
-            return null;
-        }
-    }
-
-    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
-
-    public abstract Set<?> getValues();
-
-    public abstract <T> T accept(PredicateVisitor<T> visitor);
 
 }
