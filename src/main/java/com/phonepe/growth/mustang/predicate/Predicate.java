@@ -61,6 +61,18 @@ public abstract class Predicate {
         }
     }
 
+    protected Object fetchValue(final RequestContext context) {
+        if (lhsNotAPath) {
+            return lhs;
+        }
+        try {
+            return JsonPath.read(context.getNode()
+                    .toString(), lhs);
+        } catch (PathNotFoundException e) {
+            return null;
+        }
+    }
+
     protected abstract boolean evaluate(RequestContext context, Object lhsValue);
 
     public abstract PredicateDebugResult debug(RequestContext context);

@@ -23,7 +23,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
@@ -63,9 +62,7 @@ public class ExcludedPredicate extends Predicate {
                 .result(evaluate(context))
                 .type(this.getType())
                 .lhs(this.getLhs())
-                .lhsValue(this.isLhsNotAPath() ? this.getLhs()
-                        : JsonPath.read(context.getNode()
-                                .toString(), this.getLhs()))
+                .lhsValue(fetchValue(context))
                 .values(this.getValues())
                 .build();
     }

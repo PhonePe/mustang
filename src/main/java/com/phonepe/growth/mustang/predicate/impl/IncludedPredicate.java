@@ -23,8 +23,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
@@ -60,19 +58,11 @@ public class IncludedPredicate extends Predicate {
 
     @Override
     public PredicateDebugResult debug(RequestContext context) {
-        Object lhsValue;
-        try {
-            lhsValue = this.isLhsNotAPath() ? this.getLhs()
-                    : JsonPath.read(context.getNode()
-                            .toString(), this.getLhs());
-        } catch (PathNotFoundException e) {
-            lhsValue = null;
-        }
         return PredicateDebugResult.builder()
                 .result(evaluate(context))
                 .type(this.getType())
                 .lhs(this.getLhs())
-                .lhsValue(lhsValue)
+                .lhsValue(fetchValue(context))
                 .values(values)
                 .build();
     }
