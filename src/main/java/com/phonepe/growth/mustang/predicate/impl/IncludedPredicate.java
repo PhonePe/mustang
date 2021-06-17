@@ -38,14 +38,14 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class IncludedPredicate extends Predicate {
     @NotEmpty
-    private Set<?> values;
+    private Set<Object> values;
 
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
             @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
             @JsonProperty("weight") Long weight,
-            @JsonProperty("values") Set<?> values) {
+            @JsonProperty("values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, lhsNotAPath, Objects.isNull(weight) ? 1 : weight, Boolean.FALSE);
         this.values = values;
     }

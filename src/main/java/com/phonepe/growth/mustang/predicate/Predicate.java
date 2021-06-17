@@ -64,7 +64,7 @@ public abstract class Predicate {
 
     protected abstract boolean evaluate(RequestContext context, Object lhsValue);
 
-    public abstract Set<?> getValues();
+    public abstract Set<Object> getValues();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
