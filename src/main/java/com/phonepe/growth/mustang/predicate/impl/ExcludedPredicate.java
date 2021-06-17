@@ -24,7 +24,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
@@ -54,17 +53,6 @@ public class ExcludedPredicate extends Predicate {
     @Override
     public boolean evaluate(final RequestContext context, final Object lhsValue) {
         return !values.contains(lhsValue);
-    }
-
-    @Override
-    public PredicateDebugResult debug(final RequestContext context) {
-        return PredicateDebugResult.builder()
-                .result(evaluate(context))
-                .type(getType())
-                .lhs(getLhs())
-                .lhsValue(fetchValue(context))
-                .values(values)
-                .build();
     }
 
     @Override

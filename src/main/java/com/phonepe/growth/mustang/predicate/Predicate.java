@@ -16,6 +16,8 @@
  */
 package com.phonepe.growth.mustang.predicate;
 
+import java.util.Set;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -61,6 +63,16 @@ public abstract class Predicate {
         }
     }
 
+    public PredicateDebugResult debug(final RequestContext context) {
+        return PredicateDebugResult.builder()
+                .result(evaluate(context))
+                .type(getType())
+                .lhs(getLhs())
+                .lhsValue(fetchValue(context))
+                .values(getValues())
+                .build();
+    }
+
     protected Object fetchValue(final RequestContext context) {
         if (lhsNotAPath) {
             return lhs;
@@ -75,7 +87,7 @@ public abstract class Predicate {
 
     protected abstract boolean evaluate(RequestContext context, Object lhsValue);
 
-    public abstract PredicateDebugResult debug(RequestContext context);
+    public abstract Set<?> getValues();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
