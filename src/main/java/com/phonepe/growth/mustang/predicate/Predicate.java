@@ -62,12 +62,6 @@ public abstract class Predicate {
         }
     }
 
-    protected abstract boolean evaluate(RequestContext context, Object lhsValue);
-
-    public abstract Set<Object> getValues();
-
-    public abstract <T> T accept(PredicateVisitor<T> visitor);
-
     public boolean evaluate(RequestContext context) {
         if (lhsNotAPath) {
             return evaluate(context, lhs);
@@ -84,11 +78,17 @@ public abstract class Predicate {
     public PredicateDebugResult debug(final RequestContext context) {
         return PredicateDebugResult.builder()
                 .result(evaluate(context))
-                .type(getType())
-                .lhs(getLhs())
+                .type(type)
+                .lhs(lhs)
                 .lhsValue(fetchValue(context))
                 .values(getValues())
                 .build();
     }
+
+    public abstract boolean evaluate(RequestContext context, Object lhsValue);
+
+    public abstract Set<Object> getValues();
+
+    public abstract <T> T accept(PredicateVisitor<T> visitor);
 
 }

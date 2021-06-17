@@ -51,7 +51,7 @@ public class IncludedPredicate extends Predicate {
     }
 
     @Override
-    protected boolean evaluate(final RequestContext context, final Object lhsValue) {
+    public boolean evaluate(final RequestContext context, final Object lhsValue) {
         return values.contains(lhsValue);
     }
 
