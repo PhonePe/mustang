@@ -52,18 +52,18 @@ public class ExcludedPredicate extends Predicate {
     }
 
     @Override
-    public boolean evaluate(RequestContext context, Object lhsValue) {
+    public boolean evaluate(final RequestContext context, final Object lhsValue) {
         return !values.contains(lhsValue);
     }
 
     @Override
-    public PredicateDebugResult debug(RequestContext context) {
+    public PredicateDebugResult debug(final RequestContext context) {
         return PredicateDebugResult.builder()
                 .result(evaluate(context))
-                .type(this.getType())
-                .lhs(this.getLhs())
+                .type(getType())
+                .lhs(getLhs())
                 .lhsValue(fetchValue(context))
-                .values(this.getValues())
+                .values(values)
                 .build();
     }
 
