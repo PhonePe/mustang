@@ -20,6 +20,8 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.phonepe.growth.mustang.detail.Caveat;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,12 +30,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = { "name", "value", "order" })
+@EqualsAndHashCode(of = { "name", "caveat", "value", "order" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class Key {
     @NotBlank
     private String name;
+    @NotNull
+    private Caveat caveat;
     @NotNull
     private Object value;
     private int order;

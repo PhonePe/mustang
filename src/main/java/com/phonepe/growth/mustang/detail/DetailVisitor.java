@@ -14,20 +14,18 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.debug;
+package com.phonepe.growth.mustang.detail;
 
-import com.phonepe.growth.mustang.detail.Detail;
-import com.phonepe.growth.mustang.predicate.PredicateType;
+import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.RangeDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
 
-import lombok.Builder;
-import lombok.Data;
+public interface DetailVisitor<T> {
 
-@Data
-@Builder
-public class PredicateDebugResult {
-    private boolean result;
-    private PredicateType type;
-    private String lhs;
-    private Object lhsValue;
-    private Detail detail;
+    T visit(EqualityDetail detail);
+
+    T visit(RegexMatchDetail detail);
+
+    T visit(RangeDetail detail);
+
 }

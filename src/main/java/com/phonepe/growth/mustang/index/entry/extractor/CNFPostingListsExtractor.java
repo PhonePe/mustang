@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.predicate.PredicateType;
@@ -42,6 +43,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> {
+
     private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.valueOf(k1.getOrder())
             .compareTo(k2.getOrder());
     private final Integer iId;
@@ -52,17 +54,18 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
 
     @Override
     public Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
+        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
     }
 
     @Override
     public Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
+        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
     }
 
-    private Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> extractPostingLists(PredicateType pType,
-            String lhs,
-            Set<?> values) {
+    private Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> extractPostingLists(final PredicateType pType,
+            final String lhs,
+            final Detail detail) {
+
         final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder()
                 .iId(iId)
                 .eId(eId)
@@ -70,12 +73,17 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                 .order(order)
                 .score(0)
                 .build();
+
+        final Set<Object> values = detail.accept(new DetailValueExtractor());
+
         return values.stream()
                 .map(value -> {
                     final Set<Key> keys = postingLists.keySet()
                             .stream()
                             .filter(key -> key.getName()
                                     .equals(lhs)
+                                    && key.getCaveat()
+                                            .equals(detail.getCaveat())
                                     && key.getValue()
                                             .equals(value))
                             .sorted(KEY_ORDER_COMPARATOR)
@@ -83,6 +91,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                     if (keys.isEmpty()) {
                         return Key.builder()
                                 .name(lhs)
+                                .caveat(detail.getCaveat())
                                 .value(value)
                                 .order(0)
                                 .build();
@@ -99,6 +108,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .findFirst()
                             .orElse(Key.builder()
                                     .name(lhs)
+                                    .caveat(detail.getCaveat())
                                     .value(value)
                                     .order(counter.get())
                                     .build());
@@ -106,6 +116,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                 .map(key -> {
                     final Key baseKey = Key.builder()
                             .name(key.getName())
+                            .caveat(detail.getCaveat())
                             .value(key.getValue())
                             .build();
                     cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger(0))
@@ -113,9 +124,9 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                     return key;
                 })
                 .map(key -> Pair.of(key, postingEntry))
-                .collect(Collectors.groupingBy(Pair::getKey,
+                .collect(Collectors.groupingBy(Pair::getLeft,
                         LinkedHashMap::new,
-                        Collectors.mapping(Pair::getValue,
+                        Collectors.mapping(Pair::getRight,
                                 Collectors.toMap(DisjunctionPostingEntry::getIId, x -> x, (o, n) -> n, TreeMap::new))));
     }
 }
