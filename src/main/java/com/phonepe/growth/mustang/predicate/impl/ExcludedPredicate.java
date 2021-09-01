@@ -44,11 +44,6 @@ public class ExcludedPredicate extends Predicate {
     @Valid
     @NotNull
     private Detail detail;
-    /**
-     * @deprecated since 2.0.0; backward compatibility will be retained.
-     */
-    @Deprecated
-    private Set<Object> values;
 
     @Builder
     @JsonCreator
