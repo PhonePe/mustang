@@ -26,6 +26,8 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.detail.impl.RangeDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import org.junit.Assert;
@@ -82,6 +84,85 @@ public class DebugTest {
     }
 
     @Test
+    public void testDNFPositiveRegexMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexMatchDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.debug(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .isResult());
+    }
+
+    @Test
+    public void testDNFPositiveRangeMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexMatchDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.300000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.debug(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .isResult());
+    }
+
+    @Test
     public void testDNFNegativeMatch() throws Exception {
 
         Criteria c1 = DNFCriteria.builder()
@@ -93,13 +174,15 @@ public class DebugTest {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(1, 2, 3))
+                                .detail(RangeDetail.builder()
+                                        .upperBound(7)
+                                        .build())
                                 .build())
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A");
-        testQuery.put("n", "7");
+        testQuery.put("n", 7);
 
         Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
@@ -146,6 +229,76 @@ public class DebugTest {
     }
 
     @Test
+    public void testCNFRegexMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexMatchDetail.builder()
+                                        .regex("A.?")
+                                        .build())
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A4");
+        testQuery.put("b", "B1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", false);
+
+        Assert.assertTrue(engine.debug(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .isResult());
+    }
+
+    @Test
+    public void testCNFPositiveRangeMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.1000000000001)
+                                        .build())
+                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A4");
+        testQuery.put("b", "B1");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", false);
+
+        Assert.assertTrue(engine.debug(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .isResult());
+    }
+
+    @Test
     public void testCNFNegativeMatch() throws Exception {
 
         Criteria c1 = CNFCriteria.builder()
@@ -164,6 +317,38 @@ public class DebugTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "C");
         testQuery.put("n", "7");
+
+        Assert.assertFalse(engine.debug(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .isResult());
+
+    }
+
+    @Test
+    public void testCNFNegativeRegexMatch() throws Exception {
+
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexMatchDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(6)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "C");
+        testQuery.put("n", 6);
 
         Assert.assertFalse(engine.debug(c1,
                 RequestContext.builder()
