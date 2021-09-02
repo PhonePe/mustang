@@ -27,7 +27,7 @@ import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
-import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import org.junit.Assert;
@@ -90,7 +90,7 @@ public class DebugTest {
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.*")
                                         .build())
                                 .build())
@@ -128,7 +128,7 @@ public class DebugTest {
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.*")
                                         .build())
                                 .build())
@@ -235,7 +235,7 @@ public class DebugTest {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.?")
                                         .build())
                                 .values(Sets.newHashSet("A1", "A2"))
@@ -334,7 +334,7 @@ public class DebugTest {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.*")
                                         .build())
                                 .build())

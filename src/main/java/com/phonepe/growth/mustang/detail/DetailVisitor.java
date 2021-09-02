@@ -18,13 +18,13 @@ package com.phonepe.growth.mustang.detail;
 
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
-import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 
 public interface DetailVisitor<T> {
 
     T visit(EqualityDetail detail);
 
-    T visit(RegexMatchDetail detail);
+    T visit(RegexDetail detail);
 
     T visit(RangeDetail detail);
 

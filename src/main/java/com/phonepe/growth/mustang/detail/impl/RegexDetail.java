@@ -33,14 +33,14 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class RegexMatchDetail extends Detail {
+public class RegexDetail extends Detail {
     @NotBlank
     private String regex;
 
     @Builder
     @JsonCreator
-    public RegexMatchDetail(@JsonProperty("regex") String regex) {
-        super(Caveat.REGEX_MATCH);
+    public RegexDetail(@JsonProperty("regex") String regex) {
+        super(Caveat.REGEX);
         this.regex = regex;
     }
 

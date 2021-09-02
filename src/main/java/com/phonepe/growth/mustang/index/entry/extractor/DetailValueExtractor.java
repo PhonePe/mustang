@@ -22,7 +22,7 @@ import java.util.Set;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
-import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 
 public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
     @Override
@@ -31,7 +31,7 @@ public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
     }
 
     @Override
-    public Set<Object> visit(RegexMatchDetail detail) {
+    public Set<Object> visit(RegexDetail detail) {
         return Collections.singleton(detail.getRegex());
     }
 

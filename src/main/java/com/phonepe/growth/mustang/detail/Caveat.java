@@ -28,7 +28,7 @@ public enum Caveat {
             return visitor.visitEquality();
         }
     },
-    REGEX_MATCH(Caveat.REGEX_MATCH_TEXT) {
+    REGEX(Caveat.REGEX_TEXT) {
         @Override
         public <T> T visit(Visitor<T> visitor) {
             return visitor.visitRegexMatch();
@@ -45,7 +45,7 @@ public enum Caveat {
     private String value;
 
     public static final String EQUALITY_TEXT = "EQUALITY";
-    public static final String REGEX_MATCH_TEXT = "REGEX_MATCH";
+    public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
 
     public abstract <T> T visit(Visitor<T> visitor);

@@ -46,7 +46,7 @@ import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
-import com.phonepe.growth.mustang.detail.impl.RegexMatchDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
@@ -3398,6 +3398,28 @@ public class SearchTest {
     }
 
     @Test
+    public void testDNFCriteriaColdSerDe() throws Exception {
+        String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.s\",\"values\":[\"CA\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.g\",\"values\":[\"M\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", 3);
+        testQuery.put("s", "CA");
+        testQuery.put("g", "M");
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
     public void testCNFCriteriaSerDe() throws Exception {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
@@ -3424,6 +3446,29 @@ public class SearchTest {
                 "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");// positive value
+        testQuery.put("b", "B3"); // negative value
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFCriteriaColdSerDe() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
 
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// positive value
@@ -4028,7 +4073,7 @@ public class SearchTest {
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.*")
                                         .build())
                                 .build())
@@ -4088,7 +4133,7 @@ public class SearchTest {
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.*")
                                         .build())
                                 .build())
@@ -4118,7 +4163,9 @@ public class SearchTest {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet("4", "5", "6"))
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
                                 .build())
                         .build())
                 .build();
@@ -4135,8 +4182,8 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
-        assertThat(searchResults, hasSize(1));
-        assertThat(searchResults, contains("C1"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -4151,7 +4198,7 @@ public class SearchTest {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(RegexMatchDetail.builder()
+                                .detail(RegexDetail.builder()
                                         .regex("A.?")
                                         .build())
                                 .build())
@@ -4224,6 +4271,12 @@ public class SearchTest {
                                 .lhs("$.n")
                                 .values(Sets.newHashSet("4", "5", "6"))
                                 .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -4238,8 +4291,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        assertThat(searchResults, hasSize(1));
-        assertThat(searchResults, contains("C1"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
