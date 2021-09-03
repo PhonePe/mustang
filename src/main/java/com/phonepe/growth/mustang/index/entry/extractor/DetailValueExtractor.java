@@ -25,6 +25,7 @@ import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 
 public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
+
     @Override
     public Set<Object> visit(EqualityDetail detail) {
         return detail.getValues();
@@ -39,4 +40,5 @@ public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
     public Set<Object> visit(RangeDetail detail) {
         return Collections.singleton(detail.getNormalisedView());
     }
+
 }
