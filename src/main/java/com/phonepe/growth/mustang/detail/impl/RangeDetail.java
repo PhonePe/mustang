@@ -21,7 +21,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Strings;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
@@ -75,21 +74,19 @@ public class RangeDetail extends Detail {
         return visitor.visit(this);
     }
 
+    @JsonIgnore
     public String getNormalisedView() {
         return String.format(NORMALISED_FORMAT, lowerBound, upperBound, includeLowerBound, includeUpperBound);
     }
 
     public static RangeDetail of(final String normalisedView) {
-        if (!Strings.isNullOrEmpty(normalisedView)) {
-            final String[] parts = normalisedView.split(NORMALISED_FORMAT_SEPARATOR);
-            return RangeDetail.builder()
-                    .lowerBound(Double.valueOf(parts[0]))
-                    .upperBound(Double.valueOf(parts[1]))
-                    .includeLowerBound(Boolean.valueOf(parts[2]))
-                    .includeUpperBound(Boolean.valueOf(parts[3]))
-                    .build();
-        }
-        return null;
+        final String[] parts = normalisedView.split(NORMALISED_FORMAT_SEPARATOR);
+        return RangeDetail.builder()
+                .lowerBound(Double.valueOf(parts[0]))
+                .upperBound(Double.valueOf(parts[1]))
+                .includeLowerBound(Boolean.valueOf(parts[2]))
+                .includeUpperBound(Boolean.valueOf(parts[3]))
+                .build();
 
     }
 
