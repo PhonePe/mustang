@@ -46,8 +46,11 @@ public class RegexDetail extends Detail {
 
     @Override
     public boolean validate(RequestContext context, Object lhsValue) {
-        return String.valueOf(lhsValue)
-                .matches(regex);
+        if (String.class.isAssignableFrom(lhsValue.getClass())) {
+            return lhsValue.toString()
+                    .matches(regex);
+        }
+        return false;
     }
 
     @Override

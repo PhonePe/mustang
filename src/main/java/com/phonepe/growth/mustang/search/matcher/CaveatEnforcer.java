@@ -41,9 +41,13 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitRegexMatch() {
-        return String.valueOf(query.getAssigment()
-                .getOrDefault(key.getName(), ""))
-                .matches(String.valueOf(key.getValue()));
+        final Object value = query.getAssigment()
+                .getOrDefault(key.getName(), null);
+        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
+            return value.toString()
+                    .matches(String.valueOf(key.getValue()));
+        }
+        return false;
     }
 
     @Override

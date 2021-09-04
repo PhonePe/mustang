@@ -61,13 +61,28 @@ Mustang allows indexing Boolean Expressions in high-dimensional multi-valued att
 
 
 
-`Predicate` is a conditional that supports the below operators.
+`Predicate` is a conditional and has the `Detail` that needs to be satisfied.
 
-- `INCLUDED(∈)` is satisfied when any one of the given values match.
-- `EXCLUDED(∉)` is satisfied when none of the given values match.
+- `INCLUDED(∈)` to indicate positive consideration.
+- `EXCLUDED(∉)` to indicate negative consideration.
 
 Further, Mustang allows for logical grouping of `Criteria`(s) when indexing through identification by a name.
 `Criteria` of any form can be indexed into an index-group. And searches are always directed to a specific index-group.
+
+`Detail` holds the information about the `Caveat` that needs to be satisfied. `Detail` can be predominantly of three types :
+
+- `EqualityDetail` to enforce `EQUALITY` caveat.
+- `RegexDetail` to enforce `REGEX` caveat.
+- `RangeDetail` to enforce `RANGE` caveat. Supports all flavors - greater_than, greater_than_equals, less_than, less_than_equals and between (both open & closed).
+
+Below table summarizes `Caveat` support across data types -
+
+| `Caveat `    | Data Types Supported      |
+| :--------   | :------------------------ |
+| `EQUALITY`   | String, Number, Boolean   |
+| `REGEX`      | String                    |
+| `RANGE`      | Number                    |
+
 
 
 ### Usage
@@ -86,8 +101,20 @@ MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 Criteria dnf = DNFCriteria.builder()
 				.id("C1") // id we would get back should this criteria match a given assignment
 				.conjunction(Conjunction.builder()
-				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2", "A3")).build())
-				        .predicate(IncludedPredicate.builder().lhs("$.n").values(Sets.newHashSet(4,5,6)).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.a")
+				            .detail(EqualityDetail.builder().values(Sets.newHashSet("A1", "A2", "A3")).build())
+				            .build())
+				        .predicate(IncludedPredicate.builder().lhs("$.n")
+				            .detail(RangeDetail.builder(). // example for less_than_equals
+				                .lowerBound(3)
+				                .includeLowerBound(true)
+				                .build())
+				            .build())
+				        .predicate(IncludedPredicate.builder().lhs("$.x")
+                              .detail(RangeDetail.builder() // example for greater_than
+                                 .upperBound(3)
+                                 .build())
+                              .build())
 				.build())
 			  .build();
 ```
@@ -99,9 +126,16 @@ Criteria cnf = CNFCriteria.builder()
 				.id("C2") // id we would get back should this criteria match a given assignment
 				.disjunction(Disjunction.builder()
 				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-				        .predicate(ExcludedPredicate.builder().lhs("$.b").values(Sets.newHashSet("B1", "B2")).build())
+				        .predicate(ExcludedPredicate.builder().lhs("$.b")
+				            .detail(RegexDetail.builder().regex("B.?").build())
+				            .build())
 				        .predicate(IncludedPredicate.builder().lhs("$.n")
 				                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
+				        .predicate(IncludedPredicate.builder().lhs("$.x")
+			                  .detail(RangeDetail.builder() // Example for greater_than_equals
+			                         .upperBound(7)
+			                         .includeUpperBound(true)
+			                         .build())
 				        .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
 				.build())
               .build();
@@ -218,7 +252,7 @@ boolean result = evaluate(criteria, context);
 
 #### Index Replacement
 
-At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index groud-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
+At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index ground-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
 
 ```java
 replace(oldIndex, newIndex);
@@ -227,7 +261,7 @@ replace(oldIndex, newIndex);
 
 #### Index Ratification
 
-Ratification is a predicatble way of identifying anomalies in search results for a given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are SUSPECT.
+Ratification is a predictable way of identifying anomalies in search results for a given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are SUSPECT.
 
 ```java
 engine.ratify(indexName); // This triggers the ratification process in the background
@@ -235,6 +269,9 @@ RatificationResult result = engine.getRatificationResult(indexName); // Check ba
 ```
 
 
+#### Note on backward compatibility
+
+`2.0.0` and above are fully backward compatible with `1.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `2.0.0` and above without any issues. 
 
 
 
