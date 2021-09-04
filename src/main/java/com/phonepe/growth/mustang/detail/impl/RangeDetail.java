@@ -26,7 +26,6 @@ import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
 
-import io.dropwizard.validation.ValidationMethod;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -87,13 +86,6 @@ public class RangeDetail extends Detail {
                 .includeLowerBound(Boolean.valueOf(parts[2]))
                 .includeUpperBound(Boolean.valueOf(parts[3]))
                 .build();
-
-    }
-
-    @JsonIgnore
-    @ValidationMethod
-    public boolean isValid() {
-        return Objects.nonNull(lowerBound) || Objects.nonNull(upperBound);
 
     }
 

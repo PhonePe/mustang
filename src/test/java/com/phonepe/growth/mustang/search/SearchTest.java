@@ -4678,4 +4678,55 @@ public class SearchTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
+    @Test
+    public void testFullRangeDetail() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", 0.000000000000003);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C3"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
 }
