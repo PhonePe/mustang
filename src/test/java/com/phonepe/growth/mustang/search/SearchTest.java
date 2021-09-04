@@ -45,6 +45,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
+import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.exception.ErrorCode;
@@ -4185,7 +4186,9 @@ public class SearchTest {
                                 .build())
                         .predicate(ExcludedPredicate.builder()
                                 .lhs("$.b")
-                                .values(Sets.newHashSet("B1", "B2"))
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .build())
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")

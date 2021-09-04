@@ -63,17 +63,19 @@ Mustang allows indexing Boolean Expressions in high-dimensional multi-valued att
 
 `Predicate` is a conditional and has the `Detail` that needs to be satisfied.
 
-- `INCLUDED(∈)` to indicate positive consideration.
-- `EXCLUDED(∉)` to indicate negative consideration.
+- `INCLUDED` to indicate inclusion.
+- `EXCLUDED` to indicate exclusion.
 
 Further, Mustang allows for logical grouping of `Criteria`(s) when indexing through identification by a name.
 `Criteria` of any form can be indexed into an index-group. And searches are always directed to a specific index-group.
+
 
 `Detail` holds the information about the `Caveat` that needs to be satisfied. `Detail` can be predominantly of three types :
 
 - `EqualityDetail` to enforce `EQUALITY` caveat.
 - `RegexDetail` to enforce `REGEX` caveat.
 - `RangeDetail` to enforce `RANGE` caveat. Supports all flavors - greater_than, greater_than_equals, less_than, less_than_equals and between (both open & closed).
+
 
 Below table summarizes `Caveat` support across data types -
 
@@ -99,46 +101,71 @@ MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 
 ``` java
 Criteria dnf = DNFCriteria.builder()
-				.id("C1") // id we would get back should this criteria match a given assignment
-				.conjunction(Conjunction.builder()
-				        .predicate(IncludedPredicate.builder().lhs("$.a")
-				            .detail(EqualityDetail.builder().values(Sets.newHashSet("A1", "A2", "A3")).build())
-				            .build())
-				        .predicate(IncludedPredicate.builder().lhs("$.n")
-				            .detail(RangeDetail.builder(). // example for less_than_equals
-				                .lowerBound(3)
-				                .includeLowerBound(true)
-				                .build())
-				            .build())
-				        .predicate(IncludedPredicate.builder().lhs("$.x")
-                              .detail(RangeDetail.builder() // example for greater_than
-                                 .upperBound(3)
-                                 .build())
-                              .build())
-				.build())
-			  .build();
+                .id("C1") // id we would get back should this criteria match a given assignment
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2", "A3"))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder() // example for less_than_equals
+                                        .lowerBound(3)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder() // example for greater_than
+                                        .upperBound(3)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
 ```
 
 #### Defining CNF criteria
 
 ``` java
 Criteria cnf = CNFCriteria.builder()
-				.id("C2") // id we would get back should this criteria match a given assignment
-				.disjunction(Disjunction.builder()
-				        .predicate(IncludedPredicate.builder().lhs("$.a").values(Sets.newHashSet("A1", "A2")).build())
-				        .predicate(ExcludedPredicate.builder().lhs("$.b")
-				            .detail(RegexDetail.builder().regex("B.?").build())
-				            .build())
-				        .predicate(IncludedPredicate.builder().lhs("$.n")
-				                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003)).build())
-				        .predicate(IncludedPredicate.builder().lhs("$.x")
-			                  .detail(RangeDetail.builder() // Example for greater_than_equals
-			                         .upperBound(7)
-			                         .includeUpperBound(true)
-			                         .build())
-				        .predicate(IncludedPredicate.builder().lhs("$.p").values(Sets.newHashSet(true)).build())
-				.build())
-              .build();
+                .id("C2") // id we would get back should this criteria match a given assignment
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2"))
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(RegexDetail.builder()
+                                        .regex("B.?")
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets
+                                                .newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder() // Example for greater_than_equals
+                                        .upperBound(7)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet(true))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
 ```
 
 #### Indexing criteria
