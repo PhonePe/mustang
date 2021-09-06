@@ -298,7 +298,7 @@ RatificationResult result = engine.getRatificationResult(indexName); // Check ba
 
 #### Note on backward compatibility
 
-`2.0.0` and above are fully backward compatible with `1.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `2.0.0` and above without any issues. 
+`2.0.0` and above are fully backward compatible with `1.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `2.0.0` and above.
 
 
 
