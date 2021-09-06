@@ -16,8 +16,6 @@
  */
 package com.phonepe.growth.mustang.predicate;
 
-import java.util.Set;
-
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -29,6 +27,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
+import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
@@ -40,7 +39,7 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
         @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
-@JsonPropertyOrder({ "type", "lhs", "values", "lhsNotAPath", "weight", "defaultResult" })
+@JsonPropertyOrder({ "type", "lhs", "detail", "lhsNotAPath", "weight", "defaultResult" })
 public abstract class Predicate {
     @NotNull
     private PredicateType type;
@@ -81,13 +80,13 @@ public abstract class Predicate {
                 .type(type)
                 .lhs(lhs)
                 .lhsValue(fetchValue(context))
-                .values(getValues())
+                .detail(getDetail())
                 .build();
     }
 
     public abstract boolean evaluate(RequestContext context, Object lhsValue);
 
-    public abstract Set<Object> getValues();
+    public abstract Detail getDetail();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 

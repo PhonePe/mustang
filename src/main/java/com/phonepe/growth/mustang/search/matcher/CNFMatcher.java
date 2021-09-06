@@ -188,11 +188,14 @@ public class CNFMatcher {
     private Optional<Key> getMatchingKey(final int k,
             final Entry<Key, TreeMap<Integer, DisjunctionPostingEntry>> entry) {
         final Key key = entry.getKey();
-        if (key.getValue()
-                .equals(query.getAssigment()
-                        .getOrDefault(key.getName(), null))
-                || (k == 0 && key.getName()
-                        .equals(ZERO_SIZE_DISJUNCTION_ENTRY_KEY))) {
+        if (k == 0 && key.getName()
+                .equals(ZERO_SIZE_DISJUNCTION_ENTRY_KEY)) {
+            return Optional.of(key);
+        }
+
+        final boolean result = key.getCaveat()
+                .visit(new CaveatEnforcer(key, query));
+        if (result) {
             return Optional.of(key);
         }
         return Optional.empty();
