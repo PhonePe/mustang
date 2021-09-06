@@ -51,7 +51,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                 .map(Matches::getProbables)
                 .flatMap(map -> map.entrySet()
                         .stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> o));
         final Map<String, Double> tautologicalResults = indexGroup.getTautologicalCriterias()
                 .keySet()
                 .stream()

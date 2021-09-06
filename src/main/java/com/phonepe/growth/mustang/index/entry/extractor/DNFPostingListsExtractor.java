@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.predicate.PredicateType;
@@ -46,21 +47,23 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
 
     @Override
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
+        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
     }
 
     @Override
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getValues());
+        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
     }
 
-    private Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> extractPostingLists(PredicateType pType,
-            String lhs,
-            Set<?> values) {
+    private Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> extractPostingLists(final PredicateType pType,
+            final String lhs,
+            final Detail detail) {
+        final Set<Object> values = detail.accept(new DetailValueExtractor());
         return values.stream()
                 .map(value -> {
                     final Key key = Key.builder()
                             .name(lhs)
+                            .caveat(detail.getCaveat())
                             .value(value)
                             .build();
                     dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0))
@@ -74,9 +77,9 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                 .type(pType)
                                 .score(0)
                                 .build()))
-                .collect(Collectors.groupingBy(Pair::getKey,
+                .collect(Collectors.groupingBy(Pair::getLeft,
                         LinkedHashMap::new,
-                        Collectors.mapping(Pair::getValue,
+                        Collectors.mapping(Pair::getRight,
                                 Collectors.toMap(ConjunctionPostingEntry::getIId, x -> x, (o, n) -> n, TreeMap::new))));
     }
 }

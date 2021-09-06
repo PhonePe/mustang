@@ -16,8 +16,11 @@
  */
 package com.phonepe.growth.mustang.predicate;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum PredicateType {
     EXCLUDED(PredicateType.EXCLUDED_TEXT),
     INCLUDED(PredicateType.INCLUDED_TEXT);
@@ -27,9 +30,5 @@ public enum PredicateType {
 
     @Getter
     private String value;
-
-    private PredicateType(String value) {
-        this.value = value;
-    }
 
 }

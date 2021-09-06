@@ -36,6 +36,7 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
@@ -230,6 +231,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key key = Key.builder()
                 .name("$.b")
+                .caveat(Caveat.EQUALITY)
                 .value("B1")
                 .upperBoundScore(0)
                 .build();
@@ -254,6 +256,7 @@ public class IndexTest {
                         .size());
         final Key akeyC3 = Key.builder()
                 .name("$.a")
+                .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
                 .build();
@@ -270,6 +273,7 @@ public class IndexTest {
                         .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
+                .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
                 .build();
@@ -290,6 +294,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key aKey = Key.builder()
                 .name("$.a")
+                .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
                 .build();
@@ -574,6 +579,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key key = Key.builder()
                 .name("$.b")
+                .caveat(Caveat.EQUALITY)
                 .value("B2")
                 .upperBoundScore(0)
                 .build();
@@ -598,6 +604,7 @@ public class IndexTest {
                         .size());
         final Key bkey = Key.builder()
                 .name("$.b")
+                .caveat(Caveat.EQUALITY)
                 .value("B1")
                 .upperBoundScore(0)
                 .build();
@@ -614,6 +621,7 @@ public class IndexTest {
                         .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
+                .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .order(0)
                 .upperBoundScore(0)
@@ -635,6 +643,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key aKey = Key.builder()
                 .name("$.user_id")
+                .caveat(Caveat.EQUALITY)
                 .value("22")
                 .order(1)
                 .upperBoundScore(0)

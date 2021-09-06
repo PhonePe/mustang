@@ -45,6 +45,9 @@ import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
+import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.RangeDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
@@ -3373,9 +3376,54 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria1xxSerDe() throws Exception {
+        String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.s\",\"values\":[\"CA\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.g\",\"values\":[\"M\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+        // Request Map
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", 3);
+        testQuery.put("s", "CA");
+        testQuery.put("g", "M");
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDe() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":4.9E-324,\"upperBound\":3.0E-15,\"includeLowerBound\":false,\"includeUpperBound\":true},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
@@ -3419,13 +3467,59 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
+                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
 
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// positive value
         testQuery.put("b", "B3"); // negative value
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFCriteria1xxSerDe() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"values\":[\"A1\",\"A2\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"values\":[\"B2\",\"B1\"],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"values\":[1.0E-15,2.0E-15,3.0E-15],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"values\":[true],\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");// positive value
+        testQuery.put("b", "B3"); // negative value
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFCriteria2xxSerDe() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B3\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":3.0E-15,\"upperBound\":1.7976931348623157E308,\"includeLowerBound\":true,\"includeUpperBound\":false},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
 
         engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
@@ -4016,6 +4110,626 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
         assertThat(ratificationResult.isFullFledgedRun(), is(true));
+
+    }
+
+    @Test
+    public void testDNFPositiveRegexMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFPositiveRangeCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveRegexMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("A.?")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B3"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveRangeMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveMultiRangeMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000003))
+                                .build())
+                        .build())
+                .build();
+        Criteria c4 = CNFCriteria.builder()
+                .id("C4")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RegexDetail.builder()
+                                        .regex("[0-9]*\\.?[0-9]*")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFPositiveMultipleRangeCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000004)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c4 = DNFCriteria.builder()
+                .id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000002)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c5 = DNFCriteria.builder()
+                .id("C5")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c6 = DNFCriteria.builder()
+                .id("C6")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c7 = DNFCriteria.builder()
+                .id("C7")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c8 = DNFCriteria.builder()
+                .id("C8")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000004)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        engine.add("test", c5);
+        engine.add("test", c6);
+        engine.add("test", c7);
+        engine.add("test", c8);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(4));
+        assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveMultipleRangeCheck() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000004)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c4 = CNFCriteria.builder()
+                .id("C4")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000002)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c5 = CNFCriteria.builder()
+                .id("C5")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c6 = CNFCriteria.builder()
+                .id("C6")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c7 = CNFCriteria.builder()
+                .id("C7")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c8 = CNFCriteria.builder()
+                .id("C8")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000004)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        engine.add("test", c5);
+        engine.add("test", c6);
+        engine.add("test", c7);
+        engine.add("test", c8);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(4));
+        assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testFullRangeDetail() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(RangeDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("n", 0.000000000000003);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C3"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
 }

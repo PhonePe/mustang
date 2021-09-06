@@ -49,6 +49,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DNFMatcher {
+
     private static final Comparator<Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>> COMPARATOR = (
             e1,
             e2) -> (ObjectUtils.compare(getPostingEntry(e1), getPostingEntry(e2), true));
@@ -167,11 +168,14 @@ public class DNFMatcher {
     private Optional<Key> getMatchingKey(final int k,
             final Entry<Key, TreeMap<Integer, ConjunctionPostingEntry>> entry) {
         final Key key = entry.getKey();
-        if (key.getValue()
-                .equals(query.getAssigment()
-                        .getOrDefault(key.getName(), null))
-                || (k == 0 && key.getName()
-                        .equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY))) {
+        if (k == 0 && key.getName()
+                .equals(ZERO_SIZE_CONJUNCTION_ENTRY_KEY)) {
+            return Optional.of(key);
+        }
+
+        final boolean result = key.getCaveat()
+                .visit(new CaveatEnforcer(key, query));
+        if (result) {
             return Optional.of(key);
         }
         return Optional.empty();
