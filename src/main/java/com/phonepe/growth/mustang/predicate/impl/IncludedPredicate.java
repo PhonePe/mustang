@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
@@ -52,7 +53,7 @@ public class IncludedPredicate extends Predicate {
             @JsonProperty("weight") Long weight,
             @JsonProperty("detail") Detail detail,
             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
-        super(PredicateType.INCLUDED, lhs, lhsNotAPath, Objects.isNull(weight) ? 1 : weight, Boolean.FALSE);
+        super(PredicateType.INCLUDED, lhs, lhsNotAPath, Utils.getRationalWeight(weight), Boolean.FALSE);
         this.detail = Objects.nonNull(detail) ? detail
                 : EqualityDetail.builder()
                         .values(values)

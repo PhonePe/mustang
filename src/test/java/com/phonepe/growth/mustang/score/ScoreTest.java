@@ -124,6 +124,75 @@ public class ScoreTest {
     }
 
     @Test
+    public void testDNFPositiveMatchImplicitWeights() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .weight(0L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .weight(0L)
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .weight(10L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .weight(10L)
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final RequestContext context = RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build();
+        final Set<String> searchResults = engine.search("test", context);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(engine.score(c2, context) == -1);
+        Assert.assertTrue(engine.score(c1, context) == 3);
+
+        final List<Pair<String, Double>> scores = engine.score(Arrays.asList(c1, c2), context);
+        Assert.assertTrue(scores.get(0)
+                .getKey()
+                .equals("C1")
+                && scores.get(0)
+                        .getValue() == 3);
+        Assert.assertTrue(scores.get(1)
+                .getKey()
+                .equals("C2")
+                && scores.get(1)
+                        .getValue() == -1);
+    }
+
+    @Test
     public void testDNFNegativeMatch() throws Exception {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -226,6 +295,64 @@ public class ScoreTest {
         Assert.assertTrue(searchResults.size() == 1);
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(engine.score(c1, context) == 10);
+        Assert.assertTrue(engine.score(c2, context) == -1);
+    }
+
+    @Test
+    public void testCNFPositiveMatchImplicitWeights() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .weight(0L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .weight(0L)
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .weight(10L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .weight(10L)
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final RequestContext context = RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build();
+        final Set<String> searchResults = engine.search("test", context);
+        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(engine.score(c1, context) == 1);
         Assert.assertTrue(engine.score(c2, context) == -1);
     }
 
