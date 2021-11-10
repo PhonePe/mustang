@@ -539,6 +539,112 @@ public class SearchTest {
     }
 
     @Test
+    public void testDNFPositiveMatch3() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$['store']['book'][0]['basePrice']")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.inStock == false)].category")
+                                .values(Sets.newHashSet("fiction"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.category == 'reference')].inStock")
+                                .values(Sets.newHashSet(false))
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(
+                                "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                        .build());
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveMatch3() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$['store']['book'][0]['basePrice']")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .values(Sets.newHashSet(8.90))
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.store.book[?(@.category == 'reference')].price")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readTree(
+                                "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                        .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
     public void testCNFSearchingMultipleMatch() {
         final Criteria c1 = CNFCriteria.builder()
                 .id("C1")
