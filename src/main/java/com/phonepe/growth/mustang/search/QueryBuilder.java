@@ -16,7 +16,6 @@
  */
 package com.phonepe.growth.mustang.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
 
@@ -25,7 +24,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class QueryBuilder {
 
-    public Query buildQuery(final ObjectMapper mapper, final RequestContext context) {
+    public Query buildQuery(final RequestContext context) {
         return Query.builder()
                 .requestContext(context)
                 .parsedContext(JsonPath.parse(context.getNode().toString()))

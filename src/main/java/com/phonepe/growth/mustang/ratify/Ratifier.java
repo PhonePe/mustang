@@ -110,7 +110,7 @@ public class Ratifier {
         final RequestContext context = RequestContext.builder()
                 .node(getJsonNodeFromAssignment(assigment))
                 .build();
-        final Query query = QueryBuilder.buildQuery(mapper, context);
+        final Query query = QueryBuilder.buildQuery(context);
         final Set<String> searchResults = getSearchResults(query);
         final Set<String> scanResults = getScanResults(query);
         final boolean result = Sets.symmetricDifference(searchResults, scanResults)

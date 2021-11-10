@@ -84,12 +84,12 @@ public class MustangEngine {
     }
 
     public Set<String> search(final String indexName, final RequestContext context, final int topN) {
-        final Query query = QueryBuilder.buildQuery(mapper, context);
+        final Query query = QueryBuilder.buildQuery(context);
         return searchFacade.search(indexName, query, topN, true);
     }
 
     public Set<String> search(final String indexName, final RequestContext context, final boolean score) {
-        final Query query = QueryBuilder.buildQuery(mapper, context);
+        final Query query = QueryBuilder.buildQuery(context);
         return searchFacade.search(indexName, query, -1, score);
     }
 
