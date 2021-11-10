@@ -626,10 +626,20 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
+        Criteria c4 = CNFCriteria.builder()
+                .id("C4")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$['store']['book'][0]['price']")
+                                .values(Sets.newHashSet(8.95))
+                                .build())
+                        .build())
+                .build();
 
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
+        engine.add("test", c4);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.readTree(
