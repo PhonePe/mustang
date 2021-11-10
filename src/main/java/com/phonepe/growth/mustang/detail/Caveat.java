@@ -39,6 +39,12 @@ public enum Caveat {
         public <T> T visit(Visitor<T> visitor) {
             return visitor.visitRange();
         }
+    },
+    VERSIONING(Caveat.VERSIONING_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitVersioning();
+        }
     };
 
     @Getter
@@ -47,6 +53,7 @@ public enum Caveat {
     public static final String EQUALITY_TEXT = "EQUALITY";
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
+    public static final String VERSIONING_TEXT = "VERSIONING";
 
     public abstract <T> T visit(Visitor<T> visitor);
 
@@ -57,6 +64,8 @@ public enum Caveat {
         T visitRegexMatch();
 
         T visitRange();
+
+        T visitVersioning();
 
     }
 }

@@ -19,7 +19,6 @@ package com.phonepe.growth.mustang.detail.impl;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.Caveat;
@@ -73,7 +72,6 @@ public class RangeDetail extends Detail {
         return visitor.visit(this);
     }
 
-    @JsonIgnore
     public String getNormalisedView() {
         return String.format(NORMALISED_FORMAT, lowerBound, upperBound, includeLowerBound, includeUpperBound);
     }
