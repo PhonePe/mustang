@@ -226,8 +226,7 @@ public class EvaluationTest {
                 .id("C1")
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
-                                .lhs("A") // This value is picked up for evaluation always when not a path.
-                                .lhsNotAPath(true)
+                                .lhs("A") // Not a valid path
                                 .values(Sets.newHashSet("A", "B"))
                                 .build())
                         .predicate(IncludedPredicate.builder()
@@ -240,7 +239,7 @@ public class EvaluationTest {
         testQuery.put("a", "B"); // Doesn't matter as the predicate setup above already satisfies itself.
         testQuery.put("n", "7");
 
-        Assert.assertTrue(engine.evaluate(c1,
+        Assert.assertFalse(engine.evaluate(c1,
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build()));
@@ -250,7 +249,6 @@ public class EvaluationTest {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("1")
-                                .lhsNotAPath(true)
                                 .values(Sets.newHashSet("6", "7")) // Never satisfied
                                 .build())
                         .build())

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
@@ -65,6 +66,7 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .name(lhs)
                             .caveat(detail.getCaveat())
                             .value(value)
+                            .compiledPath(JsonPath.compile(lhs))
                             .build();
                     dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0))
                             .getAndIncrement();
