@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.json;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
@@ -25,7 +26,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.val;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonUtils {
@@ -39,8 +39,8 @@ public class JsonUtils {
             final Object defaultValue) {
         Object returnValue = defaultValue;
         try {
-            val nodeValue = documentContext.read(jsonPath);
-            if (nodeValue != null) {
+            final Object nodeValue = documentContext.read(jsonPath);
+            if (Objects.nonNull(nodeValue)) {
                 if (List.class.isAssignableFrom(nodeValue.getClass())) {
                     final List<?> nodeListValue = (List<?>) nodeValue;
                     if (!nodeListValue.isEmpty()) {
