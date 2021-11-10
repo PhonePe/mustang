@@ -22,14 +22,12 @@ import com.phonepe.growth.mustang.common.RequestContext;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Query {
-    private RequestContext requestContext;
-    private DocumentContext parsedContext;
+    private final RequestContext requestContext;
+    private final DocumentContext parsedContext;
 
 }
