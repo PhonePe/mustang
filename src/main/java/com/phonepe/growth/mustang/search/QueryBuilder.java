@@ -17,23 +17,18 @@
 package com.phonepe.growth.mustang.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.json.FlattenedJson;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class QueryBuilder {
 
-    public static Query buildQuery(final ObjectMapper mapper, final RequestContext context) {
+    public Query buildQuery(final ObjectMapper mapper, final RequestContext context) {
         return Query.builder()
-                .assigment(FlattenedJson.builder()
-                        .node(context.getNode())
-                        .mapper(mapper)
-                        .build()
-                        .flatten())
-                .context(context)
+                .requestContext(context)
+                .parsedContext(JsonPath.parse(context.getNode().toString()))
                 .build();
     }
 

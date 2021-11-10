@@ -16,12 +16,13 @@
  */
 package com.phonepe.growth.mustang.search;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.spy;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +30,8 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -61,6 +61,7 @@ public class SearchTest {
 
     @Before
     public void setUp() throws Exception {
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
@@ -3376,7 +3377,7 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -3467,7 +3468,7 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}",
+                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1,\"defaultResult\":false}]}]}",
                 mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
 
@@ -3558,40 +3559,6 @@ public class SearchTest {
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
-    }
-
-    @Test
-    public void testExceptionDuringQueryNormalisation() throws Exception {
-        final ObjectMapper mapperSpy = spy(mapper);
-        doThrow(IOException.class).when(mapperSpy)
-                .readValue(Matchers.<byte[]>any(), Matchers.<TypeReference<Map<String, Object>>>any());
-        MustangEngine engine = MustangEngine.builder()
-                .mapper(mapperSpy)
-                .build();
-        Criteria c1 = CNFCriteria.builder()
-                .id("C1")
-                .disjunction(Disjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.a")
-                                .values(Sets.newHashSet("A1", "A2"))
-                                .build())
-                        .build())
-                .build();
-        Map<String, Object> testQuery = Maps.newHashMap();
-        testQuery.put("a", "A1");// positive value
-        testQuery.put("b", "B3"); // negative value
-
-        engine.add("test", c1);
-
-        try {
-            engine.search("test",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
-            Assert.fail("Should have thrown an exception");
-        } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INTERNAL_ERROR.equals(e.getErrorCode()));
-        }
     }
 
     @Test

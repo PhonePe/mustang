@@ -49,11 +49,10 @@ public class IncludedPredicate extends Predicate {
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
-            @JsonProperty("lhsNotAPath") boolean lhsNotAPath,
             @JsonProperty("weight") Long weight,
             @JsonProperty("detail") Detail detail,
             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
-        super(PredicateType.INCLUDED, lhs, lhsNotAPath, Utils.getRationalWeight(weight), Boolean.FALSE);
+        super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight), Boolean.FALSE);
         this.detail = Objects.nonNull(detail) ? detail
                 : EqualityDetail.builder()
                         .values(values)
