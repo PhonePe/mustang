@@ -16,6 +16,10 @@
  */
 package com.phonepe.growth.mustang.predicate;
 
+import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
+
+import java.util.Objects;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
@@ -23,8 +27,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.detail.Detail;
@@ -39,39 +41,21 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
         @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
-@JsonPropertyOrder({ "type", "lhs", "detail", "lhsNotAPath", "weight", "defaultResult" })
+@JsonPropertyOrder({ "type", "lhs", "detail", "weight", "defaultResult" })
 public abstract class Predicate {
     @NotNull
     private PredicateType type;
     @NotBlank
     private String lhs;
-    private boolean lhsNotAPath;
     private Long weight;
     private boolean defaultResult;
 
-    protected Object fetchValue(final RequestContext context) {
-        if (lhsNotAPath) {
-            return lhs;
-        }
-        try {
-            return JsonPath.read(context.getNode()
-                    .toString(), lhs);
-        } catch (PathNotFoundException e) {
-            return null;
-        }
-    }
-
     public boolean evaluate(RequestContext context) {
-        if (lhsNotAPath) {
-            return evaluate(context, lhs);
+        final Object lhsValue = getNodeValue(context.getNode(), lhs);
+        if (Objects.nonNull(lhsValue)) {
+            return evaluate(context, lhsValue);
         }
-        try {
-            return evaluate(context,
-                    JsonPath.read(context.getNode()
-                            .toString(), lhs));
-        } catch (PathNotFoundException e) {
-            return defaultResult;
-        }
+        return defaultResult;
     }
 
     public PredicateDebugResult debug(final RequestContext context) {
@@ -79,7 +63,7 @@ public abstract class Predicate {
                 .result(evaluate(context))
                 .type(type)
                 .lhs(lhs)
-                .lhsValue(fetchValue(context))
+                .lhsValue(getNodeValue(context.getNode(), lhs))
                 .detail(getDetail())
                 .build();
     }

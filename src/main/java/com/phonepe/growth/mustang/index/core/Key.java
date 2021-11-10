@@ -16,10 +16,12 @@
  */
 package com.phonepe.growth.mustang.index.core;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.detail.Caveat;
 
 import lombok.AllArgsConstructor;
@@ -43,4 +45,6 @@ public class Key {
     private int order;
     @Builder.Default
     private long upperBoundScore = 10;
+    @Valid
+    private JsonPath compiledPath;
 }

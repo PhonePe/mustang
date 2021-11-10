@@ -16,6 +16,8 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
+import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
+
 import java.util.Objects;
 
 import com.phonepe.growth.mustang.detail.Caveat;
@@ -35,14 +37,12 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     @Override
     public Boolean visitEquality() {
         return key.getValue()
-                .equals(query.getAssigment()
-                        .getOrDefault(key.getName(), null));
+                .equals(getNodeValue(query.getParsedContext(), key.getCompiledPath(), null));
     }
 
     @Override
     public Boolean visitRegexMatch() {
-        final Object value = query.getAssigment()
-                .getOrDefault(key.getName(), null);
+        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
         if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
             return value.toString()
                     .matches(String.valueOf(key.getValue()));
@@ -52,8 +52,7 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitRange() {
-        final Object value = query.getAssigment()
-                .getOrDefault(key.getName(), null);
+        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
         boolean result = false;
         if (Objects.nonNull(value) && Number.class.isAssignableFrom(value.getClass())) {
             final double numericalValue = ((Number) value).doubleValue();
@@ -69,4 +68,5 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
         }
         return result;
     }
+
 }

@@ -16,7 +16,6 @@
  */
 package com.phonepe.growth.mustang.ratify;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +31,15 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.wnameless.json.unflattener.JsonUnflattener;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.index.builder.CNFIndexer;
 import com.phonepe.growth.mustang.index.builder.DNFIndexer;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Query;
+import com.phonepe.growth.mustang.search.QueryBuilder;
 import com.phonepe.growth.mustang.search.handler.CriteriaSearchHandler;
 
 import lombok.AllArgsConstructor;
@@ -112,10 +110,7 @@ public class Ratifier {
         final RequestContext context = RequestContext.builder()
                 .node(getJsonNodeFromAssignment(assigment))
                 .build();
-        final Query query = Query.builder()
-                .assigment(assigment)
-                .context(context)
-                .build();
+        final Query query = QueryBuilder.buildQuery(context);
         final Set<String> searchResults = getSearchResults(query);
         final Set<String> scanResults = getScanResults(query);
         final boolean result = Sets.symmetricDifference(searchResults, scanResults)
@@ -181,19 +176,13 @@ public class Ratifier {
                 .map(entry -> Pair.of(entry.getKey()
                         .substring(2), entry.getValue()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-        final String unflatten = JsonUnflattener.unflatten(deNormalisedAssignment);
-        try {
-            return mapper.readValue(unflatten, JsonNode.class);
-        } catch (IOException e) {
-            throw MustangException.propagate(e);
-        }
+        return mapper.valueToTree(deNormalisedAssignment);
     }
 
     private Set<String> getSearchResults(final Query query) {
         return CriteriaSearchHandler.builder()
                 .indexGroup(indexGroup)
                 .query(query)
-                .score(false)
                 .build()
                 .handle()
                 .keySet();
@@ -202,7 +191,7 @@ public class Ratifier {
     private Set<String> getScanResults(final Query query) {
         return Scanner.builder()
                 .indexGroup(indexGroup)
-                .context(query.getContext())
+                .context(query.getRequestContext())
                 .build()
                 .scan();
     }

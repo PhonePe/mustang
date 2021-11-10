@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
@@ -94,6 +95,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                 .caveat(detail.getCaveat())
                                 .value(value)
                                 .order(0)
+                                .compiledPath(JsonPath.compile(lhs))
                                 .build();
                     }
                     final AtomicInteger counter = new AtomicInteger(0);
@@ -111,6 +113,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                     .caveat(detail.getCaveat())
                                     .value(value)
                                     .order(counter.get())
+                                    .compiledPath(JsonPath.compile(lhs))
                                     .build());
                 })
                 .map(key -> {
@@ -118,6 +121,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .name(key.getName())
                             .caveat(detail.getCaveat())
                             .value(key.getValue())
+                            .compiledPath(JsonPath.compile(key.getName()))
                             .build();
                     cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger(0))
                             .getAndIncrement();

@@ -295,7 +295,7 @@ public class CNFMatcher {
     private double computeScore(final String cId) {
         if (score) {
             return allCriterias.get(cId)
-                    .getScore(query.getContext());
+                    .getScore(query.getRequestContext());
         }
         return 0;
     }

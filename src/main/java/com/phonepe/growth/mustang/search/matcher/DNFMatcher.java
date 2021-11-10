@@ -62,13 +62,11 @@ public class DNFMatcher {
         final Map<String, Double> result = Maps.newHashMap();
         final Map<Integer, Map<Key, TreeMap<Integer, ConjunctionPostingEntry>>> table = invertedIndex.getTable();
         final int start = 0;
-        final int end = Math.min(query.getAssigment()
-                .size(),
-                table.keySet()
-                        .stream()
-                        .mapToInt(x -> x)
-                        .max()
-                        .orElse(0));
+        final int end = table.keySet()
+                .stream()
+                .mapToInt(x -> x)
+                .max()
+                .orElse(0);
         IntStream.rangeClosed(start, end)
                 .map(i -> end - i + start)
                 .boxed()
@@ -296,7 +294,7 @@ public class DNFMatcher {
     private double computeScore(final String cId) {
         if (score) {
             return allCriterias.get(cId)
-                    .getScore(query.getContext());
+                    .getScore(query.getRequestContext());
         }
         return 0;
     }
