@@ -85,7 +85,7 @@ Below table summarizes `Caveat` support across data types -
 | `EQUALITY`   | String, Number, Boolean   |
 | `REGEX`      | String                    |
 | `RANGE`      | Number                    |
-| `VERSIONING` | Number                    |
+| `VERSIONING` | String                    |
 
 
 
