@@ -4863,19 +4863,36 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.BELOW)
+                                        .baseVersion("1.2")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
         testQuery.put("n", "5.7.40");
+        testQuery.put("x", 1.2); // Not a number and hence shall fail
         testQuery.put("p", true);
 
         engine.add("test", c1);
         engine.add("test", c2);
+        engine.add("test", c3);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.contains("C1"));
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, contains("C1", "C2"));
 
@@ -4923,14 +4940,36 @@ public class SearchTest {
                                 .build())
                         .build())
                 .build();
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.BELOW)
+                                        .baseVersion("1.2")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
         testQuery.put("n", "5.7.40");
+        testQuery.put("x", 1.2); // Not a number and hence shall fail.
         testQuery.put("p", false);
 
         engine.add("test", c1);
         engine.add("test", c2);
+        engine.add("test", c3);
         final Set<String> searchResults = engine.search("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
