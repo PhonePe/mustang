@@ -13,11 +13,11 @@ public class ComparisionInference implements CheckType.Visitor<Boolean> {
 
     @Override
     public Boolean visitAbove() {
-        return exclude ? comparisionResult > 0 : comparisionResult >= 0;
+        return exclude ? comparisionResult < 0 : comparisionResult <= 0;
     }
 
     @Override
     public Boolean visitBelow() {
-        return exclude ? comparisionResult < 0 : comparisionResult <= 0;
+        return exclude ? comparisionResult > 0 : comparisionResult >= 0;
     }
 }
