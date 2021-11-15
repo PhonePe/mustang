@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.0.2</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 
@@ -75,6 +75,7 @@ Further, Mustang allows for logical grouping of `Criteria`(s) when indexing thro
 - `EqualityDetail` to enforce `EQUALITY` caveat.
 - `RegexDetail` to enforce `REGEX` caveat.
 - `RangeDetail` to enforce `RANGE` caveat. Supports all flavors - greater_than, greater_than_equals, less_than, less_than_equals and between (both open & closed).
+- `VersioningDetail` to enforce easier version checks.
 
 
 Below table summarizes `Caveat` support across data types -
@@ -84,6 +85,7 @@ Below table summarizes `Caveat` support across data types -
 | `EQUALITY`   | String, Number, Boolean   |
 | `REGEX`      | String                    |
 | `RANGE`      | Number                    |
+| `VERSIONING` | String                    |
 
 
 
@@ -162,6 +164,13 @@ Criteria cnf = CNFCriteria.builder()
                                 .lhs("$.p")
                                 .detail(EqualityDetail.builder()
                                         .values(Sets.newHashSet(true))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.v")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.ABOVE)
+                                        .baseVersion("1.2.3.4-alpha") // good coverage across formats
                                         .build())
                                 .build())
                         .build())

@@ -25,6 +25,7 @@ import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
+import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,9 +35,10 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "caveat")
 @JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = EqualityDetail.class),
         @JsonSubTypes.Type(name = Caveat.REGEX_TEXT, value = RegexDetail.class),
-        @JsonSubTypes.Type(name = Caveat.RANGE_TEXT, value = RangeDetail.class), })
-@JsonPropertyOrder({ "caveat", "values", "regex", "lowerBound", "upperBound", "includeLowerBound",
-        "includeUpperBound" })
+        @JsonSubTypes.Type(name = Caveat.RANGE_TEXT, value = RangeDetail.class),
+        @JsonSubTypes.Type(name = Caveat.VERSIONING_TEXT, value = VersioningDetail.class) })
+@JsonPropertyOrder({ "caveat", "values", "regex", "lowerBound", "upperBound", "includeLowerBound", "includeUpperBound",
+        "check", "baseVersion", "excludeBase" })
 public abstract class Detail {
     @NotNull
     private final Caveat caveat;

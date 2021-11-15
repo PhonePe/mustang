@@ -20,8 +20,12 @@ import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
 import java.util.Objects;
 
+import org.apache.maven.artifact.versioning.ComparableVersion;
+
 import com.phonepe.growth.mustang.detail.Caveat;
+import com.phonepe.growth.mustang.detail.impl.ComparisionInference;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
+import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.search.Query;
 
@@ -67,6 +71,19 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
                             .doubleValue());
         }
         return result;
+    }
+
+    @Override
+    public Boolean visitVersioning() {
+        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
+        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
+            final VersioningDetail detail = VersioningDetail.of(String.valueOf(key.getValue()));
+            final int comparisionResult = new ComparableVersion(detail.getBaseVersion())
+                    .compareTo(new ComparableVersion(value.toString()));
+            return detail.getCheck()
+                    .accept(new ComparisionInference(comparisionResult, detail.isExcludeBase()));
+        }
+        return false;
     }
 
 }
