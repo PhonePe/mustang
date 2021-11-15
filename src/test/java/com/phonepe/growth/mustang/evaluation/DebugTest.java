@@ -711,7 +711,7 @@ public class DebugTest {
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
-        testQuery.put("a", "B"); // Doesn't matter as the predicate setup above already satisfies itself.
+        testQuery.put("a", "B"); // Doesn't matter as the predicate setup above doesn't point to valid path.
         testQuery.put("n", "7");
 
         Assert.assertFalse(engine.debug(c1,

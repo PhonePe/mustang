@@ -14,21 +14,26 @@
  * limitations under the License.
  *
  */
-package com.phonepe.growth.mustang.detail;
+package com.phonepe.growth.mustang.detail.impl;
 
-import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
-import com.phonepe.growth.mustang.detail.impl.RangeDetail;
-import com.phonepe.growth.mustang.detail.impl.RegexDetail;
-import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 
-public interface DetailVisitor<T> {
+@Value
+@Builder
+@AllArgsConstructor
+public class ComparisionInference implements CheckType.Visitor<Boolean> {
+    private final int comparisionResult;
+    private final boolean exclude;
 
-    T visit(EqualityDetail detail);
+    @Override
+    public Boolean visitAbove() {
+        return exclude ? comparisionResult < 0 : comparisionResult <= 0;
+    }
 
-    T visit(RegexDetail detail);
-
-    T visit(RangeDetail detail);
-
-    T visit(VersioningDetail detail);
-
+    @Override
+    public Boolean visitBelow() {
+        return exclude ? comparisionResult > 0 : comparisionResult >= 0;
+    }
 }
