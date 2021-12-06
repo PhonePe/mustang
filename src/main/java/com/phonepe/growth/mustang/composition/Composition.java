@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.composition;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -46,6 +47,7 @@ public abstract class Composition {
     @NotNull
     private final CompositionType type;
     @NotEmpty
+    @Valid
     private List<Predicate> predicates;
 
     public abstract boolean evaluate(RequestContext context);
