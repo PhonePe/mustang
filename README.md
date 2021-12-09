@@ -1,13 +1,13 @@
 # Metrics
 
 
-[![Quality Gate Status](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Coverage](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Bugs](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Vulnerabilities](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Reliability Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Security Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Technical Debt](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Quality Gate Status](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Coverage](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Bugs](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Vulnerabilities](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Reliability Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Security Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Technical Debt](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
 
 # Mustang
 
