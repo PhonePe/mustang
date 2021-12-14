@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
 </dependency>
 ```
 
