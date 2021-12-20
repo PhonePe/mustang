@@ -155,7 +155,7 @@ Criteria cnf = CNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
-                                .detail(RangeDetail.builder() // Example for greater_than_equals
+                                .detail(RangeDetail.builder() // Example for lesser_than_equals
                                         .upperBound(7)
                                         .includeUpperBound(true)
                                         .build())
