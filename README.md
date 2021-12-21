@@ -113,14 +113,14 @@ Criteria dnf = DNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .detail(RangeDetail.builder() // example for less_than_equals
+                                .detail(RangeDetail.builder() // example for greater_than_equals
                                         .lowerBound(3)
                                         .includeLowerBound(true)
                                         .build())
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
-                                .detail(RangeDetail.builder() // example for greater_than
+                                .detail(RangeDetail.builder() // example for less_than
                                         .upperBound(3)
                                         .build())
                                 .build())
