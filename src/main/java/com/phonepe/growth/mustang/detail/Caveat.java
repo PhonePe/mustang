@@ -22,6 +22,12 @@ import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum Caveat {
+    NONE(Caveat.NONE_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitNone();
+        }
+    },
     EQUALITY(Caveat.EQUALITY_TEXT) {
         @Override
         public <T> T visit(Visitor<T> visitor) {
@@ -50,6 +56,7 @@ public enum Caveat {
     @Getter
     private String value;
 
+    public static final String NONE_TEXT = "TEXT";
     public static final String EQUALITY_TEXT = "EQUALITY";
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
@@ -58,6 +65,8 @@ public enum Caveat {
     public abstract <T> T visit(Visitor<T> visitor);
 
     public interface Visitor<T> {
+
+        T visitNone();
 
         T visitEquality();
 

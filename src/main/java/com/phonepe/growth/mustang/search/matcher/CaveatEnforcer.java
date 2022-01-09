@@ -39,6 +39,11 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     private final Query query;
 
     @Override
+    public Boolean visitNone() {
+        return true;
+    }
+
+    @Override
     public Boolean visitEquality() {
         return key.getValue()
                 .equals(getNodeValue(query.getParsedContext(), key.getCompiledPath(), null));

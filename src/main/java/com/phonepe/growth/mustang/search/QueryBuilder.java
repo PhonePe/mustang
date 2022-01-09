@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.search;
 
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.json.JsonFlattener;
 
 import lombok.experimental.UtilityClass;
 
@@ -27,7 +28,12 @@ public class QueryBuilder {
     public Query buildQuery(final RequestContext context) {
         return Query.builder()
                 .requestContext(context)
-                .parsedContext(JsonPath.parse(context.getNode().toString()))
+                .parsedContext(JsonPath.parse(context.getNode()
+                        .toString()))
+                .flattenedContext(JsonFlattener.builder()
+                        .node(context.getNode())
+                        .build()
+                        .flatten())
                 .build();
     }
 

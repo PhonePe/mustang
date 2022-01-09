@@ -16,8 +16,6 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import static com.phonepe.growth.mustang.index.builder.CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +27,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -174,31 +173,18 @@ public class CNFMatcher {
             final Map<Integer, Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> table,
             final int k) {
         final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-        return map.entrySet()
-                .stream()
-                .map(entry -> getMatchingKey(k, entry))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
+        return getMatchingKeys(map).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
                 .stream()
                 .toArray(Map.Entry[]::new);
     }
 
-    private Optional<Key> getMatchingKey(final int k,
-            final Entry<Key, TreeMap<Integer, DisjunctionPostingEntry>> entry) {
-        final Key key = entry.getKey();
-        if (k == 0 && key.getName()
-                .equals(ZERO_SIZE_DISJUNCTION_ENTRY_KEY)) {
-            return Optional.of(key);
-        }
-
-        final boolean result = key.getCaveat()
-                .visit(new CaveatEnforcer(key, query));
-        if (result) {
-            return Optional.of(key);
-        }
-        return Optional.empty();
+    private Stream<Key> getMatchingKeys(final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
+        return map.entrySet()
+                .stream()
+                .map(Entry::getKey)
+                .filter(key -> key.getCaveat()
+                        .visit(new CaveatEnforcer(key, query)));
     }
 
     private void initializeCurrentEntriesCNF(

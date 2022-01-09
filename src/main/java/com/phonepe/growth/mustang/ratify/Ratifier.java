@@ -133,7 +133,7 @@ public class Ratifier {
                 .map(Map::keySet)
                 .flatMap(Set::stream)
                 .filter(key -> !key.getName()
-                        .equals(DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEY))
+                        .equals(DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME))
                 .collect(Collectors.toSet());
         final Set<Key> cnfKeys = index.getCnfInvertedIndex()
                 .getTable()
@@ -142,7 +142,7 @@ public class Ratifier {
                 .map(Map::keySet)
                 .flatMap(Set::stream)
                 .filter(key -> !key.getName()
-                        .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY))
+                        .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEYNAME))
                 .collect(Collectors.toSet());
         return Stream.concat(dnfKeys.stream(), cnfKeys.stream())
                 .distinct()

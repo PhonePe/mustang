@@ -16,6 +16,8 @@
  */
 package com.phonepe.growth.mustang.search;
 
+import org.apache.commons.collections4.map.MultiKeyMap;
+
 import com.jayway.jsonpath.DocumentContext;
 import com.phonepe.growth.mustang.common.RequestContext;
 
@@ -29,5 +31,5 @@ import lombok.Data;
 public class Query {
     private final RequestContext requestContext;
     private final DocumentContext parsedContext;
-
+    private final MultiKeyMap<String, Object> flattenedContext;
 }
