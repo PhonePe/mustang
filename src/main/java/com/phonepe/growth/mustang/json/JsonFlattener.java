@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.phonepe.growth.mustang.json;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,14 +48,14 @@ public class JsonFlattener {
         return map;
     }
 
-    private void process(final JsonNode node, final String prefix1, final String prefix2) {
+    private void process(final JsonNode node, final String dotNotation, final String bracketNotation) {
         if (node.isObject()) {
             final ObjectNode object = (ObjectNode) node;
             object.fields()
                     .forEachRemaining(field -> {
                         process(field.getValue(),
-                                String.format(OBJECT_DOT_NOTATION_PREFIX_FORMAT, prefix1, field.getKey()),
-                                String.format(OBJECT_BRACKET_NOTATION_PREFIX_FORMAT, prefix2, field.getKey()));
+                                String.format(OBJECT_DOT_NOTATION_PREFIX_FORMAT, dotNotation, field.getKey()),
+                                String.format(OBJECT_BRACKET_NOTATION_PREFIX_FORMAT, bracketNotation, field.getKey()));
                     });
         } else if (node.isArray()) {
             final ArrayNode array = (ArrayNode) node;
@@ -48,11 +64,11 @@ public class JsonFlattener {
                     .forEachRemaining(element -> {
                         final int index = counter.getAndIncrement();
                         process(element,
-                                String.format(ARRAY_PREFIX_FORMAT, prefix1, index),
-                                String.format(ARRAY_PREFIX_FORMAT, prefix2, index));
+                                String.format(ARRAY_PREFIX_FORMAT, dotNotation, index),
+                                String.format(ARRAY_PREFIX_FORMAT, bracketNotation, index));
                     });
         } else {
-            map.put(prefix1, prefix2, node);
+            map.put(dotNotation, bracketNotation, node);
         }
     }
 
