@@ -58,7 +58,7 @@ public abstract class Composition {
 
     public abstract <T> T accept(CompositionVisitor<T> visitor);
 
-    public int getWeigthFromContext(RequestContext context, Predicate predicate) {
+    protected int getWeigthFromContext(RequestContext context, Predicate predicate) {
         try {
             JsonPath.read(context.getNode()
                     .toString(), predicate.getLhs());

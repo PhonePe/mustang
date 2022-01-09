@@ -16,8 +16,11 @@
  */
 package com.phonepe.growth.mustang.search.ranking;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum RankingStrategy {
     EXPLICIT_WEIGHTS(RankingStrategy.EXPLICIT_WEIGHTS_TEXT) {
         @Override
@@ -32,15 +35,11 @@ public enum RankingStrategy {
         }
     };
 
-    public static final String EXPLICIT_WEIGHTS_TEXT = "EXPLICIT_WEIGHTS";
-    public static final String IMPLICIT_FREQUENCY_TEXT = "IMPLICIT_FREQUENCY";
+    private static final String EXPLICIT_WEIGHTS_TEXT = "EXPLICIT_WEIGHTS";
+    private static final String IMPLICIT_FREQUENCY_TEXT = "IMPLICIT_FREQUENCY";
 
     @Getter
     private String value;
-
-    RankingStrategy(String value) {
-        this.value = value;
-    }
 
     public abstract <T> T accept(Visitor<T> visitor);
 
