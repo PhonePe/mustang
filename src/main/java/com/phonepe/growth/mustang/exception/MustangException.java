@@ -30,16 +30,12 @@ public class MustangException extends RuntimeException {
     private final ErrorCode errorCode;
 
     @Builder
-    public MustangException(ErrorCode errorCode, String message, Throwable cause) {
-        super(message, cause);
+    public MustangException(ErrorCode errorCode, Throwable cause) {
+        super(cause);
         this.errorCode = errorCode;
     }
 
     public static MustangException propagate(final Throwable throwable) {
-        return propagate("Error occurred", throwable);
-    }
-
-    public static MustangException propagate(final String message, final Throwable throwable) {
         if (throwable instanceof MustangException) {
             return (MustangException) throwable;
         } else if (throwable.getCause() instanceof MustangException) {
@@ -47,7 +43,6 @@ public class MustangException extends RuntimeException {
         }
         return MustangException.builder()
                 .errorCode(ErrorCode.INTERNAL_ERROR)
-                .message(message)
                 .cause(throwable)
                 .build();
     }
