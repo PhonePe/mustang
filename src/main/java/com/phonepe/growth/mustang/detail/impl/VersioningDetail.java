@@ -58,12 +58,9 @@ public class VersioningDetail extends Detail {
 
     @Override
     public boolean validate(RequestContext context, Object lhsValue) {
-        if (String.class.isAssignableFrom(lhsValue.getClass())) {
-            final int comparisionResult = new ComparableVersion(baseVersion)
-                    .compareTo(new ComparableVersion(lhsValue.toString()));
-            return check.accept(new ComparisionInference(comparisionResult, excludeBase));
-        }
-        return false;
+        final int comparisionResult = new ComparableVersion(baseVersion)
+                .compareTo(new ComparableVersion(lhsValue.toString()));
+        return check.accept(new ComparisionInference(comparisionResult, excludeBase));
     }
 
     @Override
