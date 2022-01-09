@@ -50,17 +50,13 @@ public class JsonFlattener {
 
     private void process(final JsonNode node, final String dotNotation, final String bracketNotation) {
         if (node.isObject()) {
-            final ObjectNode objectNode = (ObjectNode) node;
-            objectNode.fields()
-                    .forEachRemaining(field -> {
-                        process(field.getValue(),
-                                String.format(OBJECT_DOT_NOTATION_PREFIX_FORMAT, dotNotation, field.getKey()),
-                                String.format(OBJECT_BRACKET_NOTATION_PREFIX_FORMAT, bracketNotation, field.getKey()));
-                    });
+            ((ObjectNode) node).fields()
+                    .forEachRemaining(field -> process(field.getValue(),
+                            String.format(OBJECT_DOT_NOTATION_PREFIX_FORMAT, dotNotation, field.getKey()),
+                            String.format(OBJECT_BRACKET_NOTATION_PREFIX_FORMAT, bracketNotation, field.getKey())));
         } else if (node.isArray()) {
-            final ArrayNode arrayNode = (ArrayNode) node;
             final AtomicInteger counter = new AtomicInteger();
-            arrayNode.elements()
+            ((ArrayNode) node).elements()
                     .forEachRemaining(element -> {
                         final int index = counter.getAndIncrement();
                         process(element,
