@@ -22,31 +22,13 @@ import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum RankingStrategy {
-    EXPLICIT_WEIGHTS(RankingStrategy.EXPLICIT_WEIGHTS_TEXT) {
-        @Override
-        public <T> T accept(Visitor<T> visitor) {
-            return visitor.visitExplicitWeights();
-        }
-    },
-    IMPLICIT_FREQUENCY(RankingStrategy.IMPLICIT_FREQUENCY_TEXT) {
-        @Override
-        public <T> T accept(Visitor<T> visitor) {
-            return visitor.visitImplicitFrequency();
-        }
-    };
+    EXPLICIT_WEIGHTS(RankingStrategy.EXPLICIT_WEIGHTS_TEXT),
+    IMPLICIT_FREQUENCY(RankingStrategy.IMPLICIT_FREQUENCY_TEXT);
 
     private static final String EXPLICIT_WEIGHTS_TEXT = "EXPLICIT_WEIGHTS";
     private static final String IMPLICIT_FREQUENCY_TEXT = "IMPLICIT_FREQUENCY";
 
     @Getter
     private String value;
-
-    public abstract <T> T accept(Visitor<T> visitor);
-
-    public interface Visitor<T> {
-        T visitExplicitWeights();
-
-        T visitImplicitFrequency();
-    }
 
 }
