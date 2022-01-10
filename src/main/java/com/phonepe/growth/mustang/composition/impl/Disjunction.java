@@ -24,11 +24,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.CompositionType;
-import com.phonepe.growth.mustang.composition.CompositionVisitor;
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
-import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -72,8 +71,4 @@ public class Disjunction extends Composition {
                 .orElse(0);
     }
 
-    @Override
-    public <T> T accept(CompositionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }

@@ -56,8 +56,6 @@ public abstract class Composition {
 
     public abstract double getScore(RequestContext context);
 
-    public abstract <T> T accept(CompositionVisitor<T> visitor);
-
     protected int getWeigthFromContext(RequestContext context, Predicate predicate) {
         try {
             JsonPath.read(context.getNode()
