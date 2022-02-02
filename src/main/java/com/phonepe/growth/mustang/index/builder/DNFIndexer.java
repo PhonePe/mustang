@@ -102,6 +102,7 @@ public class DNFIndexer {
                                         .iId(iId)
                                         .eId(criteria.getId())
                                         .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
+                                        .allPaths(indexGroup.getAllPaths())
                                         .build()))
                                 .collect(Collectors.toList());
 

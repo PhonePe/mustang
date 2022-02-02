@@ -45,6 +45,7 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     private final Integer iId;
     private final String eId;
     private final Map<Key, AtomicInteger> dnfKeyFrequency;
+    private final Map<String, JsonPath> allPaths;
 
     @Override
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
@@ -66,10 +67,10 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .name(lhs)
                             .caveat(detail.getCaveat())
                             .value(value)
-                            .compiledPath(JsonPath.compile(lhs))
                             .build();
                     dnfKeyFrequency.computeIfAbsent(key, x -> new AtomicInteger(0))
                             .getAndIncrement();
+                    allPaths.computeIfAbsent(lhs, x -> JsonPath.compile(lhs));
                     return key;
                 })
                 .map(key -> Pair.of(key,

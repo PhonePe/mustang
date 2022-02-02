@@ -51,9 +51,9 @@ public abstract class Predicate {
     private boolean defaultResult;
 
     public boolean evaluate(RequestContext context) {
-        final Object lhsValue = getNodeValue(context.getNode(), lhs);
-        if (Objects.nonNull(lhsValue)) {
-            return evaluate(context, lhsValue);
+        final Object value = getNodeValue(context.getNode(), lhs);
+        if (Objects.nonNull(value)) {
+            return evaluate(context, value);
         }
         return defaultResult;
     }

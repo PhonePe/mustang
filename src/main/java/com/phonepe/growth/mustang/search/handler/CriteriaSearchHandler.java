@@ -23,8 +23,10 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.json.JsonUtils;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.matcher.CNFMatcher;
 import com.phonepe.growth.mustang.search.matcher.DNFMatcher;
@@ -44,8 +46,10 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @NotNull
     private final Query query;
     private final boolean score;
+    private final Map<String, Object> pathValues = Maps.newHashMap();
 
     public Map<String, Double> handle() {
+        extractValuesForPaths();
         final Map<String, Double> searchResults = Stream.of(CriteriaForm.values())
                 .map(cForm -> cForm.accept(this))
                 .map(Matches::getProbables)
@@ -62,6 +66,15 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> o));
     }
 
+    private void extractValuesForPaths() {
+        indexGroup.getAllPaths()
+                .entrySet()
+                .forEach(entry -> {
+                    pathValues.put(entry.getKey(),
+                            JsonUtils.getNodeValue(query.getParsedContext(), entry.getValue(), null));
+                });
+    }
+
     @Override
     public Matches visitDNF() {
         return Matches.builder()
@@ -69,6 +82,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .invertedIndex(indexGroup.getDnfInvertedIndex())
                         .query(query)
                         .allCriterias(indexGroup.getAllCriterias())
+                        .pathValues(pathValues)
                         .score(score)
                         .build()
                         .getMatches())
@@ -82,6 +96,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .invertedIndex(indexGroup.getCnfInvertedIndex())
                         .query(query)
                         .allCriterias(indexGroup.getAllCriterias())
+                        .pathValues(pathValues)
                         .score(score)
                         .build()
                         .getMatches())

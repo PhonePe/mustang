@@ -16,8 +16,6 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
-
 import java.util.Objects;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -27,7 +25,6 @@ import com.phonepe.growth.mustang.detail.impl.ComparisionInference;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 import com.phonepe.growth.mustang.index.core.Key;
-import com.phonepe.growth.mustang.search.Query;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,7 +33,7 @@ import lombok.Data;
 @AllArgsConstructor
 public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     private final Key key;
-    private final Query query;
+    private final Object value;
 
     @Override
     public Boolean visitNone() {
@@ -46,12 +43,11 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     @Override
     public Boolean visitEquality() {
         return key.getValue()
-                .equals(getNodeValue(query.getParsedContext(), key.getCompiledPath(), null));
+                .equals(value);
     }
 
     @Override
     public Boolean visitRegexMatch() {
-        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
         if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
             return value.toString()
                     .matches(String.valueOf(key.getValue()));
@@ -61,7 +57,6 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitRange() {
-        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
         boolean result = false;
         if (Objects.nonNull(value) && Number.class.isAssignableFrom(value.getClass())) {
             final double numericalValue = ((Number) value).doubleValue();
@@ -80,7 +75,6 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitVersioning() {
-        final Object value = getNodeValue(query.getParsedContext(), key.getCompiledPath(), null);
         if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
             final VersioningDetail detail = VersioningDetail.of(String.valueOf(key.getValue()));
             final int comparisionResult = new ComparableVersion(detail.getBaseVersion())

@@ -117,6 +117,7 @@ public class CNFIndexer {
                                         .order(i)
                                         .postingLists(indexTable.getOrDefault(kSize, Collections.emptyMap()))
                                         .cnfKeyFrequency(indexGroup.getCnfKeyFrequency())
+                                        .allPaths(indexGroup.getAllPaths())
                                         .build()))
                                 .collect(Collectors.toList());
 

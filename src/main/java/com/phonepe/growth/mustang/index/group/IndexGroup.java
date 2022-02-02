@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.google.common.collect.Maps;
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
@@ -54,5 +55,6 @@ public class IndexGroup {
     private final Map<String, Criteria> tautologicalCriterias = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> cnfKeyFrequency = Maps.newConcurrentMap();
+    private final Map<String, JsonPath> allPaths = Maps.newConcurrentMap();
     private RatificationResult ratificationResult;
 }

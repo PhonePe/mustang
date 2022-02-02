@@ -52,6 +52,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     private final int order;
     private final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> postingLists;
     private final Map<Key, AtomicInteger> cnfKeyFrequency;
+    private final Map<String, JsonPath> allPaths;
 
     @Override
     public Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
@@ -95,7 +96,6 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                 .caveat(detail.getCaveat())
                                 .value(value)
                                 .order(0)
-                                .compiledPath(JsonPath.compile(lhs))
                                 .build();
                     }
                     final AtomicInteger counter = new AtomicInteger(0);
@@ -113,7 +113,6 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                     .caveat(detail.getCaveat())
                                     .value(value)
                                     .order(counter.get())
-                                    .compiledPath(JsonPath.compile(lhs))
                                     .build());
                 })
                 .map(key -> {
@@ -121,10 +120,10 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .name(key.getName())
                             .caveat(detail.getCaveat())
                             .value(key.getValue())
-                            .compiledPath(JsonPath.compile(key.getName()))
                             .build();
                     cnfKeyFrequency.computeIfAbsent(baseKey, x -> new AtomicInteger(0))
                             .getAndIncrement();
+                    allPaths.computeIfAbsent(lhs, x -> JsonPath.compile(lhs));
                     return key;
                 })
                 .map(key -> Pair.of(key, postingEntry))

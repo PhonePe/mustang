@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -55,6 +56,7 @@ public class DNFMatcher {
     private final DNFInvertedIndex<ConjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
+    private final Map<String, Object> pathValues;
     private final boolean score;
 
     public Map<String, Double> getMatches() {
@@ -94,7 +96,7 @@ public class DNFMatcher {
                          */
                         if (sameConjunctionCheck(pLists, k - 1)) {
                             /* Reject conjunction if EXCLUDED predicate is violated */
-                            final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(
+                            final ConjunctionPostingEntry conjunctionPostingEntry = getConjunctionPostingEntry(
                                     pLists[0].getValue()
                                             .getValue(),
                                     pLists[0].getValue()
@@ -107,7 +109,7 @@ public class DNFMatcher {
                                 continue; // continue to next while loop iteration
                             } else {
                                 /* conjunction is fully satisfied */
-                                checkAndAdd(result, conjunctionPostingEntry.get());
+                                checkAndAdd(result, conjunctionPostingEntry);
                             }
                             /* nextID is the smallest possible ID after current ID */
                             nextID = getNextHigherId(k,
@@ -133,17 +135,16 @@ public class DNFMatcher {
 
     private static ConjunctionPostingEntry getPostingEntry(
             final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>> entry) {
-        final Optional<ConjunctionPostingEntry> conjunctionPostingEntry = getConjunctionPostingEntry(entry.getValue()
+        return getConjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        return conjunctionPostingEntry.orElse(null);
     }
 
-    private static Optional<ConjunctionPostingEntry> getConjunctionPostingEntry(
-            TreeMap<Integer, ConjunctionPostingEntry> map,
-            Integer iId) {
-        return Optional.ofNullable(map.get(iId));
+    private static ConjunctionPostingEntry getConjunctionPostingEntry(
+            final TreeMap<Integer, ConjunctionPostingEntry> map,
+            final Integer iId) {
+        return map.get(iId);
     }
 
     @SuppressWarnings("unchecked")
@@ -162,7 +163,7 @@ public class DNFMatcher {
                 .stream()
                 .map(Entry::getKey)
                 .filter(key -> key.getCaveat()
-                        .visit(new CaveatEnforcer(key, query)));
+                        .visit(new CaveatEnforcer(key, pathValues.get(key.getName()))));
     }
 
     private void initializeCurrentEntriesDNF(
@@ -179,15 +180,15 @@ public class DNFMatcher {
     private boolean canContinue(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final int k) {
-        return getConjunctionPostingEntry(pLists[k - 1].getValue()
+        return Objects.nonNull(getConjunctionPostingEntry(pLists[k - 1].getValue()
                 .getValue(),
                 pLists[k - 1].getValue()
-                        .getKey()).isPresent();
+                        .getKey()));
     }
 
-    private boolean conjunctionRejectionCheck(final Optional<ConjunctionPostingEntry> conjunctionPostingEntry) {
-        return !conjunctionPostingEntry.isPresent() || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.get()
-                .getType());
+    private boolean conjunctionRejectionCheck(final ConjunctionPostingEntry conjunctionPostingEntry) {
+        return Objects.isNull(conjunctionPostingEntry)
+                || PredicateType.EXCLUDED.equals(conjunctionPostingEntry.getType());
     }
 
     private void sortByCurrentEntriesDNF(
@@ -198,14 +199,14 @@ public class DNFMatcher {
     private boolean sameConjunctionCheck(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final Integer k) {
-        if (getConjunctionPostingEntry(pLists[0].getValue()
+        if (Objects.nonNull(getConjunctionPostingEntry(pLists[0].getValue()
                 .getValue(),
                 pLists[0].getValue()
-                        .getKey()).isPresent()
-                && getConjunctionPostingEntry(pLists[k].getValue()
+                        .getKey()))
+                && Objects.nonNull(getConjunctionPostingEntry(pLists[k].getValue()
                         .getValue(),
                         pLists[k].getValue()
-                                .getKey()).isPresent()) {
+                                .getKey()))) {
             return pLists[0].getValue()
                     .getKey()
                     .equals(pLists[k].getValue()
