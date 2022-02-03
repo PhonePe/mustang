@@ -24,6 +24,7 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
@@ -52,7 +53,7 @@ public class MustangOnlyCNFSearchBenchmark {
     @Getter
     @State(Scope.Benchmark)
     public static class BenchmarkContext {
-        @Param({ "10", "100", "1000" })
+        @Param({ "10", "100", "1000", "10000" })
         private int indexSize;
 
         private final ObjectMapper mapper = new ObjectMapper();
@@ -107,9 +108,10 @@ public class MustangOnlyCNFSearchBenchmark {
 
     }
 
+    @Benchmark
+    @Measurement(iterations = 1)
     @Fork(value = 1, warmups = 1)
     @Warmup(iterations = 1)
-    @Benchmark
     @Threads(Threads.MAX)
     @BenchmarkMode(Mode.Throughput)
     public void search(final Blackhole blackhole, final BenchmarkContext context) {
