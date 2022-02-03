@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,23 @@
  */
 package com.phonepe.growth.mustang.composition.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.CompositionType;
-import com.phonepe.growth.mustang.composition.CompositionVisitor;
+import com.phonepe.growth.mustang.debug.CompositionDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.debug.CompositionDebugResult;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @ToString(callSuper = true)
@@ -70,8 +70,4 @@ public class Conjunction extends Composition {
                 .sum();
     }
 
-    @Override
-    public <T> T accept(CompositionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }

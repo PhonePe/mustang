@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ public class QueryBuilder {
     public Query buildQuery(final RequestContext context) {
         return Query.builder()
                 .requestContext(context)
-                .parsedContext(JsonPath.parse(context.getNode().toString()))
+                .parsedContext(JsonPath.parse(context.getNode()
+                        .toString()))
                 .build();
     }
 

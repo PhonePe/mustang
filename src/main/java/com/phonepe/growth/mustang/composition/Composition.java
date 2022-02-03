@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,7 @@ public abstract class Composition {
 
     public abstract double getScore(RequestContext context);
 
-    public abstract <T> T accept(CompositionVisitor<T> visitor);
-
-    public int getWeigthFromContext(RequestContext context, Predicate predicate) {
+    protected int getWeigthFromContext(RequestContext context, Predicate predicate) {
         try {
             JsonPath.read(context.getNode()
                     .toString(), predicate.getLhs());

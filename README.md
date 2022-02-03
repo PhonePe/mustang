@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.1.1</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -193,7 +193,7 @@ Multiple criteria(s) at once.
 engine.add("index_name", Arrays.asList(criteria1, criteria2, ...));
 ```
 
-#### Searching criteria(s) matching an assignment
+#### Searching criteria matching an assignment
 
 An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
 
@@ -220,7 +220,7 @@ Set<String> searchResults = engine.search("index_name",context, false);
 ```
 
 
-#### Searching TOP N criteria(s) matching an assignment
+#### Searching TOP N criteria matching an assignment
 
 We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
 These are then leveraged to sort rank the top N criteria.

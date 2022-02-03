@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
  */
 package com.phonepe.growth.mustang.exception;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,28 +29,12 @@ import lombok.ToString;
 public class MustangException extends RuntimeException {
 
     private static final long serialVersionUID = -4278856680596761879L;
+    @NotNull
     private final ErrorCode errorCode;
 
     @Builder
-    public MustangException(ErrorCode errorCode, String message, Throwable cause) {
-        super(message, cause);
+    public MustangException(ErrorCode errorCode, Throwable cause) {
+        super(cause);
         this.errorCode = errorCode;
-    }
-
-    public static MustangException propagate(final Throwable throwable) {
-        return propagate("Error occurred", throwable);
-    }
-
-    public static MustangException propagate(final String message, final Throwable throwable) {
-        if (throwable instanceof MustangException) {
-            return (MustangException) throwable;
-        } else if (throwable.getCause() instanceof MustangException) {
-            return (MustangException) throwable.getCause();
-        }
-        return MustangException.builder()
-                .errorCode(ErrorCode.INTERNAL_ERROR)
-                .message(message)
-                .cause(throwable)
-                .build();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import java.util.stream.Stream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.json.JsonUtils;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.matcher.CNFMatcher;
 import com.phonepe.growth.mustang.search.matcher.DNFMatcher;
@@ -44,8 +46,10 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @NotNull
     private final Query query;
     private final boolean score;
+    private final Map<String, Object> pathValues = Maps.newHashMap();
 
     public Map<String, Double> handle() {
+        extractValuesForPaths();
         final Map<String, Double> searchResults = Stream.of(CriteriaForm.values())
                 .map(cForm -> cForm.accept(this))
                 .map(Matches::getProbables)
@@ -69,6 +73,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .invertedIndex(indexGroup.getDnfInvertedIndex())
                         .query(query)
                         .allCriterias(indexGroup.getAllCriterias())
+                        .pathValues(pathValues)
                         .score(score)
                         .build()
                         .getMatches())
@@ -82,10 +87,18 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .invertedIndex(indexGroup.getCnfInvertedIndex())
                         .query(query)
                         .allCriterias(indexGroup.getAllCriterias())
+                        .pathValues(pathValues)
                         .score(score)
                         .build()
                         .getMatches())
                 .build();
+    }
+
+    private void extractValuesForPaths() {
+        indexGroup.getAllPaths()
+                .entrySet()
+                .forEach(entry -> pathValues.put(entry.getKey(),
+                        JsonUtils.getNodeValue(query.getParsedContext(), entry.getValue(), null)));
     }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.scan;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -91,13 +92,14 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }),
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        final Set<String> scan = engine.scan("test",
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(scan.stream()
-                .anyMatch(criteria -> criteria.getId()
-                        .equals("C1")));
+        Assert.assertTrue(scan.contains("C1"));
     }
 
     @Test

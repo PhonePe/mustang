@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ public class Ratifier {
                 .map(Map::keySet)
                 .flatMap(Set::stream)
                 .filter(key -> !key.getName()
-                        .equals(DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEY))
+                        .equals(DNFIndexer.ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME))
                 .collect(Collectors.toSet());
         final Set<Key> cnfKeys = index.getCnfInvertedIndex()
                 .getTable()
@@ -142,7 +142,7 @@ public class Ratifier {
                 .map(Map::keySet)
                 .flatMap(Set::stream)
                 .filter(key -> !key.getName()
-                        .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY))
+                        .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEYNAME))
                 .collect(Collectors.toSet());
         return Stream.concat(dnfKeys.stream(), cnfKeys.stream())
                 .distinct()
