@@ -66,15 +66,6 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> o));
     }
 
-    private void extractValuesForPaths() {
-        indexGroup.getAllPaths()
-                .entrySet()
-                .forEach(entry -> {
-                    pathValues.put(entry.getKey(),
-                            JsonUtils.getNodeValue(query.getParsedContext(), entry.getValue(), null));
-                });
-    }
-
     @Override
     public Matches visitDNF() {
         return Matches.builder()
@@ -101,6 +92,13 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .build()
                         .getMatches())
                 .build();
+    }
+
+    private void extractValuesForPaths() {
+        indexGroup.getAllPaths()
+                .entrySet()
+                .forEach(entry -> pathValues.put(entry.getKey(),
+                        JsonUtils.getNodeValue(query.getParsedContext(), entry.getValue(), null)));
     }
 
 }
