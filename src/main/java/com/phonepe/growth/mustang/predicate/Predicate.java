@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,9 +51,9 @@ public abstract class Predicate {
     private boolean defaultResult;
 
     public boolean evaluate(RequestContext context) {
-        final Object lhsValue = getNodeValue(context.getNode(), lhs);
-        if (Objects.nonNull(lhsValue)) {
-            return evaluate(context, lhsValue);
+        final Object value = getNodeValue(context.getNode(), lhs);
+        if (Objects.nonNull(value)) {
+            return evaluate(context, value);
         }
         return defaultResult;
     }

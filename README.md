@@ -1,13 +1,13 @@
 # Metrics
 
 
-[![Quality Gate Status](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Coverage](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Bugs](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Vulnerabilities](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Reliability Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Security Rating](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
-[![Technical Debt](http://prd-sonarqubeapp101.phonepe.nm5:9000/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](http://prd-sonarqubeapp101.phonepe.nm5:9000/dashboard?id=com.phonepe.growth%3Amustang)
+[![Quality Gate Status](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Coverage](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Bugs](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Vulnerabilities](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Reliability Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Security Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
+[![Technical Debt](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
 
 # Mustang
 
@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.1.0</version>
+  <version>2.2.0</version>
 </dependency>
 ```
 
@@ -113,14 +113,14 @@ Criteria dnf = DNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .detail(RangeDetail.builder() // example for less_than_equals
+                                .detail(RangeDetail.builder() // example for greater_than_equals
                                         .lowerBound(3)
                                         .includeLowerBound(true)
                                         .build())
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
-                                .detail(RangeDetail.builder() // example for greater_than
+                                .detail(RangeDetail.builder() // example for less_than
                                         .upperBound(3)
                                         .build())
                                 .build())
@@ -155,7 +155,7 @@ Criteria cnf = CNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
-                                .detail(RangeDetail.builder() // Example for greater_than_equals
+                                .detail(RangeDetail.builder() // Example for lesser_than_equals
                                         .upperBound(7)
                                         .includeUpperBound(true)
                                         .build())
@@ -193,7 +193,7 @@ Multiple criteria(s) at once.
 engine.add("index_name", Arrays.asList(criteria1, criteria2, ...));
 ```
 
-#### Searching criteria(s) matching an assignment
+#### Searching criteria matching an assignment
 
 An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
 
@@ -220,7 +220,7 @@ Set<String> searchResults = engine.search("index_name",context, false);
 ```
 
 
-#### Searching TOP N criteria(s) matching an assignment
+#### Searching TOP N criteria matching an assignment
 
 We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
 These are then leveraged to sort rank the top N criteria.

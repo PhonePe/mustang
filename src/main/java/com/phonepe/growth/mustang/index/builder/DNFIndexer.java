@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.index.core.ConjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.DNFInvertedIndex;
@@ -49,7 +50,7 @@ import lombok.Data;
 @Data
 @Builder
 public class DNFIndexer {
-    public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEY = "ZZZ";
+    public static final String ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME = "ZZZ";
     private static final String CONJUNCTION_ENTRY_ID_FORMAT = "%s#%s";
     private static final Comparator<TreeMap<Integer, ConjunctionPostingEntry>> POSTING_ENTRY_COMPARATOR = (e1,
             e2) -> (ObjectUtils.compare(e1.firstEntry()
@@ -101,13 +102,15 @@ public class DNFIndexer {
                                         .iId(iId)
                                         .eId(criteria.getId())
                                         .dnfKeyFrequency(indexGroup.getDnfKeyFrequency())
+                                        .allPaths(indexGroup.getAllPaths())
                                         .build()))
                                 .collect(Collectors.toList());
 
                         if (kSize == 0) {
                             // ZERO size handling
                             final Key key = Key.builder()
-                                    .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEY)
+                                    .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME)
+                                    .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)
                                     .build();

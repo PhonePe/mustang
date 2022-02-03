@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,19 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import static com.phonepe.growth.mustang.index.builder.CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEY;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -61,6 +61,7 @@ public class CNFMatcher {
     private final CNFInvertedIndex<DisjunctionPostingEntry> invertedIndex;
     private final Query query;
     private final Map<String, Criteria> allCriterias;
+    private final Map<String, Object> pathValues;
     private final boolean score;
 
     public Map<String, Double> getMatches() {
@@ -135,38 +136,35 @@ public class CNFMatcher {
 
     private static Integer getIdSafely(
             final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
-        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+        final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
-                .getIId() : null;
+        return disjunctionPostingEntry != null ? disjunctionPostingEntry.getIId() : null;
     }
 
     private static PredicateType getTypeSafely(
             final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
-        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+        final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
-                .getType() : null;
+        return disjunctionPostingEntry != null ? disjunctionPostingEntry.getType() : null;
     }
 
     private static Integer getOrderSafely(
             Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>> entry) {
-        final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
+        final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(entry.getValue()
                 .getValue(),
                 entry.getValue()
                         .getKey());
-        return disjunctionPostingEntry.isPresent() ? disjunctionPostingEntry.get()
-                .getOrder() : Integer.MAX_VALUE;
+        return disjunctionPostingEntry != null ? disjunctionPostingEntry.getOrder() : Integer.MAX_VALUE;
     }
 
-    private static Optional<DisjunctionPostingEntry> getDisjunctionPostingEntry(
+    private static DisjunctionPostingEntry getDisjunctionPostingEntry(
             final TreeMap<Integer, DisjunctionPostingEntry> map,
             final Integer iId) {
-        return Optional.ofNullable(map.get(iId));
+        return map.get(iId);
     }
 
     @SuppressWarnings("unchecked")
@@ -174,31 +172,18 @@ public class CNFMatcher {
             final Map<Integer, Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> table,
             final int k) {
         final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-        return map.entrySet()
-                .stream()
-                .map(entry -> getMatchingKey(k, entry))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
+        return getMatchingKeys(map).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
                 .stream()
                 .toArray(Map.Entry[]::new);
     }
 
-    private Optional<Key> getMatchingKey(final int k,
-            final Entry<Key, TreeMap<Integer, DisjunctionPostingEntry>> entry) {
-        final Key key = entry.getKey();
-        if (k == 0 && key.getName()
-                .equals(ZERO_SIZE_DISJUNCTION_ENTRY_KEY)) {
-            return Optional.of(key);
-        }
-
-        final boolean result = key.getCaveat()
-                .visit(new CaveatEnforcer(key, query));
-        if (result) {
-            return Optional.of(key);
-        }
-        return Optional.empty();
+    private Stream<Key> getMatchingKeys(final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
+        return map.entrySet()
+                .stream()
+                .map(Entry::getKey)
+                .filter(key -> key.getCaveat()
+                        .visit(new CaveatEnforcer(key, pathValues.get(key.getName()))));
     }
 
     private void initializeCurrentEntriesCNF(
@@ -215,10 +200,10 @@ public class CNFMatcher {
     private boolean canContinue(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final int k) {
-        return getDisjunctionPostingEntry(pLists[k - 1].getValue()
+        return Objects.nonNull(getDisjunctionPostingEntry(pLists[k - 1].getValue()
                 .getValue(),
                 pLists[k - 1].getValue()
-                        .getKey()).isPresent();
+                        .getKey()));
     }
 
     private void sortByCurrentEntriesCNF(
@@ -231,14 +216,14 @@ public class CNFMatcher {
     private boolean sameConjunctionCheck(
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final Integer k) {
-        if (getDisjunctionPostingEntry(pLists[0].getValue()
+        if (Objects.nonNull(getDisjunctionPostingEntry(pLists[0].getValue()
                 .getValue(),
                 pLists[0].getValue()
-                        .getKey()).isPresent()
-                && getDisjunctionPostingEntry(pLists[k].getValue()
+                        .getKey()))
+                && Objects.nonNull(getDisjunctionPostingEntry(pLists[k].getValue()
                         .getValue(),
                         pLists[k].getValue()
-                                .getKey()).isPresent()) {
+                                .getKey()))) {
             return pLists[0].getValue()
                     .getKey()
                     .equals(pLists[k].getValue()
@@ -253,33 +238,29 @@ public class CNFMatcher {
             final Integer[] counters) {
         for (int l = 0; ((l < pLists.length) && sameConjunctionCheck(pLists, l)); l++) {
             /* Ignore entries in the Z posting list */
-            final Optional<DisjunctionPostingEntry> disjunctionPostingEntry = getDisjunctionPostingEntry(
-                    pLists[l].getValue()
-                            .getValue(),
+            final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(pLists[l].getValue()
+                    .getValue(),
                     pLists[l].getValue()
                             .getKey());
-            if (!disjunctionPostingEntry.isPresent() || disjunctionPostingEntry.get()
-                    .getOrder() == -1) {
+            if (Objects.isNull(disjunctionPostingEntry) || disjunctionPostingEntry.getOrder() == -1) {
                 continue;
             }
-            if (PredicateType.EXCLUDED.equals(disjunctionPostingEntry.get()
-                    .getType())) {
-                counters[disjunctionPostingEntry.get()
-                        .getOrder()]++;
+            if (PredicateType.EXCLUDED.equals(disjunctionPostingEntry.getType())) {
+                counters[disjunctionPostingEntry.getOrder()]++;
             } else {
                 /* Disjunction is satisfied */
-                counters[disjunctionPostingEntry.get()
-                        .getOrder()] = 1;
+                counters[disjunctionPostingEntry.getOrder()] = 1;
             }
         }
         if (Arrays.stream(counters)
                 .allMatch(i -> i != 0)) {
-            final Optional<DisjunctionPostingEntry> disjunctionPostingEntryOptional = getDisjunctionPostingEntry(
-                    pLists[k - 1].getValue()
-                            .getValue(),
+            final DisjunctionPostingEntry disjunctionPostingEntry = getDisjunctionPostingEntry(pLists[k - 1].getValue()
+                    .getValue(),
                     pLists[k - 1].getValue()
                             .getKey());
-            disjunctionPostingEntryOptional.ifPresent(postingEntry -> checkAndAdd(result, postingEntry));
+            if (Objects.nonNull(disjunctionPostingEntry)) {
+                checkAndAdd(result, disjunctionPostingEntry);
+            }
         }
         preEmptiveSortCheck(pLists, k);
     }

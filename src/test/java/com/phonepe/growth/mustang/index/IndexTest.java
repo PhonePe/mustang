@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
+ * Copyright (c) 2022 Mohammed Irfanulla S <mohammed.irfanulla.s1@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,6 +120,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key key = Key.builder()
                 .name("ZZZ")
+                .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
                 .build();
@@ -217,6 +218,7 @@ public class IndexTest {
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
                 .build();
@@ -402,6 +404,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
                 .build();
@@ -442,6 +445,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key key = Key.builder()
                 .name("ZZZ")
+                .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
                 .build();
@@ -565,6 +569,7 @@ public class IndexTest {
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
                 .build();
