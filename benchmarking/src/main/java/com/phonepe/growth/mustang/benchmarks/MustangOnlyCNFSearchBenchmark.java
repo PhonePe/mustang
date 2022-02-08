@@ -116,7 +116,7 @@ public class MustangOnlyCNFSearchBenchmark {
     @BenchmarkMode(Mode.Throughput)
     public void search(final Blackhole blackhole, final BenchmarkContext context) {
         blackhole.consume(context.getEngine()
-                .search(Utils.INDEX_NAME, context.getRequestContext()));
+                .search(Utils.INDEX_NAME, context.getRequestContext(), false));
     }
 
 }

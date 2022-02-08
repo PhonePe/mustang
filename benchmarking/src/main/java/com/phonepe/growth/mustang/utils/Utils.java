@@ -55,7 +55,7 @@ public class Utils {
             "z");
 
     public int getRandom() {
-        return RANDOM.nextInt(10000);
+        return RANDOM.nextInt(100);
     }
 
 }

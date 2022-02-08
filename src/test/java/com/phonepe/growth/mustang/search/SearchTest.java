@@ -235,7 +235,7 @@ public class SearchTest {
                         .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
@@ -305,7 +305,7 @@ public class SearchTest {
                         .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
@@ -418,7 +418,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -585,7 +585,7 @@ public class SearchTest {
                                 "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -778,7 +778,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -934,7 +934,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -1153,7 +1153,7 @@ public class SearchTest {
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C4", "C5"));
+        assertThat(searchResults, containsInAnyOrder("C4", "C5"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
@@ -1318,7 +1318,7 @@ public class SearchTest {
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
-        assertThat(searchResults, contains("C3", "C4", "C5"));
+        assertThat(searchResults, containsInAnyOrder("C3", "C4", "C5"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
@@ -4315,9 +4315,8 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.contains("C1"));
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -4426,7 +4425,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -4809,7 +4808,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C3"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C3"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -4894,7 +4893,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -4975,7 +4974,7 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, contains("C1", "C2"));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
