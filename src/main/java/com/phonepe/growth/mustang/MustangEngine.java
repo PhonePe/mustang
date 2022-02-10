@@ -80,7 +80,7 @@ public class MustangEngine {
     }
 
     public Set<String> search(final String indexName, final RequestContext context) {
-        return search(indexName, context, true);
+        return search(indexName, context, false); // turn-off scoring by default
     }
 
     public Set<String> search(final String indexName, final RequestContext context, final int topN) {

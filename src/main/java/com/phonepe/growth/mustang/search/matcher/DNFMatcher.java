@@ -21,9 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NavigableSet;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -251,20 +249,18 @@ public class DNFMatcher {
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final TreeSet<Integer> links,
             final Integer internalId) {
-        final NavigableSet<Integer> nextIds = links.tailSet(internalId, false);
-        final Optional<Integer> nextId = nextIds.stream()
-                .sequential()
+        return links.tailSet(internalId, false)
+                .stream()
                 .map(id -> {
                     skipTo(k, pLists, id);
                     if (canContinue(pLists, k)) {
-                        return Optional.of(id);
+                        return id;
                     }
-                    return Optional.empty();
+                    return -1;
                 })
-                .filter(Optional::isPresent)
-                .map(o -> (Integer) o.get())
-                .findFirst();
-        return nextId.orElse(internalId + 1);
+                .filter(id -> id > -1)
+                .findFirst()
+                .orElse(internalId + 1);
     }
 
     private int getNextId(final int k,
@@ -289,12 +285,9 @@ public class DNFMatcher {
     private void skipTo(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final int nextID) {
-        IntStream.rangeClosed(0, Math.max(k, pLists.length))
-                .boxed()
-                .filter(l -> l < pLists.length)
+        IntStream.range(0, pLists.length)
                 .forEach(l -> pLists[l].getValue()
                         .setLeft(nextID));
-
         preEmptiveSortCheck(k, pLists);
     }
 
