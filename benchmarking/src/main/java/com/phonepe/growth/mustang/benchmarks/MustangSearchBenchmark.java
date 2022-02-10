@@ -124,8 +124,10 @@ public class MustangSearchBenchmark {
 
         @Setup(Level.Invocation)
         public void prepareContext() {
+            Collections.shuffle(Utils.PATHS);
             requestContext = RequestContext.builder()
                     .node(mapper.valueToTree(Utils.PATHS.stream()
+                            .limit(Utils.RANDOM.nextInt(Utils.PATHS.size()))
                             .collect(Collectors.toMap(x -> x, x -> Utils.getRandom()))))
                     .build();
         }
