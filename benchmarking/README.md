@@ -1,6 +1,6 @@
 # SetUp
 
-Generate project template using:
+Generate project template:
 
 ```sh 
 mvn archetype:generate 
@@ -14,7 +14,7 @@ mvn archetype:generate
 
 # Custom Logic
 
-Add `@Benchmark` for such functions that need to be benchmarked.
+Add `@Benchmark` for such functions that need to be benchmarked. For more details ref : https://github.com/openjdk/jmh
 
 
 # Build & execute
@@ -38,7 +38,7 @@ Attach agent of a profiler of your choice and initiate the execution
 ## For async-profiler
  
 ```java
-java -agentpath:/Users/mohammed.irfanulla/async-profiler-2.6-macos/build/libasyncProfiler.so=start,event=cpu,file=profile.html -jar benchmarks.jar
+java -agentpath:/<path-to-async-profiler-2.6-macos>/build/libasyncProfiler.so=start,event=cpu,file=profile.html -jar benchmarks.jar
 ```
 
 ## For YourKit
