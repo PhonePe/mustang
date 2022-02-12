@@ -35,13 +35,13 @@ java -jar benchmarks.jar MustangSearchBenchmark
 
 Attach agent of a profiler of your choice and initiate the execution
 
-## For async-profiler
+## Using async-profiler
  
 ```java
 java -agentpath:/<path-to-async-profiler-2.6-macos>/build/libasyncProfiler.so=start,event=cpu,file=profile.html -jar benchmarks.jar
 ```
 
-## For YourKit
+## Using YourKit
 
 ```java
 java -agentpath:/Applications/YourKit-Java-Profiler-2021.11.app/Contents/Resources/bin/mac/libyjpagent.dylib=delay=10000,listen=all -jar benchmarks.jar
