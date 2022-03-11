@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -5381,6 +5382,122 @@ public class SearchTest {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFLinkages() throws IOException {
+
+
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c11 = DNFCriteria.builder()
+                .id("C11")
+                .conjunction(Conjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("abc"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet(3))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.g")
+                                .values(Sets.newHashSet("F"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet(3))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.g")
+                                .values(Sets.newHashSet("M"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.s")
+                                .values(Sets.newHashSet("CA"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c4 = DNFCriteria.builder()
+                .id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.s")
+                                .values(Sets.newHashSet("CA"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.g")
+                                .values(Sets.newHashSet("M"))
+                                .build())
+                        .build())
+                .build();
+        Criteria c5 = DNFCriteria.builder()
+                .id("C5")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet(3, 4))
+                                .build())
+                        .build())
+                .build();
+        Criteria c6 = DNFCriteria.builder()
+                .id("C6")
+                .conjunction(Conjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.s")
+                                .values(Sets.newHashSet("CA", "NY"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c7 = TautologicalCriteria.generate(CriteriaForm.CNF, "C7");
+        Criteria c8 = TautologicalCriteria.generate(CriteriaForm.DNF, "C8");
+        Criteria c9 = TautologicalCriteria.generate(CriteriaForm.CNF, "C9");
+
+        // Index ingestion
+        engine.add("test", c1);
+        engine.add("test", c11);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        engine.add("test", c5);
+        engine.add("test", c6);
+        engine.add("test", c7);
+        engine.add("test", c8);
+        engine.add("test", c9);
+
+        String testquery = "{\"a\":\"abc\"}";
+        // Search query for same criteria
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(testquery))
+                .build());
+        assertThat(searchResults, hasSize(4));
+        assertThat(searchResults, containsInAnyOrder("C6", "C7", "C8", "C9"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
