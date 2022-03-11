@@ -30,7 +30,7 @@
         <!--
             JMH version used to benchmark in this project.
           -->
-        <mustang.version>2.2.1-SNAPSHOT</mustang.version>
+        <mustang.version>2.2.2-SNAPSHOT</mustang.version>
 
 
     </properties>

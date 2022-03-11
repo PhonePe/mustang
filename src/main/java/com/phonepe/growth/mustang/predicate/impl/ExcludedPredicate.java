@@ -49,19 +49,23 @@ public class ExcludedPredicate extends Predicate {
     @Builder
     @JsonCreator
     public ExcludedPredicate(@JsonProperty("lhs") String lhs,
-            @JsonProperty("weight") Long weight,
-            @JsonProperty("detail") Detail detail,
-            @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
-        super(PredicateType.EXCLUDED, lhs, Utils.getRationalWeight(weight), Boolean.TRUE);
-        this.detail = Objects.nonNull(detail) ? detail
-                : EqualityDetail.builder()
-                        .values(values)
-                        .build();
+                             @JsonProperty("weight") Long weight,
+                             @JsonProperty("detail") Detail detail,
+                             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
+        super(PredicateType.EXCLUDED, lhs, Utils.getRationalWeight(weight));
+        this.detail = Objects.nonNull(detail) ? detail : EqualityDetail.builder()
+                .values(values)
+                .build();
     }
 
     @Override
     public boolean evaluate(final RequestContext context, final Object lhsValue) {
         return !detail.validate(context, lhsValue);
+    }
+
+    @Override
+    public boolean getDefaultResult() {
+        return true;
     }
 
     @Override

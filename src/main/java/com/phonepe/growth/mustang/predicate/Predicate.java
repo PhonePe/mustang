@@ -40,7 +40,7 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
-        @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
+                @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
 @JsonPropertyOrder({ "type", "lhs", "detail", "weight", "defaultResult" })
 public abstract class Predicate {
     @NotNull
@@ -48,14 +48,13 @@ public abstract class Predicate {
     @NotBlank
     private String lhs;
     private Long weight;
-    private boolean defaultResult;
 
     public boolean evaluate(RequestContext context) {
         final Object value = getNodeValue(context.getNode(), lhs);
         if (Objects.nonNull(value)) {
             return evaluate(context, value);
         }
-        return defaultResult;
+        return getDefaultResult();
     }
 
     public PredicateDebugResult debug(final RequestContext context) {
@@ -71,6 +70,8 @@ public abstract class Predicate {
     public abstract boolean evaluate(RequestContext context, Object lhsValue);
 
     public abstract Detail getDetail();
+
+    public abstract boolean getDefaultResult();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
