@@ -28,7 +28,7 @@ merge_ready:
   <<: *default
   <<: *default_tag
   script:
-    - mvn verify -U -Pquality_check
+    - mvn verify
 
 deploy_snapshot:
   stage: deploy
