@@ -16,9 +16,11 @@
  */
 package com.phonepe.growth.mustang.index;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
@@ -119,11 +121,22 @@ public class IndexingFacade {
                 .build();
     }
 
+    public IndexGroup importIndexGroup(final String groupInfo, final ObjectMapper mapper) {
+        IndexGroup newGroup = null;
+        try {
+            newGroup = mapper.readValue(groupInfo, IndexGroup.class);
+        } catch (IOException e) {
+            throw MustangException.builder()
+                    .cause(e)
+                    .build();
+        }
+        return indexMap.putIfAbsent(groupInfo, newGroup);
+    }
+
     private IndexGroup get(final String index) {
-        return indexMap.computeIfAbsent(index,
-                x -> IndexGroup.builder()
-                        .name(index)
-                        .build());
+        return indexMap.computeIfAbsent(index, x -> IndexGroup.builder()
+                .name(index)
+                .build());
     }
 
 }

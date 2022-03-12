@@ -51,7 +51,7 @@ public class IndexGroup {
     private final CNFInvertedIndex<DisjunctionPostingEntry> cnfInvertedIndex = CNFInvertedIndex
             .<DisjunctionPostingEntry>builder()
             .build();
-    private final Map<String, Criteria> allCriterias = Maps.newConcurrentMap();
+    private final Map<String, Criteria> allCriterias = Maps.newLinkedHashMap();
     private final Map<String, Criteria> tautologicalCriterias = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> dnfKeyFrequency = Maps.newConcurrentMap();
     private final Map<Key, AtomicInteger> cnfKeyFrequency = Maps.newConcurrentMap();

@@ -59,6 +59,10 @@ public class MustangEngine {
             .build();
     private final AsyncProcessor processor = AsyncProcessor.getInstance();
 
+    public synchronized void importIndexGroup(final String info) {
+        indexingFacde.importIndexGroup(info, mapper);
+    }
+
     public synchronized void add(final String indexName, final Criteria criteria) {
         indexingFacde.add(indexName, criteria);
     }
