@@ -227,10 +227,8 @@ public class DNFMatcher {
                 .filter(l -> pLists[l].getValue()
                         .getKey()
                         .equals(rejectId))
-                .forEach(l -> {
-                    pLists[l].getValue()
-                            .setLeft(nextHigher);
-                });
+                .forEach(l -> pLists[l].getValue()
+                    .setLeft(nextHigher));
 
         preEmptiveSortCheck(k, pLists);
     }
