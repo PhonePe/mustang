@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -41,7 +42,7 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
                 @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
-@JsonPropertyOrder({ "type", "lhs", "detail", "weight", "defaultResult" })
+@JsonPropertyOrder({ "type", "lhs", "detail", "weight" })
 public abstract class Predicate {
     @NotNull
     private PredicateType type;
@@ -71,6 +72,7 @@ public abstract class Predicate {
 
     public abstract Detail getDetail();
 
+    @JsonIgnore
     public abstract boolean getDefaultResult();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
