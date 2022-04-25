@@ -139,6 +139,7 @@ public class IndexingFacade {
             return mapper.writeValueAsString(getIndexGroup(index));
         } catch (JsonProcessingException e) {
             throw MustangException.builder()
+                    .errorCode(ErrorCode.INTERNAL_ERROR)
                     .cause(e)
                     .build();
         }
