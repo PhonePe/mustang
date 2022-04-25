@@ -22,8 +22,10 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -102,6 +104,7 @@ public class DNFMatcher {
                             if (conjunctionRejectionCheck(conjunctionPostingEntry)) {
                                 conjunctionRejectionSkip(k,
                                         pLists,
+                                        links,
                                         pLists[0].getValue()
                                                 .getKey());
                                 continue; // continue to next while loop iteration
@@ -215,7 +218,9 @@ public class DNFMatcher {
 
     private void conjunctionRejectionSkip(final int k,
             final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
+            final TreeSet<Integer> links,
             final Integer rejectId) {
+        final Integer nextHigher = Optional.ofNullable(links.higher(rejectId)).map(Function.identity()).orElse(rejectId + 1);
         IntStream.rangeClosed(0, Math.max(k, pLists.length))
                 .boxed()
                 .filter(l -> l < pLists.length)
@@ -223,7 +228,7 @@ public class DNFMatcher {
                         .getKey()
                         .equals(rejectId))
                 .forEach(l -> pLists[l].getValue()
-                        .setLeft(rejectId + 1));
+                    .setLeft(nextHigher));
 
         preEmptiveSortCheck(k, pLists);
     }
