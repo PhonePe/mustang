@@ -49,14 +49,13 @@ public class IncludedPredicate extends Predicate {
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
-            @JsonProperty("weight") Long weight,
-            @JsonProperty("detail") Detail detail,
-            @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
-        super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight), Boolean.FALSE);
-        this.detail = Objects.nonNull(detail) ? detail
-                : EqualityDetail.builder()
-                        .values(values)
-                        .build();
+                             @JsonProperty("weight") Long weight,
+                             @JsonProperty("detail") Detail detail,
+                             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
+        super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight));
+        this.detail = Objects.nonNull(detail) ? detail : EqualityDetail.builder()
+                .values(values)
+                .build();
     }
 
     @Override
@@ -65,7 +64,13 @@ public class IncludedPredicate extends Predicate {
     }
 
     @Override
+    public boolean getDefaultResult() {
+        return false;
+    }
+
+    @Override
     public <T> T accept(PredicateVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
 }

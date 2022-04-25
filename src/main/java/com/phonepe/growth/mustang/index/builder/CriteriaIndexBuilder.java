@@ -48,7 +48,8 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(DNFCriteria dnf) {
-        if (dnf instanceof DNFTautologicalCriteria) {
+        if (dnf instanceof DNFTautologicalCriteria || dnf.getConjunctions()
+                .isEmpty()) {
             indexGroup.getTautologicalCriterias()
                     .put(dnf.getId(), dnf);
         } else {
@@ -64,7 +65,8 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     @Override
     public Void visit(CNFCriteria cnf) {
-        if (cnf instanceof CNFTautologicalCriteria) {
+        if (cnf instanceof CNFTautologicalCriteria || cnf.getDisjunctions()
+                .isEmpty()) {
             indexGroup.getTautologicalCriterias()
                     .put(cnf.getId(), cnf);
         } else {
@@ -82,13 +84,12 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
         final List<Map.Entry<T, TreeMap<Integer, S>>> tempResult = maps.stream()
                 .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream()
-                .collect(Collectors.groupingBy(Map.Entry::getKey,
-                        LinkedHashMap::new,
-                        Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
-                            final TreeMap<Integer, S> combined = new TreeMap<>(s1);
-                            combined.putAll(s2);
-                            return combined;
-                        }))));
+                .collect(Collectors.groupingBy(Map.Entry::getKey, LinkedHashMap::new,
+                    Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
+                        final TreeMap<Integer, S> combined = new TreeMap<>(s1);
+                        combined.putAll(s2);
+                        return combined;
+                    }))));
     }
 
 }

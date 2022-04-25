@@ -16,9 +16,13 @@
  */
 package com.phonepe.growth.mustang.index;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.exception.ErrorCode;
@@ -119,11 +123,52 @@ public class IndexingFacade {
                 .build();
     }
 
+    public String exportIndexGroup(final String index, final ObjectMapper mapper) {
+        try {
+            return mapper.writeValueAsString(getIndexGroup(index).getAllCriterias()
+                    .values());
+        } catch (JsonProcessingException e) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_EXPORT_ERROR)
+                    .cause(e)
+                    .build();
+        }
+    }
+
+    public String snapshot(final String index, final ObjectMapper mapper) {
+        try {
+            return mapper.writeValueAsString(getIndexGroup(index));
+        } catch (JsonProcessingException e) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INTERNAL_ERROR)
+                    .cause(e)
+                    .build();
+        }
+    }
+
+    public IndexGroup importIndexGroup(final String indexName, final String groupDetails, final ObjectMapper mapper) {
+        if (indexMap.containsKey(indexName)) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_GROUP_EXISTS)
+                    .build();
+        }
+        try {
+            final List<Criteria> criterias = mapper.readValue(groupDetails, new TypeReference<List<Criteria>>() {
+            });
+            add(indexName, criterias);
+        } catch (IOException e) {
+            throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_IMPORT_ERROR)
+                    .cause(e)
+                    .build();
+        }
+        return getIndexGroup(indexName);
+    }
+
     private IndexGroup get(final String index) {
-        return indexMap.computeIfAbsent(index,
-                x -> IndexGroup.builder()
-                        .name(index)
-                        .build());
+        return indexMap.computeIfAbsent(index, x -> IndexGroup.builder()
+                .name(index)
+                .build());
     }
 
 }
