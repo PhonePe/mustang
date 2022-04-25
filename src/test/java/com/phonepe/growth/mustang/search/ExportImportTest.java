@@ -257,6 +257,36 @@ public class ExportImportTest {
     }
 
     @Test
+    public void testExportFailure() throws IOException {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("fastag_campaigns_offers"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        final ObjectMapper mapperMock = mock(ObjectMapper.class);
+        final MustangEngine engine = MustangEngine.builder()
+                .mapper(mapperMock)
+                .build();
+        engine.add("test", c1);
+
+        doThrow(JsonProcessingException.class).when(mapperMock)
+                .writeValueAsString(Mockito.anyObject());
+
+        try {
+            engine.exportIndexGroup("test");
+            Assert.fail("should have thrown exception");
+        } catch (MustangException e) {
+            assertTrue(ErrorCode.INDEX_EXPORT_ERROR.equals(e.getErrorCode()));
+        }
+    }
+
+    @Test
     public void testImportFailure() throws IOException {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")

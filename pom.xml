@@ -44,17 +44,13 @@
 	</distributionManagement>
 
 	<properties>
-		<jacoco.version>0.8.6</jacoco.version>
-		<sonar.sources>src/main</sonar.sources>
-		<sonar.tests>src/test</sonar.tests>
+		<!-- Sonar-JaCoCo properties -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
 		<sonar.language>java</sonar.language>
-		<jacoco.version>0.8.6</jacoco.version>
+		<sonar.buildbreaker.skip>true</sonar.buildbreaker.skip>
 		<jackson.version>2.9.9</jackson.version>
-
-
-
 	</properties>
 
 	<dependencies>
@@ -149,21 +145,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.6</version>
+				<groupId>com.github.sgoertzen</groupId>
+				<artifactId>sonar-break-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
+						<id>sonar-break</id>
+						<phase />
 					</execution>
 				</executions>
 			</plugin>

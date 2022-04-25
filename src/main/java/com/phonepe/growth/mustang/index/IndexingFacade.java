@@ -129,6 +129,7 @@ public class IndexingFacade {
                     .values());
         } catch (JsonProcessingException e) {
             throw MustangException.builder()
+                    .errorCode(ErrorCode.INDEX_EXPORT_ERROR)
                     .cause(e)
                     .build();
         }
