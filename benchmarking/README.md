@@ -7,7 +7,7 @@ mvn archetype:generate
 	-DinteractiveMode=false 
 	-DarchetypeGroupId=org.openjdk.jmh 
 	-DarchetypeArtifactId=jmh-java-benchmark-archetype 
-	-DgroupId=com.phonepe.growth.mustang 
+	-DgroupId=com.phonepe.mustang 
 	-DartifactId=benchmarking 
 	-Dversion=1.0.0-SNAPSHOT
 ```

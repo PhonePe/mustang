@@ -1,14 +1,6 @@
 # Metrics
 
 
-[![Quality Gate Status](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=alert_status)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Coverage](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=coverage)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Bugs](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=bugs)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Vulnerabilities](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=vulnerabilities)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Reliability Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=reliability_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Security Rating](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=security_rating)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-[![Technical Debt](https://sonarqube-internal.phonepe.com/api/project_badges/measure?project=com.phonepe.growth%3Amustang&metric=sqale_index)](https://sonarqube-internal.phonepe.com/dashboard?id=com.phonepe.growth%3Amustang)
-
 # Mustang
 
 
@@ -33,9 +25,9 @@ on the number of advertisements that can be shown on a given page and only the â
 
 ```xml
 <dependency>
-  <groupId>com.phonepe.growth</groupId>
+  <groupId>com.phonepe</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.2.2</version>
+  <version>2.2.3</version>
 </dependency>
 ```
 
