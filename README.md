@@ -244,7 +244,7 @@ engine.update("index_name", criteria)
 
 PS :
 - `update` is NOT limited to only already indexed `criteria`. If `criteria` is not already indexed, behavior will be akin to `add`.
-- Successive `add` operations to index a given `criteria` (identified by `criteriaId`) are not be allowed.
+- Successive `add` operations to index a given `criteria` (identified by `criteriaId`) are not allowed.
 - For changes in any Criteria thats already indexed to reflect in the index, `update` is the way to go.
 - Post the `update` operation, for all practical purposes, only the newer version of `criteria` will be considered for searches.
 
@@ -297,9 +297,19 @@ RatificationResult result = engine.getRatificationResult(indexName); // Check ba
 ```
 
 
-#### Note on backward compatibility
+#### Debuggability Support : Export/Import Index Group
 
-`2.0.0` and above are fully backward compatible with `1.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `2.0.0` and above.
 
+To aid in debugging, there is an export & import functionality provided on the index group.
+
+```java
+String indexGroup = remoteMustangEngine.exportIndexGroup("index_name");
+
+localMustangEngine.importIndexGroup(indexGroup);
+
+// Try out searches on this index group now.
+Set<String> searchResults = localMustangEngine.search("index_name",context);
+
+```
 
 
