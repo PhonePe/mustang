@@ -16,6 +16,9 @@
  */
 package com.phonepe.mustang.index;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -79,22 +82,19 @@ public class IndexTest {
                 .build();
         engine.add("test", c1);
         // Indexing Size assertion
-        Assert.assertEquals(1,
-                engine.getIndexingFacde()
-                        .getIndexMap()
-                        .size());
+        Assert.assertEquals(1, engine.getIndexingFacde()
+                .getIndexMap()
+                .size());
         // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
-        Assert.assertEquals(1,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(8,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(3)
-                        .size());
+        Assert.assertEquals(1, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(8, index.getDnfInvertedIndex()
+                .getTable()
+                .get(3)
+                .size());
 
     }
 
@@ -111,10 +111,9 @@ public class IndexTest {
                 .build();
         engine.add("test", c1);
         // Indexing Size assertion
-        Assert.assertEquals(1,
-                engine.getIndexingFacde()
-                        .getIndexMap()
-                        .size());
+        Assert.assertEquals(1, engine.getIndexingFacde()
+                .getIndexMap()
+                .size());
         // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
@@ -124,19 +123,17 @@ public class IndexTest {
                 .value(0)
                 .upperBoundScore(0)
                 .build();
-        Assert.assertEquals(1,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(1, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
         Assert.assertTrue(index.getDnfInvertedIndex()
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertEquals(3,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(3, index.getDnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
     }
 
     @Test
@@ -210,10 +207,9 @@ public class IndexTest {
                 .getIndexGroup("test");
 
         /* Asserions for index size */
-        Assert.assertEquals(4,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(4, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
 
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
@@ -222,11 +218,10 @@ public class IndexTest {
                 .value(0)
                 .upperBoundScore(0)
                 .build();
-        Assert.assertEquals(3,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(3, index.getDnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
         Assert.assertTrue(index.getDnfInvertedIndex()
                 .getTable()
                 .get(0)
@@ -251,11 +246,10 @@ public class IndexTest {
                 .equals("C1"));
 
         /* Asserions for keys in k = 1 */
-        Assert.assertEquals(4,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(1)
-                        .size());
+        Assert.assertEquals(4, index.getDnfInvertedIndex()
+                .getTable()
+                .get(1)
+                .size());
         final Key akeyC3 = Key.builder()
                 .name("$.a")
                 .caveat(Caveat.EQUALITY)
@@ -268,11 +262,10 @@ public class IndexTest {
                 .containsKey(akeyC3));
 
         /* Asserions for keys in k = 2 */
-        Assert.assertEquals(5,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(2)
-                        .size());
+        Assert.assertEquals(5, index.getDnfInvertedIndex()
+                .getTable()
+                .get(2)
+                .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
                 .caveat(Caveat.EQUALITY)
@@ -285,11 +278,10 @@ public class IndexTest {
                 .containsKey(keyK2));
 
         /* Asserions for keys in k = 3 */
-        Assert.assertEquals(8,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(3)
-                        .size());
+        Assert.assertEquals(8, index.getDnfInvertedIndex()
+                .getTable()
+                .get(3)
+                .size());
         Assert.assertFalse(index.getDnfInvertedIndex()
                 .getTable()
                 .get(3)
@@ -395,10 +387,9 @@ public class IndexTest {
                 .build();
         engine.add("test", Arrays.asList(c1, c2));
         // Indexing Size assertion
-        Assert.assertEquals(1,
-                engine.getIndexingFacde()
-                        .getIndexMap()
-                        .size());
+        Assert.assertEquals(1, engine.getIndexingFacde()
+                .getIndexMap()
+                .size());
         // Fetch for a specific Index Group
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
@@ -412,20 +403,17 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(zKey));
-        Assert.assertEquals(2,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(6,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
-        Assert.assertEquals(10,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(1)
-                        .size());
+        Assert.assertEquals(2, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(6, index.getCnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
+        Assert.assertEquals(10, index.getCnfInvertedIndex()
+                .getTable()
+                .get(1)
+                .size());
 
     }
 
@@ -453,15 +441,13 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertEquals(1,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(3,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(1, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(3, index.getCnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
     }
 
     @Test
@@ -561,10 +547,9 @@ public class IndexTest {
                 .getIndexGroup("test");
 
         /* Asserions for index size */
-        Assert.assertEquals(4,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(4, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
 
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
@@ -573,11 +558,10 @@ public class IndexTest {
                 .value(0)
                 .upperBoundScore(0)
                 .build();
-        Assert.assertEquals(9,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(9, index.getCnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
         Assert.assertTrue(index.getCnfInvertedIndex()
                 .getTable()
                 .get(0)
@@ -602,11 +586,10 @@ public class IndexTest {
                 .equals("C2"));
 
         /* Asserions for keys in k = 1 */
-        Assert.assertEquals(6,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(2)
-                        .size());
+        Assert.assertEquals(6, index.getCnfInvertedIndex()
+                .getTable()
+                .get(2)
+                .size());
         final Key bkey = Key.builder()
                 .name("$.b")
                 .caveat(Caveat.EQUALITY)
@@ -619,11 +602,10 @@ public class IndexTest {
                 .containsKey(bkey));
 
         /* Asserions for keys in k = 2 */
-        Assert.assertEquals(6,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(2)
-                        .size());
+        Assert.assertEquals(6, index.getCnfInvertedIndex()
+                .getTable()
+                .get(2)
+                .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
                 .caveat(Caveat.EQUALITY)
@@ -637,11 +619,10 @@ public class IndexTest {
                 .containsKey(keyK2));
 
         /* Asserions for keys in k = 3 */
-        Assert.assertEquals(16,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(3)
-                        .size());
+        Assert.assertEquals(16, index.getCnfInvertedIndex()
+                .getTable()
+                .get(3)
+                .size());
         Assert.assertFalse(index.getCnfInvertedIndex()
                 .getTable()
                 .get(3)
@@ -667,9 +648,8 @@ public class IndexTest {
                     .getIndexGroup("test");
             ;
         } catch (MustangException e) {
-            Assert.assertEquals("INDEX_NOT_FOUND",
-                    e.getErrorCode()
-                            .toString());
+            Assert.assertEquals("INDEX_NOT_FOUND", e.getErrorCode()
+                    .toString());
         }
         Assert.assertNull(index);
     }
@@ -688,15 +668,13 @@ public class IndexTest {
         engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
-        Assert.assertEquals(1,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(2,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(1)
-                        .size());
+        Assert.assertEquals(1, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(2, index.getDnfInvertedIndex()
+                .getTable()
+                .get(1)
+                .size());
     }
 
     @Test
@@ -713,15 +691,13 @@ public class IndexTest {
         engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
-        Assert.assertEquals(1,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(3,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(1, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(3, index.getDnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
 
     }
 
@@ -743,15 +719,13 @@ public class IndexTest {
         engine.add("test", c1);
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
-        Assert.assertEquals(1,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(4,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .get(1)
-                        .size());
+        Assert.assertEquals(1, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(4, index.getDnfInvertedIndex()
+                .getTable()
+                .get(1)
+                .size());
     }
 
     @Test
@@ -769,20 +743,17 @@ public class IndexTest {
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         // Check value in DNF index
-        Assert.assertEquals(0,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(0, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
         // Check value in CNF index
-        Assert.assertEquals(1,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(2,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(1)
-                        .size());
+        Assert.assertEquals(1, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(2, index.getCnfInvertedIndex()
+                .getTable()
+                .get(1)
+                .size());
     }
 
     @Test
@@ -800,20 +771,17 @@ public class IndexTest {
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         // Check value in DNF index
-        Assert.assertEquals(0,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(0, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
         // Check value in CNF index
-        Assert.assertEquals(1,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(3,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(1, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(3, index.getCnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
 
     }
 
@@ -837,20 +805,17 @@ public class IndexTest {
         IndexGroup index = engine.getIndexingFacde()
                 .getIndexGroup("test");
         // Check value in DNF index
-        Assert.assertEquals(0,
-                index.getDnfInvertedIndex()
-                        .getTable()
-                        .size());
+        Assert.assertEquals(0, index.getDnfInvertedIndex()
+                .getTable()
+                .size());
         // Check value in CNF index
-        Assert.assertEquals(1,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .size());
-        Assert.assertEquals(5,
-                index.getCnfInvertedIndex()
-                        .getTable()
-                        .get(0)
-                        .size());
+        Assert.assertEquals(1, index.getCnfInvertedIndex()
+                .getTable()
+                .size());
+        Assert.assertEquals(5, index.getCnfInvertedIndex()
+                .getTable()
+                .get(0)
+                .size());
     }
 
     @Test(expected = MustangException.class)
@@ -872,10 +837,9 @@ public class IndexTest {
         engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
-        engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.fail("Search on non-existant index should fail");
 
     }
@@ -899,11 +863,10 @@ public class IndexTest {
         engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        assertThat(searchResults, hasSize(1));
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -936,10 +899,9 @@ public class IndexTest {
         engine.replaceIndex("test", "testNew");
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.isEmpty());
     }
 

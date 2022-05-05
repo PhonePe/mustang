@@ -16,6 +16,10 @@
  */
 package com.phonepe.mustang.score;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -107,8 +111,8 @@ public class ScoreTest {
                 .build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(engine.score(c2, context) == -1);
-        Assert.assertTrue(engine.score(c1, context) == 30);
+        assertThat(engine.score(c2, context), is(-1.0));
+        assertThat(engine.score(c1, context), is(30.0));
 
         final List<Pair<String, Double>> scores = engine.score(Arrays.asList(c1, c2), context);
         Assert.assertTrue(scores.get(0)
@@ -176,8 +180,8 @@ public class ScoreTest {
                 .build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(engine.score(c2, context) == -1);
-        Assert.assertTrue(engine.score(c1, context) == 3);
+        assertThat(engine.score(c2, context), is(-1.0));
+        assertThat(engine.score(c1, context), is(3.0));
 
         final List<Pair<String, Double>> scores = engine.score(Arrays.asList(c1, c2), context);
         Assert.assertTrue(scores.get(0)
@@ -234,8 +238,8 @@ public class ScoreTest {
                 .build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.isEmpty());
-        Assert.assertTrue(engine.score(c1, context) == -1);
-        Assert.assertTrue(engine.score(c2, context) == -1);
+        assertThat(engine.score(c1, context), is(-1.0));
+        assertThat(engine.score(c2, context), is(-1.0));
     }
 
     @Test
@@ -292,10 +296,10 @@ public class ScoreTest {
                 .node(mapper.valueToTree(testQuery))
                 .build();
         final Set<String> searchResults = engine.search("test", context);
-        Assert.assertTrue(searchResults.size() == 1);
+        assertThat(searchResults, hasSize(1));
         Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(engine.score(c1, context) == 10);
-        Assert.assertTrue(engine.score(c2, context) == -1);
+        assertThat(engine.score(c1, context), is(10.0));
+        assertThat(engine.score(c2, context), is(-1.0));
     }
 
     @Test
@@ -350,10 +354,10 @@ public class ScoreTest {
                 .node(mapper.valueToTree(testQuery))
                 .build();
         final Set<String> searchResults = engine.search("test", context);
-        Assert.assertTrue(searchResults.size() == 1);
+        assertThat(searchResults, hasSize(1));
         Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(engine.score(c1, context) == 1);
-        Assert.assertTrue(engine.score(c2, context) == -1);
+        assertThat(engine.score(c1, context), is(1.0));
+        assertThat(engine.score(c2, context), is(-1.0));
     }
 
     @Test
@@ -400,8 +404,8 @@ public class ScoreTest {
                 .build();
         final Set<String> searchResults = engine.search("test", context);
         Assert.assertTrue(searchResults.isEmpty());
-        Assert.assertTrue(engine.score(c1, context) == -1);
-        Assert.assertTrue(engine.score(c2, context) == -1);
+        assertThat(engine.score(c1, context), is(-1.0));
+        assertThat(engine.score(c2, context), is(-1.0));
 
     }
 
@@ -522,22 +526,22 @@ public class ScoreTest {
                 .build();
 
         Set<String> searchResults = engine.search("test", context);
-        Assert.assertTrue(searchResults.size() == 2);
+        assertThat(searchResults, hasSize(2));
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
 
         searchResults = engine.search("test", context, 1);
-        Assert.assertTrue(searchResults.size() == 1);
+        assertThat(searchResults, hasSize(1));
         Assert.assertTrue(searchResults.contains("C1"));
-        Assert.assertTrue(engine.score(c1, context) == 30);
-        Assert.assertTrue(engine.score(c2, context) == 20);
-        Assert.assertTrue(engine.score(c3, context) == -1);
+        assertThat(engine.score(c1, context), is(30.0));
+        assertThat(engine.score(c2, context), is(20.0));
+        assertThat(engine.score(c3, context), is(-1.0));
 
         searchResults = engine.search("test", context, 3);
-        Assert.assertTrue(searchResults.size() == 2);
+        assertThat(searchResults, hasSize(2));
         final String[] searchResultsArr = searchResults.toArray(new String[0]);
-        Assert.assertTrue(searchResultsArr[0].equals("C1"));
-        Assert.assertTrue(searchResultsArr[1].equals("C2"));
+        assertThat(searchResultsArr[0], is("C1"));
+        assertThat(searchResultsArr[1], is("C2"));
 
     }
 

@@ -56,19 +56,19 @@ public class MustangOnlyDNFSearchBenchmark {
         @Param({ "10", "100", "1000", "10000" })
         private int indexSize;
 
-        private final ObjectMapper mapper = new ObjectMapper();
-        private MustangEngine engine;
-        private RequestContext requestContext;
+        private final ObjectMapper objectMapper = new ObjectMapper();
+        private MustangEngine mustangEngine;
+        private RequestContext context;
 
         @Setup(Level.Trial)
         public void setUp() {
 
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            engine = MustangEngine.builder()
-                    .mapper(mapper)
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mustangEngine = MustangEngine.builder()
+                    .mapper(objectMapper)
                     .build();
 
-            for (int i = 0; i < indexSize; i++) {
+            for (int j = 0; j < indexSize; j++) {
                 Collections.shuffle(Utils.PATHS);
 
                 final Criteria c = CNFCriteria.builder()
@@ -77,22 +77,22 @@ public class MustangOnlyDNFSearchBenchmark {
                         .disjunction(Disjunction.builder()
                                 .predicates(Utils.PATHS.subList(0, Utils.RANDOM.nextInt(5) + 1)
                                         .stream()
-                                        .map(path -> {
+                                        .map(p -> {
                                             if (Utils.RANDOM.nextInt(5) != 0) { // 80-20 split
                                                 return IncludedPredicate.builder()
-                                                        .lhs("$." + path)
+                                                        .lhs("$." + p)
                                                         .values(Sets.newHashSet(Utils.getRandom()))
                                                         .build();
                                             }
                                             return ExcludedPredicate.builder()
-                                                    .lhs("$." + path)
+                                                    .lhs("$." + p)
                                                     .values(Sets.newHashSet(Utils.getRandom()))
                                                     .build();
                                         })
                                         .collect(Collectors.toList()))
                                 .build())
                         .build();
-                engine.add(Utils.INDEX_NAME, c);
+                mustangEngine.add(Utils.INDEX_NAME, c);
 
             }
 
@@ -101,8 +101,8 @@ public class MustangOnlyDNFSearchBenchmark {
         @Setup(Level.Invocation)
         public void prepareContext() {
             Collections.shuffle(Utils.PATHS);
-            requestContext = RequestContext.builder()
-                    .node(mapper.valueToTree(Utils.PATHS.stream()
+            context = RequestContext.builder()
+                    .node(objectMapper.valueToTree(Utils.PATHS.stream()
                             .limit(Utils.RANDOM.nextInt(Utils.PATHS.size()))
                             .collect(Collectors.toMap(x -> x, x -> Utils.getRandom()))))
                     .build();
@@ -116,9 +116,9 @@ public class MustangOnlyDNFSearchBenchmark {
     @Measurement(iterations = 1)
     @Threads(Threads.MAX)
     @BenchmarkMode(Mode.Throughput)
-    public void search(final Blackhole blackhole, final BenchmarkContext context) {
-        blackhole.consume(context.getEngine()
-                .search(Utils.INDEX_NAME, context.getRequestContext(), false));
+    public void search(final Blackhole blackhole, final BenchmarkContext benchmarkContext) {
+        blackhole.consume(benchmarkContext.getMustangEngine()
+                .search(Utils.INDEX_NAME, benchmarkContext.getContext(), false));
     }
 
 }
