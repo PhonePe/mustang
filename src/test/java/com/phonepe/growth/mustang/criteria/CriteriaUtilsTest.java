@@ -124,4 +124,32 @@ public class CriteriaUtilsTest {
         Assert.assertEquals(expectedCNFCriteria, actualCNFCriteria);
     }
 
+    @Test
+    public void testGetCNFCriteriaNoMultiPredicate() {
+        // A OR D OR E
+        DNFCriteria dnfCriteria = DNFCriteria.builder()
+                .id(CRITERIA_ID)
+                .conjunction(Conjunction.builder()
+                        .predicate(PREDICATE_A)
+                        .build())
+                .conjunction(Conjunction.builder()
+                        .predicate(PREDICATE_D)
+                        .build())
+                .conjunction(Conjunction.builder()
+                        .predicate(PREDICATE_E)
+                        .build())
+                .build();
+        // (A OR D OR E)
+        CNFCriteria expectedCNFCriteria = CNFCriteria.builder()
+                .id(CRITERIA_ID)
+                .disjunction(Disjunction.builder()
+                        .predicate(PREDICATE_A)
+                        .predicate(PREDICATE_D)
+                        .predicate(PREDICATE_E)
+                        .build())
+                .build();
+        CNFCriteria actualCNFCriteria = CriteriaUtils.getCNFCriteria(dnfCriteria);
+        Assert.assertEquals(expectedCNFCriteria, actualCNFCriteria);
+    }
+
 }

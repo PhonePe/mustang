@@ -67,7 +67,7 @@ public class CriteriaUtils {
         }
 
         // If there are no multi predicate composition, just create a single composition with all predicates
-        if (multiPredicateCompositions.size() == 0) {
+        if (multiPredicateCompositions.isEmpty()) {
             return new ArrayList<>(Collections.singletonList(transformingFunction.apply(commonPredicates)));
         }
 
