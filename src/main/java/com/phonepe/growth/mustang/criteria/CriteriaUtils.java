@@ -55,7 +55,7 @@ public class CriteriaUtils {
         // Separating out multi predicate compositions and single predicate compositions
         List<Predicate> commonPredicates = new ArrayList<>();
         List<Composition> multiPredicateCompositions = new ArrayList<>();
-        for (Composition composition : compositions) {
+        compositions.forEach(composition -> {
             if (composition.getPredicates()
                     .size() == 1) {
                 commonPredicates.add(composition.getPredicates()
@@ -64,7 +64,7 @@ public class CriteriaUtils {
                     .size() > 1) {
                 multiPredicateCompositions.add(composition);
             }
-        }
+        });
 
         // If there are no multi predicate composition, just create a single composition with all predicates
         if (multiPredicateCompositions.isEmpty()) {
