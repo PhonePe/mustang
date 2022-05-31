@@ -23,7 +23,6 @@ import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -54,18 +53,16 @@ public class CriteriaUtils {
     private static <T> List<T> getCompositions(List<? extends Composition> compositions,
                                                Function<List<Predicate>, T> transformingFunction) {
         // Separating out multi predicate compositions and single predicate compositions
-        List<Predicate> commonPredicates = new ArrayList<>();
-        List<Composition> multiPredicateCompositions = new ArrayList<>();
-        compositions.forEach(composition -> {
-            if (composition.getPredicates()
-                    .size() == 1) {
-                commonPredicates.add(composition.getPredicates()
-                        .get(0));
-            } else if (composition.getPredicates()
-                    .size() > 1) {
-                multiPredicateCompositions.add(composition);
-            }
-        });
+        List<Predicate> commonPredicates = compositions.stream()
+                .filter(composition -> composition.getPredicates()
+                        .size() == 1)
+                .map(composition -> composition.getPredicates()
+                        .get(0))
+                .collect(Collectors.toList());
+        List<Composition> multiPredicateCompositions = compositions.stream()
+                .filter(composition -> composition.getPredicates()
+                        .size() > 1)
+                .collect(Collectors.toList());
 
         // If there are no multi predicate composition, just create a single composition with all predicates
         if (multiPredicateCompositions.isEmpty()) {
