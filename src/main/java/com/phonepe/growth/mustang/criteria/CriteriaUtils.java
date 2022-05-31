@@ -15,6 +15,7 @@
  */
 package com.phonepe.growth.mustang.criteria;
 
+import com.google.common.collect.Lists;
 import com.phonepe.growth.mustang.composition.Composition;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
@@ -68,7 +69,7 @@ public class CriteriaUtils {
 
         // If there are no multi predicate composition, just create a single composition with all predicates
         if (multiPredicateCompositions.isEmpty()) {
-            return new ArrayList<>(Collections.singletonList(transformingFunction.apply(commonPredicates)));
+            return Lists.newArrayList(transformingFunction.apply(commonPredicates));
         }
 
         List<T> resultantCompositions = new ArrayList<>();
