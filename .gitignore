@@ -9,3 +9,6 @@
 .DS_Store
 
 /bin/
+
+benchmarking/.idea/
+benchmarking/target/

@@ -1,4 +1,4 @@
-image: maven:3-jdk-8
+image: docker.phonepe.com:5000/pp-maven:3.8.4-openjdk-8
 
 .default: &default
   only:
@@ -7,7 +7,7 @@ image: maven:3-jdk-8
 
 .default_tag: &default_tag
   tags:
-    - backend
+    - backend-docker
 
 stages:
   - build

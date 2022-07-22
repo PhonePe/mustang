@@ -18,12 +18,6 @@ package com.phonepe.growth.mustang.predicate;
 
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
-import java.util.Objects;
-
-import javax.validation.constraints.NotNull;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -33,9 +27,11 @@ import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
-
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
@@ -44,13 +40,15 @@ import lombok.Data;
                 @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
 @JsonPropertyOrder({ "type", "lhs", "detail", "weight" })
 public abstract class Predicate {
+
+    public static final double NO_MATCH_SCORE = -1.0D;
     @NotNull
     private PredicateType type;
     @NotBlank
     private String lhs;
     private Long weight;
 
-    public boolean evaluate(RequestContext context) {
+    public boolean evaluate(final RequestContext context) {
         final Object value = getNodeValue(context.getNode(), lhs);
         if (Objects.nonNull(value)) {
             return evaluate(context, value);
@@ -68,7 +66,8 @@ public abstract class Predicate {
                 .build();
     }
 
-    public abstract boolean evaluate(RequestContext context, Object lhsValue);
+    public abstract boolean evaluate(RequestContext context,
+                                     Object lhsValue);
 
     public abstract Detail getDetail();
 
@@ -76,5 +75,7 @@ public abstract class Predicate {
     public abstract boolean getDefaultResult();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
+
+    public abstract long getWeightFromContext(RequestContext context);
 
 }
