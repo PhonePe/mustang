@@ -56,13 +56,4 @@ public abstract class Composition {
 
     public abstract double getScore(RequestContext context);
 
-    protected int getWeigthFromContext(RequestContext context, Predicate predicate) {
-        try {
-            JsonPath.read(context.getNode()
-                    .toString(), predicate.getLhs());
-            return 1;
-        } catch (PathNotFoundException e) {
-            return 0;
-        }
-    }
 }

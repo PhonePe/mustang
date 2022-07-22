@@ -78,7 +78,7 @@ public class DNFCriteria extends Criteria {
         return conjunctions.stream()
                 .mapToDouble(conjunction -> conjunction.getScore(context))
                 .max()
-                .orElse(0);
+                .orElse(0D);
     }
 
     @Override
