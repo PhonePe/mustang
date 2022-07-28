@@ -128,21 +128,13 @@ public class MustangEngine {
     }
 
     public double score(final Criteria criteria, final RequestContext context) {
-        if (criteria.evaluate(context)) {
-            return criteria.getScore(context);
-        }
-        return -1.0; // negative score to indicate unmatched criteria.
+        return criteria.getScore(context);
     }
 
     public List<Pair<String, Double>> score(final List<Criteria> criterias, final RequestContext context) {
         return criterias.stream()
                 .sequential()
-                .map(criteria -> {
-                    if (criteria.evaluate(context)) {
-                        return Pair.of(criteria.getId(), criteria.getScore(context));
-                    }
-                    return Pair.of(criteria.getId(), -1.0); // negative score to indicate unmatched criteria.
-                })
+                .map(criteria -> Pair.of(criteria.getId(), criteria.getScore(context)))
                 .collect(Collectors.toList());
     }
 

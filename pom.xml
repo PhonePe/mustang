@@ -4,42 +4,13 @@
 
 	<groupId>com.phonepe.growth</groupId>
 	<artifactId>mustang</artifactId>
-	<version>2.2.2</version>
+	<version>2.2.3</version>
 
 	<parent>
 		<groupId>com.phonepe</groupId>
 		<artifactId>pp-parent-pom</artifactId>
-		<version>0.36</version>
+		<version>0.58</version>
 	</parent>
-
-	<repositories>
-		<repository>
-			<id>clojars</id>
-			<name>Clojars repository</name>
-			<url>https://clojars.org/repo</url>
-		</repository>
-		<repository>
-			<id>phonepe-releases</id>
-			<name>releases</name>
-			<url>http://artifactory.phonepe.com/content/repositories/releases</url>
-		</repository>
-		<repository>
-			<id>phonepe-snapshots</id>
-			<name>snapshots</name>
-			<url>http://artifactory.phonepe.com/content/repositories/snapshots</url>
-		</repository>
-	</repositories>
-
-	<distributionManagement>
-		<repository>
-			<id>phonepe-releases</id>
-			<url>http://artifactory.phonepe.com/content/repositories/releases</url>
-		</repository>
-		<snapshotRepository>
-			<id>phonepe-snapshots</id>
-			<url>http://artifactory.phonepe.com/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<properties>
 		<!-- Sonar-JaCoCo properties -->
@@ -49,13 +20,14 @@
 		<sonar.language>java</sonar.language>
 		<sonar.buildbreaker.skip>true</sonar.buildbreaker.skip>
 		<jackson.version>2.9.9</jackson.version>
+		<maven.deploy.skip>false</maven.deploy.skip>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.16.16</version>
+			<version>1.18.22</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -121,6 +93,7 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.10.19</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>

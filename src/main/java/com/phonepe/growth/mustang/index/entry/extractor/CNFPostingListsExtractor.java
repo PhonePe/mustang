@@ -16,16 +16,6 @@
  */
 package com.phonepe.growth.mustang.index.entry.extractor;
 
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.detail.Detail;
@@ -35,10 +25,17 @@ import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
-
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Data
 @Builder
@@ -88,7 +85,6 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                             .equals(detail.getCaveat())
                                     && key.getValue()
                                             .equals(value))
-                            .sorted(KEY_ORDER_COMPARATOR)
                             .collect(Collectors.toSet());
                     if (keys.isEmpty()) {
                         return Key.builder()
