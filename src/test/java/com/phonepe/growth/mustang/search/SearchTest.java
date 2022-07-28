@@ -5558,6 +5558,75 @@ public class SearchTest {
         Assert.assertEquals(new HashSet<String>() {{
             add("C3");
         }}, searchResults);
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFSearchPostExcludeLinkMiss() throws IOException {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+
+        String testquery = "{\"a\":\"abc\", \"c\":\"abc\"}";
+        // Search query for same criteria
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(testquery))
+                .build());
+        Assert.assertEquals(new HashSet<String>() {{
+            add("C3");
+        }}, searchResults);
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
 }
