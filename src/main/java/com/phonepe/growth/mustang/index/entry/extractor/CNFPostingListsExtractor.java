@@ -85,6 +85,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                                             .equals(detail.getCaveat())
                                     && key.getValue()
                                             .equals(value))
+                            .sorted(KEY_ORDER_COMPARATOR)
                             .collect(Collectors.toSet());
                     if (keys.isEmpty()) {
                         return Key.builder()
