@@ -23,15 +23,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -56,6 +47,13 @@ import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SearchTest {
 
@@ -5503,6 +5501,63 @@ public class SearchTest {
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFSearchPostExcludeLinkMiss() throws IOException {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+
+        String testquery = "{\"a\":\"abc\", \"c\":\"abc\"}";
+        // Search query for same criteria
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(testquery))
+                .build());
+        Assert.assertEquals(new HashSet<String>() {{
+            add("C3");
+        }}, searchResults);
     }
 
 }
