@@ -189,7 +189,7 @@ public class ScanTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(scan.size() == 2);
+        Assert.assertEquals(2, scan.size());
         Assert.assertTrue(scan.stream()
                 .anyMatch(criteria -> criteria.getId()
                         .equals("C1")));
@@ -336,7 +336,7 @@ public class ScanTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(scan.size() == 2);
+        Assert.assertEquals(2, scan.size());
         Assert.assertTrue(scan.stream()
                 .anyMatch(criteria -> criteria.getId()
                         .equals("C1")));

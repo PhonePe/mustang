@@ -54,7 +54,7 @@ public enum Caveat {
     };
 
     @Getter
-    private String value;
+    private final String value;
 
     public static final String NONE_TEXT = "TEXT";
     public static final String EQUALITY_TEXT = "EQUALITY";
