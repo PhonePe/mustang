@@ -169,9 +169,8 @@ public class CNFMatcher {
     }
 
     private Stream<Key> getMatchingKeys(final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
-        return map.entrySet()
+        return map.keySet()
                 .stream()
-                .map(Entry::getKey)
                 .filter(key -> key.getCaveat()
                         .visit(new CaveatEnforcer(key, pathValues.get(key.getName()))));
     }

@@ -18,7 +18,7 @@ package com.phonepe.growth.mustang.index.core;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import com.phonepe.growth.mustang.detail.Caveat;
 

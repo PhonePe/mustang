@@ -241,14 +241,13 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertTrue(index.getDnfInvertedIndex()
+        Assert.assertEquals("C1", index.getDnfInvertedIndex()
                 .getTable()
                 .get(0)
                 .get(key)
                 .firstEntry()
                 .getValue()
-                .getEId()
-                .equals("C1"));
+                .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(4,
@@ -592,14 +591,13 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertTrue(index.getCnfInvertedIndex()
+        Assert.assertEquals("C2", index.getCnfInvertedIndex()
                 .getTable()
                 .get(0)
                 .get(key)
                 .firstEntry()
                 .getValue()
-                .getEId()
-                .equals("C2"));
+                .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(6,
@@ -903,7 +901,7 @@ public class IndexTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -962,7 +960,7 @@ public class IndexTest {
             engine.delete("test", c1);
             Assert.fail("Mustang Exception should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
 
     }

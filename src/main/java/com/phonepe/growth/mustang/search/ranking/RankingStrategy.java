@@ -29,6 +29,6 @@ public enum RankingStrategy {
     private static final String IMPLICIT_FREQUENCY_TEXT = "IMPLICIT_FREQUENCY";
 
     @Getter
-    private String value;
+    private final String value;
 
 }

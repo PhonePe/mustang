@@ -1,4 +1,4 @@
-image: docker.phonepe.com:5000/pp-maven:3.8.4-openjdk-8
+image: docker.phonepe.com:5000/pp-maven:3.8.4-openjdk-17
 
 .default: &default
   only:

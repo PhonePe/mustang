@@ -1841,7 +1841,7 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
@@ -2006,7 +2006,7 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
@@ -2524,7 +2524,7 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
@@ -2777,7 +2777,7 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
@@ -2877,7 +2877,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -2905,7 +2905,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -2933,7 +2933,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 0);
+        Assert.assertEquals(0, searchResults.size());
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -3271,7 +3271,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3332,7 +3332,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3380,7 +3380,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3395,7 +3395,7 @@ public class SearchTest {
                             .build());
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3414,7 +3414,7 @@ public class SearchTest {
                             .build());
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3598,7 +3598,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3621,7 +3621,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3644,7 +3644,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3693,7 +3693,7 @@ public class SearchTest {
                             .build());
             Assert.fail("MustangException should have been thrown.");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3779,7 +3779,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        Assert.assertTrue(searchResults.size() == 1);
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         // Remove from index
