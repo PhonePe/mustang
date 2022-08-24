@@ -43,9 +43,8 @@ public class Scanner {
 
     public Set<String> scan() {
         final List<Criteria> scanResults = indexGroup.getAllCriterias()
-                .entrySet()
+                .values()
                 .stream()
-                .map(Map.Entry::getValue)
                 .filter(criteria -> criteria.evaluate(context))
                 .collect(Collectors.toList());
         return Stream.of(scanResults,
