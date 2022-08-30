@@ -125,7 +125,7 @@ public class DNFMatcher {
                             nextID = getNextId(links, pLists[k - 1].getValue()
                                     .getKey(), nextID);
                         }
-                        skipTo(k, pLists, nextID);
+                        skipTo(pLists, nextID);
                     }
                 });
         return result;
@@ -226,8 +226,7 @@ public class DNFMatcher {
         return 0;
     }
 
-    private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
+    private void skipTo(final Entry<Key, MutablePair<Integer, TreeMap<Integer, ConjunctionPostingEntry>>>[] pLists,
             final int nextID) {
         IntStream.range(0, pLists.length)
                 .filter(l -> Objects.nonNull(pLists[l].getValue()
