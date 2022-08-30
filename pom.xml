@@ -46,6 +46,13 @@
 				<role>developer</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>F1reb0lt</id>
+			<name>Sidharth</name>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
 	</developers>
 
 	<issueManagement>
