@@ -149,7 +149,7 @@ public class CNFMatcher {
                             nextID = getNextId(links, pLists[k - 1].getValue()
                                     .getKey(), nextID);
                         }
-                        skipTo(k, pLists, nextID);
+                        skipTo(pLists, nextID);
                     }
                 });
 
@@ -286,8 +286,7 @@ public class CNFMatcher {
                 .toArray(Integer[]::new);
     }
 
-    private void skipTo(final int k,
-            final Map.Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
+    private void skipTo(final Entry<Key, MutablePair<Integer, TreeMap<Integer, DisjunctionPostingEntry>>>[] pLists,
             final int nextID) {
         IntStream.range(0, pLists.length)
                 .filter(l -> Objects.nonNull(pLists[l].getValue()
