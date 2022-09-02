@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TautologicalCriteria {
 
-    public static final Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
+    public static Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
         return criteriaForm.accept(new CriteriaForm.Visitor<Criteria>() {
 
             @Override

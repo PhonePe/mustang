@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package com.phonepe.mustang.scan;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,9 +42,8 @@ public class Scanner {
 
     public Set<String> scan() {
         final List<Criteria> scanResults = indexGroup.getAllCriterias()
-                .entrySet()
+                .values()
                 .stream()
-                .map(Map.Entry::getValue)
                 .filter(criteria -> criteria.evaluate(context))
                 .collect(Collectors.toList());
         return Stream.of(scanResults,

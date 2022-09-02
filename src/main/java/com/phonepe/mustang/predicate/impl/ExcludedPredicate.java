@@ -16,12 +16,6 @@
  */
 package com.phonepe.mustang.predicate.impl;
 
-import java.util.Objects;
-import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -32,7 +26,10 @@ import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.predicate.Predicate;
 import com.phonepe.mustang.predicate.PredicateType;
 import com.phonepe.mustang.predicate.PredicateVisitor;
-
+import java.util.Objects;
+import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -71,6 +68,13 @@ public class ExcludedPredicate extends Predicate {
     @Override
     public <T> T accept(PredicateVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public long getWeightFromContext(final RequestContext context) {
+        return evaluate(context)
+               ? 0
+               : (long) NO_MATCH_SCORE;
     }
 
 }

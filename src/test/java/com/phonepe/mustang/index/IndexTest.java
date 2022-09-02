@@ -5,27 +5,15 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.index;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
@@ -44,6 +32,12 @@ import com.phonepe.mustang.index.core.Key;
 import com.phonepe.mustang.index.group.IndexGroup;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class IndexTest {
 
@@ -236,14 +230,13 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertTrue(index.getDnfInvertedIndex()
+        Assert.assertEquals("C1", index.getDnfInvertedIndex()
                 .getTable()
                 .get(0)
                 .get(key)
                 .firstEntry()
                 .getValue()
-                .getEId()
-                .equals("C1"));
+                .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(4, index.getDnfInvertedIndex()
@@ -576,14 +569,13 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertTrue(index.getCnfInvertedIndex()
+        Assert.assertEquals("C2", index.getCnfInvertedIndex()
                 .getTable()
                 .get(0)
                 .get(key)
                 .firstEntry()
                 .getValue()
-                .getEId()
-                .equals("C2"));
+                .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(6, index.getCnfInvertedIndex()
@@ -646,7 +638,6 @@ public class IndexTest {
         try {
             index = engine.getIndexingFacde()
                     .getIndexGroup("test");
-            ;
         } catch (MustangException e) {
             Assert.assertEquals("INDEX_NOT_FOUND", e.getErrorCode()
                     .toString());
@@ -866,7 +857,7 @@ public class IndexTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
     }
 
@@ -924,7 +915,7 @@ public class IndexTest {
             engine.delete("test", c1);
             Assert.fail("Mustang Exception should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
 
     }
