@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,13 +21,11 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import com.phonepe.mustang.common.RequestContext;
 import com.phonepe.mustang.composition.impl.Conjunction;
 import com.phonepe.mustang.composition.impl.Disjunction;
@@ -56,13 +54,4 @@ public abstract class Composition {
 
     public abstract double getScore(RequestContext context);
 
-    protected int getWeigthFromContext(RequestContext context, Predicate predicate) {
-        try {
-            JsonPath.read(context.getNode()
-                    .toString(), predicate.getLhs());
-            return 1;
-        } catch (PathNotFoundException e) {
-            return 0;
-        }
-    }
 }

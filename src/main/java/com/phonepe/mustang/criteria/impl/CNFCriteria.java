@@ -5,23 +5,17 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.criteria.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import org.hibernate.validator.constraints.NotEmpty;
+import static com.phonepe.mustang.predicate.Predicate.NO_MATCH_SCORE;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,17 +25,21 @@ import com.phonepe.mustang.criteria.Criteria;
 import com.phonepe.mustang.criteria.CriteriaForm;
 import com.phonepe.mustang.criteria.CriteriaVisitor;
 import com.phonepe.mustang.debug.DebugResult;
-
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class CNFCriteria extends Criteria {
+
     @Valid
     @NotEmpty
     private List<Disjunction> disjunctions;
@@ -49,7 +47,7 @@ public class CNFCriteria extends Criteria {
     @Builder
     @JsonCreator
     public CNFCriteria(@JsonProperty("id") String id,
-            @JsonProperty("disjunctions") @Singular List<Disjunction> disjunctions) {
+                       @JsonProperty("disjunctions") @Singular List<Disjunction> disjunctions) {
         super(CriteriaForm.CNF, id);
         this.disjunctions = disjunctions;
     }
@@ -75,9 +73,15 @@ public class CNFCriteria extends Criteria {
     @Override
     public double getScore(RequestContext context) {
         // score of a CNF is the sum of score of all its constituent disjunctions.
-        return disjunctions.stream()
-                .mapToDouble(disjunction -> disjunction.getScore(context))
-                .sum();
+        double sum = 0.0;
+        for (Disjunction disjunction : disjunctions) {
+            final double score = disjunction.getScore(context);
+            if (score == NO_MATCH_SCORE) {
+                return NO_MATCH_SCORE;
+            }
+            sum += score;
+        }
+        return sum;
     }
 
     @Override

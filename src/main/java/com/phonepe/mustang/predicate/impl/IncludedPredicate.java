@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,6 @@
  *
  */
 package com.phonepe.mustang.predicate.impl;
-
-import java.util.Objects;
-import java.util.Set;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +26,10 @@ import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.predicate.Predicate;
 import com.phonepe.mustang.predicate.PredicateType;
 import com.phonepe.mustang.predicate.PredicateVisitor;
-
+import java.util.Objects;
+import java.util.Set;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -71,6 +68,13 @@ public class IncludedPredicate extends Predicate {
     @Override
     public <T> T accept(PredicateVisitor<T> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public long getWeightFromContext(final RequestContext context) {
+        return evaluate(context)
+               ? getWeight()
+               : (long) NO_MATCH_SCORE;
     }
 
 }

@@ -5,27 +5,15 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.scan;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -40,6 +28,12 @@ import com.phonepe.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ScanTest {
 
@@ -137,7 +131,7 @@ public class ScanTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.isEmpty());
@@ -186,10 +180,10 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(scan, hasSize(2));
+        Assert.assertEquals(2, scan.size());
         Assert.assertTrue(scan.stream()
                 .anyMatch(criteria -> criteria.getId()
                         .equals("C1")));
@@ -240,7 +234,7 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -281,7 +275,7 @@ public class ScanTest {
         testQuery.put("a", "D");
         testQuery.put("n", "7");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.isEmpty());
@@ -330,10 +324,10 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(scan, hasSize(2));
+        Assert.assertEquals(2, scan.size());
         Assert.assertTrue(scan.stream()
                 .anyMatch(criteria -> criteria.getId()
                         .equals("C1")));
@@ -372,7 +366,7 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -410,7 +404,7 @@ public class ScanTest {
         testQuery.put("n", 0.300000000003);
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertFalse(scan.stream()
@@ -438,7 +432,7 @@ public class ScanTest {
         testQuery.put("a", "A10");
         testQuery.put("p", Boolean.FALSE);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -466,7 +460,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("p", Boolean.TRUE);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertFalse(scan.stream()
@@ -520,7 +514,7 @@ public class ScanTest {
         testQuery.put("abc", "ABC1");
         testQuery.put("boolTest", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -577,7 +571,7 @@ public class ScanTest {
         testQuery.put("abc", "ABC10");
         testQuery.put("boolTest", false);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -624,7 +618,7 @@ public class ScanTest {
         testQuery.put("a", "A10");
         testQuery.put("p", false);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -671,7 +665,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertFalse(scan.stream()
@@ -709,7 +703,7 @@ public class ScanTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -745,7 +739,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("b", "B10");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -772,7 +766,7 @@ public class ScanTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -800,7 +794,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("p", Boolean.TRUE);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] {}), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertFalse(scan.stream()
@@ -850,7 +844,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("abc", "ABC1");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -904,7 +898,7 @@ public class ScanTest {
         testQuery.put("abc", "ABC10");
         testQuery.put("boolTest", false);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -949,7 +943,7 @@ public class ScanTest {
         testQuery.put("helloWorld", "helloWorld100");
         testQuery.put("a", "A10");
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertTrue(scan.stream()
@@ -996,7 +990,7 @@ public class ScanTest {
         testQuery.put("a", "A1");
         testQuery.put("p", true);
 
-        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[] { c2 }), RequestContext.builder()
+        final List<Criteria> scan = engine.scan(Lists.asList(c1, new Criteria[]{c2}), RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
         Assert.assertFalse(scan.stream()
