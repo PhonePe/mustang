@@ -12,15 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.evaluation;
-
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
@@ -34,6 +27,10 @@ import com.phonepe.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
+import java.util.Map;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EvaluationTest {
     private final ObjectMapper mapper = new ObjectMapper();

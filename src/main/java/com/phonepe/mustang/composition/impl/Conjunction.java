@@ -12,12 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.composition.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static com.phonepe.mustang.predicate.Predicate.NO_MATCH_SCORE;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,8 +24,8 @@ import com.phonepe.mustang.composition.Composition;
 import com.phonepe.mustang.composition.CompositionType;
 import com.phonepe.mustang.debug.CompositionDebugResult;
 import com.phonepe.mustang.predicate.Predicate;
-import com.phonepe.mustang.predicate.PredicateType;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -64,10 +62,15 @@ public class Conjunction extends Composition {
 
     @Override
     public double getScore(RequestContext context) {
-        return getPredicates().stream()
-                .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate))
-                .sum();
+        double sum = 0.0;
+        for (Predicate predicate : getPredicates()) {
+            final double score = predicate.getWeightFromContext(context);
+            if (score == NO_MATCH_SCORE) {
+                return NO_MATCH_SCORE;
+            }
+            sum += score;
+        }
+        return sum;
     }
 
 }

@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.search;
 
@@ -22,15 +21,6 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -56,6 +46,13 @@ import com.phonepe.mustang.exception.MustangException;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.mustang.ratify.RatificationResult;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SearchTest {
 
@@ -160,7 +157,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
@@ -574,7 +571,7 @@ public class SearchTest {
         engine.add("test", c3);
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.readTree(
-                    "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                        "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
                 .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
@@ -636,7 +633,7 @@ public class SearchTest {
         engine.add("test", c4);
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.readTree(
-                    "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                        "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
                 .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
@@ -808,7 +805,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
@@ -982,7 +979,7 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
@@ -1814,7 +1811,7 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
@@ -1920,8 +1917,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
+    public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = DNFCriteria.builder()
@@ -1974,13 +1970,12 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
     @Test
-    public void
-           testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+    public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = DNFCriteria.builder()
@@ -2053,8 +2048,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
+    public void testDNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = DNFCriteria.builder()
@@ -2162,8 +2156,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testDNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
+    public void testDNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = DNFCriteria.builder()
@@ -2426,8 +2419,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
+    public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = CNFCriteria.builder()
@@ -2480,13 +2472,12 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
     @Test
-    public void
-           testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+    public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = CNFCriteria.builder()
@@ -2561,8 +2552,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
+    public void testCNFMultipleInclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterDelete() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = CNFCriteria.builder()
@@ -2673,8 +2663,7 @@ public class SearchTest {
     }
 
     @Test
-    public void
-           testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
+    public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgain() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = CNFCriteria.builder()
@@ -2727,13 +2716,12 @@ public class SearchTest {
             engine.add("test", c1);
             Assert.fail("MustangException should have been thrown");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_GENERATION_ERROR.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_GENERATION_ERROR, e.getErrorCode());
         }
     }
 
     @Test
-    public void
-           testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
+    public void testCNFMultipleExclusionPredicateQueryEngineAndUpdateSameCriteriaWithSameNumberOfInclusionPredicateQueryAgainAfterUpdate() {
         Criteria c1;
         /* Initial Criteria Builder -set value as TRUE */
         c1 = CNFCriteria.builder()
@@ -2824,7 +2812,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -2851,7 +2839,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -2878,7 +2866,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        Assert.assertTrue(searchResults.isEmpty());
+        Assert.assertEquals(0, searchResults.size());
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -3209,7 +3197,7 @@ public class SearchTest {
         Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3268,7 +3256,7 @@ public class SearchTest {
         Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3313,7 +3301,7 @@ public class SearchTest {
         engine.add("test1", c1);
         engine.replaceIndex("test", "test1");
         searchResults = engine.search("test", requestContext);
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3325,7 +3313,7 @@ public class SearchTest {
             searchResults = engine.search("test1", requestContext);
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3344,7 +3332,7 @@ public class SearchTest {
             engine.search("test", requestContext);
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3423,8 +3411,8 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-            "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
-            mapper.writeValueAsString(c1));
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
+                mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -3511,8 +3499,8 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-            "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
-            mapper.writeValueAsString(c1));
+                "{\"form\":\"CNF\",\"id\":\"C1\",\"disjunctions\":[{\"type\":\"OR\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"A1\",\"A2\"]},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[1.0E-15,2.0E-15,3.0E-15]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
+                mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
 
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -3523,7 +3511,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3545,7 +3533,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3567,7 +3555,7 @@ public class SearchTest {
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3615,7 +3603,7 @@ public class SearchTest {
             engine.search("test", requestContext);
             Assert.fail("MustangException should have been thrown.");
         } catch (MustangException e) {
-            Assert.assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -3697,7 +3685,7 @@ public class SearchTest {
         Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.valueToTree(testQuery))
                 .build());
-        assertThat(searchResults, hasSize(1));
+        Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         // Remove from index
@@ -3821,8 +3809,7 @@ public class SearchTest {
         engine.add("test", c6);
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.readTree(str))
-                .build(),
-            false);
+                .build(), false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -3936,8 +3923,7 @@ public class SearchTest {
         engine.add("test", c6);
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.readTree(str))
-                .build(),
-            false);
+                .build(), false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4093,8 +4079,7 @@ public class SearchTest {
         engine.add("test", c4);
         final Set<String> searchResults = engine.search("test", RequestContext.builder()
                 .node(mapper.readTree(str))
-                .build(),
-            false);
+                .build(), false);
         Assert.assertEquals(3, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -5263,8 +5248,8 @@ public class SearchTest {
                         .build())
                 .build();
         Assert.assertEquals(
-            "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"VERSIONING\",\"check\":\"ABOVE\",\"baseVersion\":\"5.7.40\",\"excludeBase\":false,\"normalisedView\":\"ABOVE#5.7.40#false\"},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.x\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":3.0E-15,\"upperBound\":1.7976931348623157E308,\"includeLowerBound\":true,\"includeUpperBound\":false,\"normalisedView\":\"3.0E-15#1.7976931348623157E308#true#false\"},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
-            mapper.writeValueAsString(c1));
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"weight\":1},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"VERSIONING\",\"check\":\"ABOVE\",\"baseVersion\":\"5.7.40\",\"excludeBase\":false,\"normalisedView\":\"ABOVE#5.7.40#false\"},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.x\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":3.0E-15,\"upperBound\":1.7976931348623157E308,\"includeLowerBound\":true,\"includeUpperBound\":false,\"normalisedView\":\"3.0E-15#1.7976931348623157E308#true#false\"},\"weight\":1},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"weight\":1}]}]}",
+                mapper.writeValueAsString(c1));
         Criteria c11 = mapper.readValue(mapper.writeValueAsString(c1), Criteria.class);
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -5393,6 +5378,132 @@ public class SearchTest {
                 .build());
         assertThat(searchResults, hasSize(4));
         assertThat(searchResults, containsInAnyOrder("C6", "C7", "C8", "C9"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFSearchPostExcludeLinkMiss() throws IOException {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+
+        String testquery = "{\"a\":\"abc\", \"c\":\"abc\"}";
+        // Search query for same criteria
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(testquery))
+                .build());
+        Assert.assertEquals(new HashSet<String>() {{
+            add("C3");
+        }}, searchResults);
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFSearchPostExcludeLinkMiss() throws IOException {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.c")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("abc"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+
+        String testquery = "{\"a\":\"abc\", \"c\":\"abc\"}";
+        // Search query for same criteria
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(testquery))
+                .build());
+        Assert.assertEquals(new HashSet<String>() {{
+            add("C3");
+        }}, searchResults);
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");

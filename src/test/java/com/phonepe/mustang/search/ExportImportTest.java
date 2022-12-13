@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.mustang.search;
 
@@ -21,26 +20,16 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Maps;
@@ -58,6 +47,15 @@ import com.phonepe.mustang.exception.MustangException;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.mustang.ratify.RatificationResult;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 
 public class ExportImportTest {
 
@@ -224,7 +222,7 @@ public class ExportImportTest {
             engine.exportIndexGroup("nonExistent");
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
-            assertTrue(ErrorCode.INDEX_NOT_FOUND.equals(e.getErrorCode()));
+            assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
         }
     }
 
@@ -252,7 +250,7 @@ public class ExportImportTest {
             engine1.importIndexGroup("testsearch", indexGroup);
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
-            assertTrue(ErrorCode.INDEX_GROUP_EXISTS.equals(e.getErrorCode()));
+            assertEquals(ErrorCode.INDEX_GROUP_EXISTS, e.getErrorCode());
         }
     }
 
@@ -276,13 +274,13 @@ public class ExportImportTest {
         engine.add("test", c1);
 
         doThrow(JsonProcessingException.class).when(mapperMock)
-                .writeValueAsString(Mockito.anyObject());
+                .writeValueAsString(Mockito.any());
 
         try {
             engine.exportIndexGroup("test");
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
-            assertTrue(ErrorCode.INDEX_EXPORT_ERROR.equals(e.getErrorCode()));
+            assertEquals(ErrorCode.INDEX_EXPORT_ERROR, e.getErrorCode());
         }
     }
 
@@ -308,14 +306,14 @@ public class ExportImportTest {
                 .mapper(mapperMock)
                 .build();
 
-        doThrow(IOException.class).when(mapperMock)
-                .readValue(Mockito.anyString(), Matchers.<TypeReference<List<Criteria>>>any());
+        doThrow(JsonMappingException.class).when(mapperMock)
+                .readValue(Mockito.anyString(), ArgumentMatchers.<TypeReference<List<Criteria>>>any());
 
         try {
             engine1.importIndexGroup("testsearch", indexGroup);
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
-            assertTrue(ErrorCode.INDEX_IMPORT_ERROR.equals(e.getErrorCode()));
+            assertEquals(ErrorCode.INDEX_IMPORT_ERROR, e.getErrorCode());
         }
     }
 
@@ -339,13 +337,13 @@ public class ExportImportTest {
         engine.add("test", c1);
 
         doThrow(JsonProcessingException.class).when(mapperMock)
-                .writeValueAsString(Mockito.anyObject());
+                .writeValueAsString(Mockito.any());
 
         try {
             engine.snapshot("test");
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
-            assertTrue(ErrorCode.INTERNAL_ERROR.equals(e.getErrorCode()));
+            assertEquals(ErrorCode.INTERNAL_ERROR, e.getErrorCode());
         }
     }
 

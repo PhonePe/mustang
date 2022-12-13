@@ -39,7 +39,7 @@ public enum CheckType {
     public static final String BELOW_TEXT = "BELOW";
 
     @Getter
-    private String value;
+    private final String value;
 
     public abstract <T> T accept(Visitor<T> visitor);
 

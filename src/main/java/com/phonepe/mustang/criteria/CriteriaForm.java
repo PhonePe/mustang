@@ -35,7 +35,7 @@ public enum CriteriaForm {
     public static final String DNF_TEXT = "DNF"; // Disjunctive Normal Form
     public static final String CNF_TEXT = "CNF"; // Conjunctive Normal Form
     @Getter
-    private String value;
+    private final String value;
 
     private CriteriaForm(String value) {
         this.value = value;

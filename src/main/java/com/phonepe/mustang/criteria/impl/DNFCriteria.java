@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -78,7 +78,7 @@ public class DNFCriteria extends Criteria {
         return conjunctions.stream()
                 .mapToDouble(conjunction -> conjunction.getScore(context))
                 .max()
-                .orElse(0);
+                .orElse(0D);
     }
 
     @Override
