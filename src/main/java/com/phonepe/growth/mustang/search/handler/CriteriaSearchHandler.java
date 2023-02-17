@@ -51,6 +51,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     public Map<String, Double> handle() {
         extractValuesForPaths();
         final Map<String, Double> searchResults = Stream.of(CriteriaForm.values())
+                .filter(CriteriaForm::isNormalizedForm)
                 .map(cForm -> cForm.accept(this))
                 .map(Matches::getProbables)
                 .flatMap(map -> map.entrySet()
@@ -92,6 +93,11 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .build()
                         .getMatches())
                 .build();
+    }
+
+    @Override
+    public Matches visitUNF() {
+        throw new UnsupportedOperationException("UNFCriteria should not be present here");
     }
 
     private void extractValuesForPaths() {

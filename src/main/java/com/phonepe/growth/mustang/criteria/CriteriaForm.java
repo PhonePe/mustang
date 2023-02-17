@@ -21,19 +21,41 @@ import lombok.Getter;
 public enum CriteriaForm {
     DNF(CriteriaForm.DNF_TEXT) {
         @Override
+        public boolean isNormalizedForm() {
+            return true;
+        }
+
+        @Override
         public <T> T accept(Visitor<T> visitor) {
             return visitor.visitDNF();
         }
     },
     CNF(CriteriaForm.CNF_TEXT) {
         @Override
+        public boolean isNormalizedForm() {
+            return true;
+        }
+
+        @Override
         public <T> T accept(Visitor<T> visitor) {
             return visitor.visitCNF();
+        }
+    },
+    UNF(CriteriaForm.UNF_TEXT) {
+        @Override
+        public boolean isNormalizedForm() {
+            return false;
+        }
+
+        @Override
+        public <T> T accept(Visitor<T> visitor) {
+            return visitor.visitUNF();
         }
     };
 
     public static final String DNF_TEXT = "DNF"; // Disjunctive Normal Form
     public static final String CNF_TEXT = "CNF"; // Conjunctive Normal Form
+    public static final String UNF_TEXT = "UNF"; // Unnormalized Form
     @Getter
     private final String value;
 
@@ -41,11 +63,17 @@ public enum CriteriaForm {
         this.value = value;
     }
 
+
+    public abstract boolean isNormalizedForm();
+
     public abstract <T> T accept(Visitor<T> visitor);
+
 
     public interface Visitor<T> {
         T visitDNF();
 
         T visitCNF();
+
+        T visitUNF();
     }
 }

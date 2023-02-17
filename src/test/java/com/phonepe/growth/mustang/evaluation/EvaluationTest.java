@@ -16,24 +16,24 @@
  */
 package com.phonepe.growth.mustang.evaluation;
 
-import java.util.Map;
-
-import com.phonepe.growth.mustang.MustangEngine;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.MustangEngine;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import java.util.Map;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class EvaluationTest {
     private final ObjectMapper mapper = new ObjectMapper();
@@ -161,6 +161,74 @@ public class EvaluationTest {
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "C");
+        testQuery.put("n", "7");
+
+        Assert.assertFalse(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
+
+    }
+
+    @Test
+    public void testUNFPositiveMatch() throws Exception {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .values(Sets.newHashSet("A1", "A2"))
+                        .build())
+                .predicate(ExcludedPredicate.builder()
+                        .lhs("$.b")
+                        .values(Sets.newHashSet("B1", "B2"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                        .build())
+                .criteria(UNFCriteria.builder()
+                        .id("C1")
+                        .type(CompositionType.OR)
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.q")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.evaluate(c1,
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build()));
+    }
+
+    @Test
+    public void testUNFNegativeMatch() throws Exception {
+
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .values(Sets.newHashSet("A", "B"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .values(Sets.newHashSet(1, 2, 3))
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A");
         testQuery.put("n", "7");
 
         Assert.assertFalse(engine.evaluate(c1,

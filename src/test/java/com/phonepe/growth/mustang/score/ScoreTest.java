@@ -23,11 +23,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import java.util.Arrays;
@@ -398,6 +400,120 @@ public class ScoreTest {
         Assert.assertEquals(NO_MATCH_SCORE, engine.score(c1, context), 0.0);
         Assert.assertEquals(NO_MATCH_SCORE, engine.score(c2, context), 0.0);
 
+    }
+
+    @Test
+    public void testUNFPositiveMatchImplicitWeights() {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .criteria(UNFCriteria.builder()
+                        .id("C1_0")
+                        .type(CompositionType.OR)
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A7", "A2"))
+                                .weight(10L)
+                                .build())
+                        .criteria(UNFCriteria.builder()
+                                .id("C1_0_0")
+                                .type(CompositionType.AND)
+                                .predicate(ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .weight(10L)
+                                        .build())
+                                .predicate(IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .values(Sets.newHashSet(true))
+                                        .weight(10L)
+                                        .build())
+                                .build())
+                        .build())
+                .criteria(UNFCriteria.builder()
+                        .id("C1_0")
+                        .type(CompositionType.OR)
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .weight(10L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .weight(10L)
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        final RequestContext context = RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build();
+
+        Set<String> searchResults = engine.search("test", context);
+        Assert.assertEquals(1, searchResults.size());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertEquals(20, engine.score(c1, context), 0.0);
+    }
+
+    @Test
+    public void testUNFNegativeMatchImplicitWeights() {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .criteria(UNFCriteria.builder()
+                        .id("C1_0")
+                        .type(CompositionType.OR)
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .weight(10L)
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(1, 2, 3))
+                                .weight(10L)
+                                .build())
+                        .build())
+                .criteria(UNFCriteria.builder()
+                        .id("C1_0")
+                        .type(CompositionType.OR)
+                        .criteria(UNFCriteria.builder()
+                                .id("C1_0")
+                                .type(CompositionType.AND)
+                                .predicate(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .values(Sets.newHashSet("A7", "A5", "A6"))
+                                        .weight(10L)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(4, 5, 6))
+                                .weight(10L)
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        final RequestContext context = RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build();
+
+        Set<String> searchResults = engine.search("test", context);
+        Assert.assertEquals(0, searchResults.size());
+        Assert.assertEquals(NO_MATCH_SCORE, engine.score(c1, context), 0.0);
     }
 
     @Test

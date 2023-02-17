@@ -12,15 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.growth.mustang.composition;
 
 import lombok.Getter;
 
 public enum CompositionType {
-    AND(CompositionType.AND_TEXT),
-    OR(CompositionType.OR_TEXT);
+    AND(CompositionType.AND_TEXT) {
+        @Override
+        public <T> T accept(Visitor<T> visitor) {
+            return visitor.visitAnd();
+        }
+    },
+    OR(CompositionType.OR_TEXT) {
+        @Override
+        public <T> T accept(Visitor<T> visitor) {
+            return visitor.visitOr();
+        }
+    };
 
     public static final String AND_TEXT = "AND";
     public static final String OR_TEXT = "OR";
@@ -30,6 +39,15 @@ public enum CompositionType {
 
     private CompositionType(String value) {
         this.value = value;
+    }
+
+    public abstract <T> T accept(Visitor<T> visitor);
+
+    public interface Visitor<T> {
+
+        T visitAnd();
+
+        T visitOr();
     }
 
 }
