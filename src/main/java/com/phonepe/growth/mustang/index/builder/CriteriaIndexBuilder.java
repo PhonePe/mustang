@@ -16,6 +16,9 @@
  */
 package com.phonepe.growth.mustang.index.builder;
 
+import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.growth.mustang.criteria.CriteriaUtils;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,6 +81,18 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             cnfIndexer.index();
         }
         return null;
+    }
+
+    @Override
+    public Void visit(UNFCriteria unf) {
+        Criteria normalizedCriteria = CriteriaUtils.getNormalizedCriteria(unf);
+        if (normalizedCriteria instanceof CNFCriteria){
+            return this.visit((CNFCriteria) normalizedCriteria);
+        }else if (normalizedCriteria instanceof DNFCriteria){
+            return this.visit((DNFCriteria) normalizedCriteria);
+        }else {
+            throw new AssertionError("Should never happen");
+        }
     }
 
     public static <T, S> Map<T, TreeMap<Integer, S>> compactPostingLists(List<Map<T, TreeMap<Integer, S>>> maps) {

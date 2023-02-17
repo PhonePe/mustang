@@ -16,26 +16,26 @@
  */
 package com.phonepe.growth.mustang.evaluation;
 
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import java.util.Map;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DebugTest {
     private final ObjectMapper mapper = new ObjectMapper();
@@ -186,11 +186,154 @@ public class DebugTest {
         testQuery.put("n", 7);
 
         Assert.assertFalse(engine.debug(c1,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
                 .isResult());
 
+    }
+
+    @Test
+    public void testDNFPositiveMultipleRangeCheck() throws Exception {
+
+        final Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c2,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000004)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c3,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c4 = DNFCriteria.builder()
+                .id("C4")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000002)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c4,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c5 = DNFCriteria.builder()
+                .id("C5")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c5,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c6 = DNFCriteria.builder()
+                .id("C6")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c6,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c7 = DNFCriteria.builder()
+                .id("C7")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c7,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c8 = DNFCriteria.builder()
+                .id("C8")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000004)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c8,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
     }
 
     @Test
@@ -360,149 +503,6 @@ public class DebugTest {
     }
 
     @Test
-    public void testDNFPositiveMultipleRangeCheck() throws Exception {
-
-        final Map<String, Object> testQuery = Maps.newHashMap();
-        testQuery.put("a", "A1");
-        testQuery.put("b", "B3");
-        testQuery.put("n", 0.000000000000003);
-        testQuery.put("p", false);
-
-        Criteria c1 = DNFCriteria.builder()
-                .id("C1")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .upperBound(0.000000000000003)
-                                        .includeUpperBound(true)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertTrue(engine.debug(c1,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c2 = DNFCriteria.builder()
-                .id("C2")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .upperBound(0.000000000000003)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertFalse(engine.debug(c2,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c3 = DNFCriteria.builder()
-                .id("C3")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .upperBound(0.000000000000004)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertTrue(engine.debug(c3,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c4 = DNFCriteria.builder()
-                .id("C4")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .upperBound(0.000000000000002)
-                                        .includeLowerBound(true)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertFalse(engine.debug(c4,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c5 = DNFCriteria.builder()
-                .id("C5")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .lowerBound(0.000000000000003)
-                                        .includeLowerBound(true)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertTrue(engine.debug(c5,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c6 = DNFCriteria.builder()
-                .id("C6")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .lowerBound(0.000000000000003)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertFalse(engine.debug(c6,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c7 = DNFCriteria.builder()
-                .id("C7")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .lowerBound(0.000000000000002)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertTrue(engine.debug(c7,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-        Criteria c8 = DNFCriteria.builder()
-                .id("C8")
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder()
-                                        .lowerBound(0.000000000000004)
-                                        .includeLowerBound(true)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-        Assert.assertFalse(engine.debug(c8,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build())
-                .isResult());
-    }
-
-    @Test
     public void testCNFPositiveMultipleRangeCheck() throws Exception {
         final Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
@@ -638,9 +638,285 @@ public class DebugTest {
                         .build())
                 .build();
         Assert.assertFalse(engine.debug(c8,
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+    }
+
+    @Test
+    public void testUNFPositiveMatch() throws Exception {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .values(Sets.newHashSet("A1", "A2"))
                         .build())
+                .predicate(ExcludedPredicate.builder()
+                        .lhs("$.b")
+                        .values(Sets.newHashSet("B1", "B2"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.p")
+                        .values(Sets.newHashSet(true))
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+    }
+
+    @Test
+    public void testUNFPositiveRegexMatch() throws Exception {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .detail(RegexDetail.builder()
+                                .regex("A.*")
+                                .build())
+                        .build())
+                .predicate(ExcludedPredicate.builder()
+                        .lhs("$.b")
+                        .values(Sets.newHashSet("B1"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.p")
+                        .values(Sets.newHashSet(true))
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+    }
+
+    @Test
+    public void testUNFPositiveRangeMatch() throws Exception {
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .detail(RegexDetail.builder()
+                                .regex("A.*")
+                                .build())
+                        .build())
+                .predicate(ExcludedPredicate.builder()
+                        .lhs("$.b")
+                        .values(Sets.newHashSet("B1"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(0.300000000003)
+                                .includeUpperBound(true)
+                                .build())
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.p")
+                        .values(Sets.newHashSet(true))
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.300000000003);
+        testQuery.put("p", true);
+
+        Assert.assertTrue(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+    }
+
+    @Test
+    public void testUNFNegativeMatch() throws Exception {
+
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .values(Sets.newHashSet("A", "B"))
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(7)
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A");
+        testQuery.put("n", 7);
+
+        Assert.assertFalse(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+
+    }
+
+    @Test
+    public void testUNFPositiveMultipleRangeCheck() throws Exception {
+
+        final Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", false);
+
+        Criteria c1 = UNFCriteria.builder()
+                .id("C1")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(0.000000000000003)
+                                .includeUpperBound(true)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c1,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c2 = UNFCriteria.builder()
+                .id("C2")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(0.000000000000003)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c2,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c3 = UNFCriteria.builder()
+                .id("C3")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(0.000000000000004)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c3,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c4 = UNFCriteria.builder()
+                .id("C4")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .upperBound(0.000000000000002)
+                                .includeLowerBound(true)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c4,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c5 = UNFCriteria.builder()
+                .id("C5")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .lowerBound(0.000000000000003)
+                                .includeLowerBound(true)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c5,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c6 = UNFCriteria.builder()
+                .id("C6")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .lowerBound(0.000000000000003)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c6,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c7 = UNFCriteria.builder()
+                .id("C7")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .lowerBound(0.000000000000002)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertTrue(engine.debug(c7,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
+                .isResult());
+        Criteria c8 = UNFCriteria.builder()
+                .id("C8")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.n")
+                        .detail(RangeDetail.builder()
+                                .lowerBound(0.000000000000004)
+                                .includeLowerBound(true)
+                                .build())
+                        .build())
+                .build();
+        Assert.assertFalse(engine.debug(c8,
+                        RequestContext.builder()
+                                .node(mapper.valueToTree(testQuery))
+                                .build())
                 .isResult());
     }
 

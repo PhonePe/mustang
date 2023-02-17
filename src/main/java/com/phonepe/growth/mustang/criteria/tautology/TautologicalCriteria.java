@@ -12,21 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.growth.mustang.criteria.tautology;
 
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
-
+import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
+import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TautologicalCriteria {
 
-    public static Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
-        return criteriaForm.accept(new CriteriaForm.Visitor<Criteria>() {
+    public static Criteria generate(final CriteriaForm criteriaForm,
+            final String criteriaId) {
+        return criteriaForm.accept(new CriteriaForm.Visitor<>() {
 
             @Override
             public Criteria visitDNF() {
@@ -38,6 +41,30 @@ public final class TautologicalCriteria {
                 return new CNFTautologicalCriteria(criteriaId);
             }
 
+            @Override
+            public Criteria visitUNF() {
+                return new UNFTautologicalCriteria(criteriaId);
+            }
+
+        });
+    }
+
+    public static boolean isTautologicalCriteria(final Criteria criteria) {
+        return criteria.accept(new CriteriaVisitor<>() {
+            @Override
+            public Boolean visit(DNFCriteria dnf) {
+                return dnf.getConjunctions().isEmpty();
+            }
+
+            @Override
+            public Boolean visit(CNFCriteria cnf) {
+                return cnf.getDisjunctions().isEmpty();
+            }
+
+            @Override
+            public Boolean visit(UNFCriteria unf) {
+                return unf.getPredicates().isEmpty() && unf.getCriterias().isEmpty();
+            }
         });
     }
 }

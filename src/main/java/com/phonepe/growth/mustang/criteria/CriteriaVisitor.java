@@ -18,11 +18,18 @@ package com.phonepe.growth.mustang.criteria;
 
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 
 public interface CriteriaVisitor<T> {
 
     T visit(DNFCriteria dnf);
 
     T visit(CNFCriteria cnf);
+
+    /**
+     * If you are not sure how to implement this, the following should work.
+     *     return this.visit(CriteriaUtils.getDNFCriteria(unf));
+      */
+    T visit(UNFCriteria unf);
 
 }

@@ -64,7 +64,7 @@ public class Conjunction extends Composition {
     public double getScore(RequestContext context) {
         double sum = 0.0;
         for (Predicate predicate : getPredicates()) {
-            final double score = predicate.getWeightFromContext(context);
+            final double score = predicate.getScore(context);
             if (score == NO_MATCH_SCORE) {
                 return NO_MATCH_SCORE;
             }

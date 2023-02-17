@@ -71,7 +71,7 @@ public class ExcludedPredicate extends Predicate {
     }
 
     @Override
-    public long getWeightFromContext(final RequestContext context) {
+    public long getScore(final RequestContext context) {
         return evaluate(context)
                ? 0
                : (long) NO_MATCH_SCORE;
