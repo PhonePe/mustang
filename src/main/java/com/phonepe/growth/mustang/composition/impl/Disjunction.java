@@ -64,7 +64,7 @@ public class Disjunction extends Composition {
     @Override
     public double getScore(RequestContext context) {
         return getPredicates().stream()
-                .mapToDouble(predicate -> predicate.getWeightFromContext(context))
+                .mapToDouble(predicate -> predicate.getScore(context))
                 .max()
                 .orElse(0);
     }

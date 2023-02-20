@@ -30,13 +30,16 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.MustangEngine;
 import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.composition.CompositionType;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
+import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.CheckType;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
@@ -5622,6 +5625,66 @@ public class SearchTest {
         Assert.assertEquals(new HashSet<String>() {{
             add("C3");
         }}, searchResults);
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testUNFPositiveMatch() throws Exception {
+        Criteria c1 = new UNFTautologicalCriteria("C1");
+        Criteria c2 = UNFCriteria.builder()
+                .id("C2")
+                .type(CompositionType.OR)
+                .build();
+        Criteria c3 = UNFCriteria.builder()
+                .id("C3")
+                .type(CompositionType.OR)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .detail(EqualityDetail.builder()
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .build();
+
+        Criteria c4 = UNFCriteria.builder()
+                .id("C4")
+                .type(CompositionType.AND)
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.a")
+                        .detail(EqualityDetail.builder()
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .build())
+                .predicate(IncludedPredicate.builder()
+                        .lhs("$.b")
+                        .detail(EqualityDetail.builder()
+                                .values(Sets.newHashSet("B1", "B3"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+        engine.add("test", c4);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+        Assert.assertTrue(searchResults.contains("C2"));
+        Assert.assertTrue(searchResults.contains("C3"));
+        Assert.assertTrue(searchResults.contains("C4"));
+        assertThat(searchResults, hasSize(4));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");

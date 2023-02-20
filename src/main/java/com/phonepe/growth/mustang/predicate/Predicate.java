@@ -76,6 +76,6 @@ public abstract class Predicate {
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
-    public abstract long getWeightFromContext(RequestContext context);
+    public abstract long getScore(RequestContext context);
 
 }
