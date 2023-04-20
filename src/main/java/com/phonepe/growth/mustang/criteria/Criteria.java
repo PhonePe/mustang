@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.debug.DebugResult;
 
 import lombok.AllArgsConstructor;
@@ -34,9 +35,12 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "form")
-@JsonSubTypes({ @JsonSubTypes.Type(name = CriteriaForm.DNF_TEXT, value = DNFCriteria.class),
-        @JsonSubTypes.Type(name = CriteriaForm.CNF_TEXT, value = CNFCriteria.class) })
-@JsonPropertyOrder({ "form", "id" })
+@JsonSubTypes({
+        @JsonSubTypes.Type(name = CriteriaForm.DNF_TEXT, value = DNFCriteria.class),
+        @JsonSubTypes.Type(name = CriteriaForm.CNF_TEXT, value = CNFCriteria.class),
+        @JsonSubTypes.Type(name = CriteriaForm.UNF_TEXT, value = UNFCriteria.class)
+})
+@JsonPropertyOrder({"form", "id"})
 public abstract class Criteria {
     @NotNull
     private CriteriaForm form;
