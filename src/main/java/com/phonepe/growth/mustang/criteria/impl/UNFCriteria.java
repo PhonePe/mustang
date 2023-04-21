@@ -33,7 +33,7 @@ public class UNFCriteria extends Criteria {
     private final CompositionType type;
 
     @Valid
-    @NotEmpty
+    @NotNull
     private List<Criteria> criterias;
 
     @Valid
