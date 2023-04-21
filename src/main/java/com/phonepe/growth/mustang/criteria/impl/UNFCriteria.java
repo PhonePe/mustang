@@ -18,10 +18,13 @@ import java.util.stream.DoubleStream;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Singular;
+import lombok.ToString;
 
-import lombok.*;
-
-@Getter
+@Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class UNFCriteria extends Criteria {
@@ -31,19 +34,19 @@ public class UNFCriteria extends Criteria {
 
     @Valid
     @NotNull
-    private final List<Criteria> criterias;
+    private List<Criteria> criterias;
 
     @Valid
     @NotEmpty
-    private final List<Predicate> predicates;
+    private List<Predicate> predicates;
 
 
     @Builder
     @JsonCreator
-    public UNFCriteria(@JsonProperty("id") final String id,
-            @JsonProperty("type") final CompositionType type,
-            @JsonProperty("criterias") @Singular final List<Criteria> criterias,
-            @JsonProperty("predicates") @Singular final List<Predicate> predicates) {
+    public UNFCriteria(@JsonProperty("id") String id,
+            @JsonProperty("type") CompositionType type,
+            @JsonProperty("criterias") @Singular List<Criteria> criterias,
+            @JsonProperty("predicates") @Singular List<Predicate> predicates) {
         super(CriteriaForm.UNF, id);
         this.type = type;
         this.criterias = criterias;
