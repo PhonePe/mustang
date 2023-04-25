@@ -37,9 +37,8 @@ public class UNFCriteria extends Criteria {
     private List<Criteria> criterias;
 
     @Valid
-    @NotEmpty
+    @NotNull
     private List<Predicate> predicates;
-
 
     @Builder
     @JsonCreator
