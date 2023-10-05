@@ -1,0 +1,7 @@
+* @growth/code-owners/core-approvers
+
+[Codeowners]
+CODEOWNERS @mohammed.irfanulla @ankit.nautiyal @shantanu.tiwari
+
+[CI/CD pipeline]
+.gitlab-ci.yml @mohammed.irfanulla @ankit.nautiyal @shantanu.tiwari
