@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.index.entry.extractor;
 
+import com.phonepe.growth.mustang.detail.impl.EqualityInDetail;
 import java.util.Collections;
 import java.util.Set;
 
@@ -45,6 +46,11 @@ public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
     @Override
     public Set<Object> visit(VersioningDetail detail) {
         return Collections.singleton(detail.getNormalisedView());
+    }
+
+    @Override
+    public Set<Object> visit(EqualityInDetail detail) {
+        return detail.getValues();
     }
 
 }

@@ -52,6 +52,7 @@ import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
@@ -5685,6 +5686,78 @@ public class SearchTest {
         Assert.assertTrue(searchResults.contains("C3"));
         Assert.assertTrue(searchResults.contains("C4"));
         assertThat(searchResults, hasSize(4));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithListInclusion() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":5e-324,\"upperBound\":3e-15,\"includeLowerBound\":false,\"includeUpperBound\":true},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.d\",\"detail\":{\"caveat\":\"EQUALITY_IN\",\"values\":[\"D1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D1", "D2"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+            RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithListMultipleValsInclusion() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":5e-324,\"upperBound\":3e-15,\"includeLowerBound\":false,\"includeUpperBound\":true},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.d\",\"detail\":{\"caveat\":\"EQUALITY_IN\",\"values\":[\"D1\",\"D3\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D1", "D2"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+            RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithListMultipleValsExclusion() throws Exception {
+        final String stringifiedCriteria = "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.a\",\"detail\":{\"caveat\":\"REGEX\",\"regex\":\"A.*\"},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.b\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"B2\",\"B1\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":true},{\"type\":\"INCLUDED\",\"lhs\":\"$.n\",\"detail\":{\"caveat\":\"RANGE\",\"lowerBound\":5e-324,\"upperBound\":3e-15,\"includeLowerBound\":false,\"includeUpperBound\":true},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"INCLUDED\",\"lhs\":\"$.p\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[true]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false},{\"type\":\"EXCLUDED\",\"lhs\":\"$.d\",\"detail\":{\"caveat\":\"EQUALITY_IN\",\"values\":[\"D1\",\"D3\"]},\"lhsNotAPath\":false,\"weight\":1,\"defaultResult\":false}]}]}";
+        Criteria c11 = mapper.readValue(stringifiedCriteria, Criteria.class);
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D1", "D2"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test",
+            RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.isEmpty());
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");

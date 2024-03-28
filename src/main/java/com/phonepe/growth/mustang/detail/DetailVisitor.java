@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.detail;
 
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.EqualityInDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
@@ -30,5 +31,7 @@ public interface DetailVisitor<T> {
     T visit(RangeDetail detail);
 
     T visit(VersioningDetail detail);
+
+    T visit(EqualityInDetail detail);
 
 }

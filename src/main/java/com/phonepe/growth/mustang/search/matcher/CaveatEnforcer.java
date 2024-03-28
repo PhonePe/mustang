@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
@@ -42,8 +43,11 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitEquality() {
-        return key.getValue()
-                .equals(value);
+        if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
+            return key.getValue().equals(((List<?>) value).get(0));
+        } else {
+            return key.getValue().equals(value);
+        }
     }
 
     @Override
@@ -83,6 +87,21 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
                     .accept(new ComparisionInference(comparisionResult, detail.isExcludeBase()));
         }
         return false;
+    }
+
+    @Override
+    public Boolean visitEqualityIn() {
+        if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
+            List<?> valueList = (List<?>) value;
+            for (Object v : valueList) {
+                if (key.getValue().equals(v)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return key.getValue().equals(value);
+        }
     }
 
 }
