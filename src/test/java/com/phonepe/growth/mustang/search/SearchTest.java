@@ -5702,7 +5702,7 @@ public class SearchTest {
         testQuery.put("b", "B3");
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
-        testQuery.put("d", List.of("D1", "D2"));
+        testQuery.put("d", List.of("D2", "D1"));
 
         engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
@@ -5726,7 +5726,7 @@ public class SearchTest {
         testQuery.put("b", "B3");
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
-        testQuery.put("d", List.of("D1", "D2"));
+        testQuery.put("d", List.of("D2", "D1"));
 
         engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
@@ -5750,7 +5750,7 @@ public class SearchTest {
         testQuery.put("b", "B3");
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
-        testQuery.put("d", List.of("D1", "D2"));
+        testQuery.put("d", List.of("D3", "D2"));
 
         engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
