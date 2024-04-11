@@ -51,12 +51,6 @@ public enum Caveat {
         public <T> T visit(Visitor<T> visitor) {
             return visitor.visitVersioning();
         }
-    },
-    EQUALITY_IN(Caveat.EQUALITY_IN_TEXT) {
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitEqualityIn();
-        }
     };
 
     @Getter
@@ -67,7 +61,6 @@ public enum Caveat {
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
     public static final String VERSIONING_TEXT = "VERSIONING";
-    public static final String EQUALITY_IN_TEXT = "EQUALITY_IN";
 
     public abstract <T> T visit(Visitor<T> visitor);
 
@@ -82,8 +75,6 @@ public enum Caveat {
         T visitRange();
 
         T visitVersioning();
-
-        T visitEqualityIn();
 
     }
 }

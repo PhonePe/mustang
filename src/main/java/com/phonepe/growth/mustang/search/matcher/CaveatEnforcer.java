@@ -44,10 +44,9 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     @Override
     public Boolean visitEquality() {
         if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
-            return key.getValue().equals(((List<?>) value).get(0));
-        } else {
-            return key.getValue().equals(value);
+            return ((List<?>) value).contains(key.getValue());
         }
+        return key.getValue().equals(value);
     }
 
     @Override
@@ -88,14 +87,4 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
         }
         return false;
     }
-
-    @Override
-    public Boolean visitEqualityIn() {
-        if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
-            return ((List<?>) value).contains(key.getValue());
-        }
-        return key.getValue()
-                .equals(value);
-    }
-
 }

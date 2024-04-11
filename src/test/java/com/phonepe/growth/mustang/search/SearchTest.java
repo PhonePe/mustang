@@ -41,7 +41,6 @@ import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.CheckType;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
-import com.phonepe.growth.mustang.detail.impl.EqualityInDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
@@ -5612,7 +5611,7 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityInDetail.builder()
+                                        .detail(EqualityDetail.builder()
                                                 .values(Set.of("D1"))
                                                 .build())
                                         .weight(1L)
@@ -5676,7 +5675,7 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityInDetail.builder()
+                                        .detail(EqualityDetail.builder()
                                                 .values(Set.of("D1", "D3"))
                                                 .build())
                                         .weight(1L)
@@ -5740,7 +5739,7 @@ public class SearchTest {
                                         .build(),
                                 ExcludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityInDetail.builder()
+                                        .detail(EqualityDetail.builder()
                                                 .values(Set.of("D1", "D3"))
                                                 .build())
                                         .weight(1L)
@@ -5803,7 +5802,7 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityInDetail.builder()
+                                        .detail(EqualityDetail.builder()
                                                 .values(Set.of("D1", "D3"))
                                                 .build())
                                         .weight(1L)
@@ -5867,8 +5866,8 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityInDetail.builder()
-                                                .values(Set.of("D1", "D3"))
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D3", "D1"))
                                                 .build())
                                         .weight(1L)
                                         .build()))

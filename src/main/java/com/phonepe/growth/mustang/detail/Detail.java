@@ -16,7 +16,6 @@
  */
 package com.phonepe.growth.mustang.detail;
 
-import com.phonepe.growth.mustang.detail.impl.EqualityInDetail;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,8 +36,7 @@ import lombok.Data;
 @JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = EqualityDetail.class),
         @JsonSubTypes.Type(name = Caveat.REGEX_TEXT, value = RegexDetail.class),
         @JsonSubTypes.Type(name = Caveat.RANGE_TEXT, value = RangeDetail.class),
-        @JsonSubTypes.Type(name = Caveat.VERSIONING_TEXT, value = VersioningDetail.class),
-        @JsonSubTypes.Type(name = Caveat.EQUALITY_IN_TEXT, value = EqualityInDetail.class)})
+        @JsonSubTypes.Type(name = Caveat.VERSIONING_TEXT, value = VersioningDetail.class)})
 @JsonPropertyOrder({ "caveat", "values", "regex", "lowerBound", "upperBound", "includeLowerBound", "includeUpperBound",
         "check", "baseVersion", "excludeBase" })
 public abstract class Detail {
