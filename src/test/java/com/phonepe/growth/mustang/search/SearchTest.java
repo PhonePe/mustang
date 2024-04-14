@@ -12,7 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 package com.phonepe.growth.mustang.search;
 
@@ -52,6 +51,7 @@ import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
@@ -115,10 +115,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
@@ -162,11 +161,10 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
@@ -231,10 +229,9 @@ public class SearchTest {
         engine.add("testsearch", c1);
         engine.add("testsearch", c2);
         engine.add("testsearch", c3);
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
@@ -301,10 +298,9 @@ public class SearchTest {
         engine.add("testsearch", c1);
         engine.add("testsearch", c2);
         engine.add("testsearch", c3);
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
@@ -359,10 +355,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -415,10 +410,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -463,10 +457,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
@@ -529,10 +522,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -581,11 +573,10 @@ public class SearchTest {
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(
-                                "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(
+                        "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -644,11 +635,10 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(
-                                "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(
+                        "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -717,10 +707,9 @@ public class SearchTest {
         engine.add("testsearch", c1);
         engine.add("testsearch", c2);
         engine.add("testsearch", c3);
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
@@ -775,10 +764,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -821,11 +809,10 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
@@ -931,10 +918,9 @@ public class SearchTest {
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -997,11 +983,10 @@ public class SearchTest {
         testQuery.put("a", "A");
         testQuery.put("n", "7");
 
-        engine.add("test", Lists.asList(c1, new Criteria[] { c2 }));
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        engine.add("test", Lists.asList(c1, new Criteria[]{c2}));
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
@@ -1042,10 +1027,9 @@ public class SearchTest {
         testQuery.put("n", 1.000000000000001);
         testQuery.put("p", false);
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -1149,10 +1133,9 @@ public class SearchTest {
         testQuery.put("s", "CA");// C2 value
         testQuery.put("g", "M");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C4", "C5"));
@@ -1314,10 +1297,9 @@ public class SearchTest {
         testQuery.put("a", 1);// C1 value
         testQuery.put("c", 2);// C2 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C3", "C4", "C5"));
@@ -1391,10 +1373,9 @@ public class SearchTest {
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
@@ -1492,10 +1473,9 @@ public class SearchTest {
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
@@ -1515,15 +1495,12 @@ public class SearchTest {
         testQuery.put("p", true);
         Set<String> searchResults = new HashSet<>();
         try {
-            searchResults = engine.search("test",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
+            searchResults = engine.search("test", RequestContext.builder()
+                    .node(mapper.valueToTree(testQuery))
+                    .build());
         } catch (MustangException e) {
-            Assert.assertEquals("Error code message is not matching",
-                    "INDEX_NOT_FOUND",
-                    e.getErrorCode()
-                            .toString());
+            Assert.assertEquals("Error code message is not matching", "INDEX_NOT_FOUND", e.getErrorCode()
+                    .toString());
         }
         assertThat(searchResults, is(empty()));
     }
@@ -1590,10 +1567,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");// Negative value
         testQuery.put("n", 0.300000000003);// Postive value
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, is(empty()));
 
@@ -1666,10 +1642,9 @@ public class SearchTest {
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         assertThat(searchResults, is(empty()));
 
@@ -1723,10 +1698,9 @@ public class SearchTest {
         testQuery.put("a", "A1");
         testQuery.put("n", 6); // Same value as criteria but as Integer
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, is(empty()));
 
         engine.ratify("test");
@@ -1754,10 +1728,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -1785,10 +1758,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -1817,10 +1789,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -1867,10 +1838,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -1891,20 +1861,18 @@ public class SearchTest {
         testQuery.clear();
         testQuery.put("p", false);
         // Search query - with new value
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", true);
         // Search query - with older value
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults2, is(empty()));
 
         engine.ratify("test");
@@ -1932,20 +1900,18 @@ public class SearchTest {
         final Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", true);
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
         // Delete from the index
         engine.delete("test", c1);
 
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.ratify("test");
@@ -1978,10 +1944,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "A1");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2037,10 +2002,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "A1");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2066,10 +2030,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "B1");
         // Search query with new values
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults1, hasSize(1));
         assertThat(searchResults1, contains("C1"));
         // Request Map - updation
@@ -2077,10 +2040,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "A1");
         // Search query with new values
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults2, is(empty()));
 
         engine.ratify("test");
@@ -2113,20 +2075,18 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "A1");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
         // Remove from index
         engine.delete("test", c1);
 
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults2, is(empty()));
 
         engine.ratify("test", false);
@@ -2155,10 +2115,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2179,20 +2138,18 @@ public class SearchTest {
         testQuery.clear();
         testQuery.put("p", true);
         // Search query - with new value
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults1, hasSize(1));
         assertThat(searchResults1, contains("C2"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
         // Search query - with older value
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults2, hasSize(1));
         assertThat(searchResults2, contains("C1"));
 
@@ -2226,10 +2183,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "A10");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2255,10 +2211,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "B10");
         // Search query with new values
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults1, hasSize(1));
         assertThat(searchResults1, contains("C2"));
 
@@ -2267,10 +2222,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "A10");
         // Search Engine call
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults2, hasSize(1));
         assertThat(searchResults2, contains("C1"));
 
@@ -2323,10 +2277,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2379,10 +2332,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("n", 6); // Same value as criteria but as Integer
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1)); // TODO
         assertThat(searchResults, contains("C1"));
 
@@ -2426,10 +2378,9 @@ public class SearchTest {
         testQuery.put("p", false);
 
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
 
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
@@ -2459,10 +2410,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search query
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -2496,10 +2446,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2555,10 +2504,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2585,10 +2533,9 @@ public class SearchTest {
         testQuery.put("p", false);
 
         // Search query with new values
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
 
@@ -2597,10 +2544,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search query with new values
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.ratify("test");
@@ -2633,10 +2579,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2644,10 +2589,9 @@ public class SearchTest {
         engine.delete("test", c1);
 
         // Search query with new values
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.ratify("test");
@@ -2675,10 +2619,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("p", false);
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2703,20 +2646,18 @@ public class SearchTest {
         testQuery.clear();
         testQuery.put("p", true);
         // Search query - with new value
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
         testQuery.clear();
         testQuery.put("p", false);
         // Search query - with older value
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.ratify("test");
@@ -2749,10 +2690,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "A10");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2808,10 +2748,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "A10");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2837,10 +2776,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "B10");
         // Search query with new values
-        final Set<String> searchResults1 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults1 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults1.size());
         Assert.assertTrue(searchResults1.contains("C1"));
         // Request Map - updation
@@ -2848,10 +2786,9 @@ public class SearchTest {
         testQuery.put("p", false);
         testQuery.put("a", "A10");
         // Search Engine call
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults2.size());
         Assert.assertTrue(searchResults2.contains("C1"));
 
@@ -2876,10 +2813,9 @@ public class SearchTest {
         testQuery.put("a", " ");
         engine.add("test", c1);
         // Query engine
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2904,10 +2840,9 @@ public class SearchTest {
         testQuery.put("a", "!");
         engine.add("test", c1);
         // Query engine
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -2932,10 +2867,9 @@ public class SearchTest {
         testQuery.put("a", " ");
         engine.add("test", c1);
         // Query engine
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(0, searchResults.size());
 
         engine.ratify("test");
@@ -2986,10 +2920,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1"); // C1,C2 value
         testQuery.put("b", "B1"); // C1 value
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
@@ -3041,10 +2974,9 @@ public class SearchTest {
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1"); // C1 value
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C2"));
@@ -3096,10 +3028,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1"); // C1 value
         testQuery.put("b", "B1"); // C1 value
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
@@ -3152,10 +3083,9 @@ public class SearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");
         testQuery.put("b", "B10");
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         Assert.assertEquals(0, searchResults.size());
 
@@ -3207,10 +3137,9 @@ public class SearchTest {
         testQuery.put("a", "A1"); // C1,C2 value
         testQuery.put("b", "B1"); // C1 value
         testQuery.put("n", 4); // C2 value
-        final Set<String> searchResults = engine.search("testsearch",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("testsearch", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         // Assertion
         Assert.assertEquals(2, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
@@ -3240,10 +3169,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.isEmpty());
 
         engine.ratify("test");
@@ -3270,10 +3198,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3301,10 +3228,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.isEmpty());
 
         engine.ratify("test");
@@ -3331,10 +3257,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3362,10 +3287,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.isEmpty());
 
         c1 = DNFCriteria.builder()
@@ -3379,10 +3303,9 @@ public class SearchTest {
                 .build();
         engine.add("test1", c1);
         engine.replaceIndex("test", "test1");
-        searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3392,10 +3315,9 @@ public class SearchTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         try {
-            searchResults = engine.search("test1",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
+            searchResults = engine.search("test1", RequestContext.builder()
+                    .node(mapper.valueToTree(testQuery))
+                    .build());
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
             Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
@@ -3411,10 +3333,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         try {
-            engine.search("test",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
+            engine.search("test", RequestContext.builder()
+                    .node(mapper.valueToTree(testQuery))
+                    .build());
             Assert.fail("Should have thrown an exception");
         } catch (MustangException e) {
             Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
@@ -3461,10 +3382,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(str))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(str))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3507,10 +3427,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3529,10 +3448,9 @@ public class SearchTest {
         testQuery.put("s", "CA");
         testQuery.put("g", "M");
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3552,10 +3470,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -3597,10 +3514,9 @@ public class SearchTest {
         testQuery.put("b", "B3"); // negative value
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3620,10 +3536,9 @@ public class SearchTest {
         testQuery.put("b", "B3"); // negative value
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3643,10 +3558,9 @@ public class SearchTest {
         testQuery.put("n", 0.000000000000003);
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3668,10 +3582,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
 
@@ -3690,10 +3603,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         try {
-            engine.search("test",
-                    RequestContext.builder()
-                            .node(mapper.valueToTree(testQuery))
-                            .build());
+            engine.search("test", RequestContext.builder()
+                    .node(mapper.valueToTree(testQuery))
+                    .build());
             Assert.fail("MustangException should have been thrown.");
         } catch (MustangException e) {
             Assert.assertEquals(ErrorCode.INDEX_NOT_FOUND, e.getErrorCode());
@@ -3724,10 +3636,9 @@ public class SearchTest {
         testQuery.put("p", true);
         testQuery.put("a", "A1");
         // Search Engine call
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
@@ -3739,18 +3650,16 @@ public class SearchTest {
         // Remove from index
         engine.delete("test", c1);
 
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.add("test", c1);
         // Search Engine call
-        final Set<String> searchResults3 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults3 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults3.size());
         Assert.assertTrue(searchResults3.contains("C1"));
 
@@ -3778,28 +3687,25 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c1);
-        Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
 
         // Remove from index
         engine.delete("test", c1);
 
-        final Set<String> searchResults2 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults2 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults2.isEmpty());
 
         engine.add("test", c1);
         // Search Engine call
-        final Set<String> searchResults3 = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults3 = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertEquals(1, searchResults3.size());
         Assert.assertTrue(searchResults3.contains("C1"));
 
@@ -3906,11 +3812,9 @@ public class SearchTest {
         engine.add("test", c4);
         engine.add("test", c5);
         engine.add("test", c6);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(str))
-                        .build(),
-                false);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(str))
+                .build(), false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4022,11 +3926,9 @@ public class SearchTest {
         engine.add("test", c4);
         engine.add("test", c5);
         engine.add("test", c6);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(str))
-                        .build(),
-                false);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(str))
+                .build(), false);
         Assert.assertEquals(5, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4104,11 +4006,9 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(str))
-                        .build(),
-                false);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(str))
+                .build(), false);
         Assert.assertEquals(3, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4181,11 +4081,9 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.readTree(str))
-                        .build(),
-                false);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.readTree(str))
+                .build(), false);
         Assert.assertEquals(3, searchResults.size());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
@@ -4246,10 +4144,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
@@ -4313,10 +4210,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -4364,10 +4260,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 
@@ -4422,10 +4317,9 @@ public class SearchTest {
 
         engine.add("test", c1);
         engine.add("test", c2);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -4510,10 +4404,9 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
@@ -4632,10 +4525,9 @@ public class SearchTest {
         engine.add("test", c6);
         engine.add("test", c7);
         engine.add("test", c8);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(4));
         assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
 
@@ -4754,10 +4646,9 @@ public class SearchTest {
         engine.add("test", c6);
         engine.add("test", c7);
         engine.add("test", c8);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(4));
         assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
 
@@ -4805,10 +4696,9 @@ public class SearchTest {
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C3"));
 
@@ -4890,10 +4780,9 @@ public class SearchTest {
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -4971,10 +4860,9 @@ public class SearchTest {
         engine.add("test", c1);
         engine.add("test", c2);
         engine.add("test", c3);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(2));
         assertThat(searchResults, containsInAnyOrder("C1", "C2"));
 
@@ -5056,10 +4944,9 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
@@ -5186,10 +5073,9 @@ public class SearchTest {
         engine.add("test", c6);
         engine.add("test", c7);
         engine.add("test", c8);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(4));
         assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
 
@@ -5316,10 +5202,9 @@ public class SearchTest {
         engine.add("test", c6);
         engine.add("test", c7);
         engine.add("test", c8);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(4));
         assertThat(searchResults, containsInAnyOrder("C1", "C3", "C5", "C7"));
 
@@ -5378,10 +5263,9 @@ public class SearchTest {
         testQuery.put("p", true);
 
         engine.add("test", c11);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
@@ -5392,7 +5276,6 @@ public class SearchTest {
 
     @Test
     public void testDNFLinkages() throws IOException {
-
 
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -5676,15 +5559,333 @@ public class SearchTest {
         engine.add("test", c2);
         engine.add("test", c3);
         engine.add("test", c4);
-        final Set<String> searchResults = engine.search("test",
-                RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
-                        .build());
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         Assert.assertTrue(searchResults.contains("C1"));
         Assert.assertTrue(searchResults.contains("C2"));
         Assert.assertTrue(searchResults.contains("C3"));
         Assert.assertTrue(searchResults.contains("C4"));
         assertThat(searchResults, hasSize(4));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithEqualityInInclusion() {
+        Criteria c11 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .detail(RegexDetail.builder()
+                                                .regex("A.*")
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2", "B1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.n")
+                                        .detail(RangeDetail.builder()
+                                                .lowerBound(5e-324)
+                                                .upperBound(3e-15)
+                                                .includeUpperBound(true)
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of(true))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build()))
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D2", "D1"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithEqualityInListMultipleValuesInclusion() {
+        Criteria c11 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .detail(RegexDetail.builder()
+                                                .regex("A.*")
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2", "B1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.n")
+                                        .detail(RangeDetail.builder()
+                                                .lowerBound(5e-324)
+                                                .upperBound(3e-15)
+                                                .includeUpperBound(true)
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of(true))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D1", "D3"))
+                                                .build())
+                                        .weight(1L)
+                                        .build()))
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D2", "D1"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithEqualityInListMultipleValuesExclusion() {
+        Criteria c11 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .detail(RegexDetail.builder()
+                                                .regex("A.*")
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2", "B1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.n")
+                                        .detail(RangeDetail.builder()
+                                                .lowerBound(5e-324)
+                                                .upperBound(3e-15)
+                                                .includeUpperBound(true)
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of(true))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D1", "D3"))
+                                                .build())
+                                        .weight(1L)
+                                        .build()))
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", List.of("D3", "D2"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.isEmpty());
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithEqualityInNullValuesInclusion() {
+        Criteria c11 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .detail(RegexDetail.builder()
+                                                .regex("A.*")
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2", "B1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.n")
+                                        .detail(RangeDetail.builder()
+                                                .lowerBound(5e-324)
+                                                .upperBound(3e-15)
+                                                .includeUpperBound(true)
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of(true))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D1", "D3"))
+                                                .build())
+                                        .weight(1L)
+                                        .build()))
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", null);
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.isEmpty());
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFCriteria2xxSerDeWithEqualityListValueInclusion() {
+        Criteria c11 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                        .lhs("$.a")
+                                        .detail(RegexDetail.builder()
+                                                .regex("A.*")
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                ExcludedPredicate.builder()
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2", "B1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.n")
+                                        .detail(RangeDetail.builder()
+                                                .lowerBound(5e-324)
+                                                .upperBound(3e-15)
+                                                .includeUpperBound(true)
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.p")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of(true))
+                                                .build())
+                                        .weight(1L)
+                                        .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D3", "D1"))
+                                                .build())
+                                        .weight(1L)
+                                        .build()))
+                        .build())
+                .build();
+
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+        testQuery.put("d", Set.of("D1", "D3"));
+
+        engine.add("test", c11);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        Assert.assertTrue(searchResults.contains("C1"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
