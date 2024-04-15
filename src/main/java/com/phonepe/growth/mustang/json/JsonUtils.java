@@ -44,7 +44,7 @@ public class JsonUtils {
                 if (List.class.isAssignableFrom(nodeValue.getClass())) {
                     final List<?> nodeListValue = (List<?>) nodeValue;
                     if (!nodeListValue.isEmpty()) {
-                        returnValue = nodeListValue.get(0);
+                        returnValue = nodeListValue;
                     }
                 } else {
                     returnValue = nodeValue;
