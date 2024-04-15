@@ -7,9 +7,9 @@
 	<version>2.3.5-SNAPSHOT</version>
 
 	<parent>
-		<groupId>com.phonepe</groupId>
-		<artifactId>pp-parent-pom</artifactId>
-		<version>0.66</version>
+		<groupId>com.phonepe.growth</groupId>
+		<artifactId>growth-parent-pom</artifactId>
+		<version>1.0.35</version>
 	</parent>
 
 	<properties>
