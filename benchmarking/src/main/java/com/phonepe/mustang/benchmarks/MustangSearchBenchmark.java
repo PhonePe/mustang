@@ -58,19 +58,19 @@ public class MustangSearchBenchmark {
         @Param({ "10", "100", "1000", "10000" })
         private int indexSize;
 
-        private final ObjectMapper mapper = new ObjectMapper();
-        private MustangEngine engine;
+        private final ObjectMapper objMapper = new ObjectMapper();
+        private MustangEngine mEngine;
         private RequestContext requestContext;
 
         @Setup(Level.Trial)
         public void setUp() {
 
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            engine = MustangEngine.builder()
-                    .mapper(mapper)
+            objMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mEngine = MustangEngine.builder()
+                    .mapper(objMapper)
                     .build();
 
-            for (int i = 0; i < indexSize; i++) {
+            for (int k = 0; k < indexSize; k++) {
                 Collections.shuffle(Utils.PATHS);
 
                 final Criteria c = CNFCriteria.builder()
@@ -79,15 +79,15 @@ public class MustangSearchBenchmark {
                         .disjunction(Disjunction.builder()
                                 .predicates(Utils.PATHS.subList(0, Utils.RANDOM.nextInt(2) + 1)
                                         .stream()
-                                        .map(path -> {
+                                        .map(pth -> {
                                             if (Utils.RANDOM.nextInt(5) != 0) { // 80-20 split
                                                 return IncludedPredicate.builder()
-                                                        .lhs("$." + path)
+                                                        .lhs("$." + pth)
                                                         .values(Sets.newHashSet(Utils.getRandom()))
                                                         .build();
                                             }
                                             return ExcludedPredicate.builder()
-                                                    .lhs("$." + path)
+                                                    .lhs("$." + pth)
                                                     .values(Sets.newHashSet(Utils.getRandom()))
                                                     .build();
                                         })
@@ -100,23 +100,23 @@ public class MustangSearchBenchmark {
                         .conjunction(Conjunction.builder()
                                 .predicates(Utils.PATHS.subList(0, Utils.RANDOM.nextInt(3) + 1)
                                         .stream()
-                                        .map(path -> {
+                                        .map(pth -> {
                                             if (Utils.RANDOM.nextInt(5) != 0) { // 80-20 split
                                                 return IncludedPredicate.builder()
-                                                        .lhs("$." + path)
+                                                        .lhs("$." + pth)
                                                         .values(Sets.newHashSet(Utils.getRandom()))
                                                         .build();
                                             }
                                             return ExcludedPredicate.builder()
-                                                    .lhs("$." + path)
+                                                    .lhs("$." + pth)
                                                     .values(Sets.newHashSet(Utils.getRandom()))
                                                     .build();
                                         })
                                         .collect(Collectors.toList()))
                                 .build())
                         .build();
-                engine.add(Utils.INDEX_NAME, c);
-                engine.add(Utils.INDEX_NAME, cc);
+                mEngine.add(Utils.INDEX_NAME, c);
+                mEngine.add(Utils.INDEX_NAME, cc);
 
             }
 
@@ -126,7 +126,7 @@ public class MustangSearchBenchmark {
         public void prepareContext() {
             Collections.shuffle(Utils.PATHS);
             requestContext = RequestContext.builder()
-                    .node(mapper.valueToTree(Utils.PATHS.stream()
+                    .node(objMapper.valueToTree(Utils.PATHS.stream()
                             .limit(Utils.RANDOM.nextInt(Utils.PATHS.size()))
                             .collect(Collectors.toMap(x -> x, x -> Utils.getRandom()))))
                     .build();
@@ -141,7 +141,7 @@ public class MustangSearchBenchmark {
     @Threads(Threads.MAX)
     @BenchmarkMode(Mode.Throughput)
     public void search(final Blackhole blackhole, final BenchmarkContext context) {
-        blackhole.consume(context.getEngine()
+        blackhole.consume(context.getMEngine()
                 .search(Utils.INDEX_NAME, context.getRequestContext(), false));
     }
 

@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TautologicalCriteria {
 
-    public static final Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
+    public static Criteria generate(final CriteriaForm criteriaForm, final String criteriaId) {
         return criteriaForm.accept(new CriteriaForm.Visitor<Criteria>() {
 
             @Override

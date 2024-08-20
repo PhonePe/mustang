@@ -16,6 +16,7 @@
  */
 package com.phonepe.mustang.ratify;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -62,10 +63,8 @@ public class Ratifier {
         final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex = buildIndex(allKeys);
         final Map<String, Set<Integer>> keyGroups = groupKeys(allKeys, keyIndex);
 
-        final Set<List<Integer>> cartesianProductCombinations = Sets.cartesianProduct(keyGroups.entrySet()
-                .stream()
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList()));
+        final Set<List<Integer>> cartesianProductCombinations = Sets.cartesianProduct(
+                new ArrayList<>(keyGroups.values()));
 
         final Set<Set<Integer>> subSetCombinations = fullFledged ? IntStream.range(1,
                 keyGroups.values()
@@ -145,7 +144,6 @@ public class Ratifier {
                         .equals(CNFIndexer.ZERO_SIZE_DISJUNCTION_ENTRY_KEYNAME))
                 .collect(Collectors.toSet());
         return Stream.concat(dnfKeys.stream(), cnfKeys.stream())
-                .distinct()
                 .collect(Collectors.toSet());
 
     }

@@ -26,7 +26,6 @@ import com.phonepe.mustang.composition.Composition;
 import com.phonepe.mustang.composition.CompositionType;
 import com.phonepe.mustang.debug.CompositionDebugResult;
 import com.phonepe.mustang.predicate.Predicate;
-import com.phonepe.mustang.predicate.PredicateType;
 
 import lombok.Builder;
 import lombok.Data;
@@ -65,8 +64,7 @@ public class Disjunction extends Composition {
     @Override
     public double getScore(RequestContext context) {
         return getPredicates().stream()
-                .filter(predicate -> PredicateType.INCLUDED.equals(predicate.getType()))
-                .mapToDouble(predicate -> predicate.getWeight() * getWeigthFromContext(context, predicate))
+                .mapToDouble(predicate -> predicate.getWeightFromContext(context))
                 .max()
                 .orElse(0);
     }

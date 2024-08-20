@@ -26,7 +26,7 @@ public enum CompositionType {
     public static final String OR_TEXT = "OR";
 
     @Getter
-    private String value;
+    private final String value;
 
     private CompositionType(String value) {
         this.value = value;

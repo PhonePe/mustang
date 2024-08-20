@@ -16,16 +16,6 @@
  */
 package com.phonepe.mustang.index.entry.extractor;
 
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.mustang.detail.Detail;
@@ -35,18 +25,25 @@ import com.phonepe.mustang.predicate.PredicateType;
 import com.phonepe.mustang.predicate.PredicateVisitor;
 import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
-
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 
 @Data
 @Builder
 @AllArgsConstructor
 public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> {
 
-    private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.valueOf(k1.getOrder())
-            .compareTo(k2.getOrder());
+    private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.compare(k1.getOrder(),
+            k2.getOrder());
     private final Integer iId;
     private final String eId;
     private final int order;

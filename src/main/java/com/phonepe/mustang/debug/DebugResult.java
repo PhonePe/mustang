@@ -16,12 +16,11 @@
  */
 package com.phonepe.mustang.debug;
 
+import com.phonepe.mustang.criteria.CriteriaForm;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
-
-import com.phonepe.mustang.criteria.CriteriaForm;
 
 @Data
 @Builder

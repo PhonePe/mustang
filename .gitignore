@@ -39,6 +39,8 @@ crashlytics-build.properties
 ## Directory-based project format:
 /.idea/
 /target/
+benchmarking/.idea/
+benchmarking/target/
 *.iml
 *.ipr
 *.iws

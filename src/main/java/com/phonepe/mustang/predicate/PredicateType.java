@@ -29,6 +29,6 @@ public enum PredicateType {
     public static final String INCLUDED_TEXT = "INCLUDED";
 
     @Getter
-    private String value;
+    private final String value;
 
 }

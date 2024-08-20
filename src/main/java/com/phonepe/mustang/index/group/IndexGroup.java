@@ -19,7 +19,7 @@ package com.phonepe.mustang.index.group;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import com.google.common.collect.Maps;
 import com.jayway.jsonpath.JsonPath;

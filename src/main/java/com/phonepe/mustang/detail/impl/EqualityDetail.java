@@ -18,7 +18,7 @@ package com.phonepe.mustang.detail.impl;
 
 import java.util.Set;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

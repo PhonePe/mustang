@@ -19,7 +19,7 @@ package com.phonepe.mustang.detail.impl;
 import javax.validation.constraints.NotNull;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

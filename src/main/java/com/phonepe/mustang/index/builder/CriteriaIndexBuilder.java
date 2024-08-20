@@ -82,7 +82,7 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
 
     public static <T, S> Map<T, TreeMap<Integer, S>> compactPostingLists(List<Map<T, TreeMap<Integer, S>>> maps) {
         final List<Map.Entry<T, TreeMap<Integer, S>>> tempResult = maps.stream()
-                .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
+                .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), ArrayList::addAll);
         return tempResult.stream()
                 .collect(Collectors.groupingBy(Map.Entry::getKey, LinkedHashMap::new,
                     Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
