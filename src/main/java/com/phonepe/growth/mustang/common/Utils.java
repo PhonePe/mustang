@@ -16,12 +16,18 @@
  */
 package com.phonepe.growth.mustang.common;
 
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
 import java.util.Objects;
 
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Utils {
+
+    public static final Configuration JSONPATH_CONFIGURATION =
+            Configuration.defaultConfiguration()
+                    .addOptions(Option.SUPPRESS_EXCEPTIONS);
 
     public Long getRationalWeight(final Long weight) {
         if (Objects.isNull(weight) || weight == 0) {

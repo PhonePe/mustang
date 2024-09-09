@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.json;
 
+import com.phonepe.growth.mustang.common.Utils;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,27 +32,23 @@ import lombok.NoArgsConstructor;
 public class JsonUtils {
 
     public static Object getNodeValue(final JsonNode node, final String path) {
-        return getNodeValue(JsonPath.parse(node.toString()), JsonPath.compile(path), null);
+        return getNodeValue(JsonPath.parse(node.toString(), Utils.JSONPATH_CONFIGURATION), JsonPath.compile(path), null);
     }
 
     public static Object getNodeValue(final DocumentContext documentContext,
             final JsonPath jsonPath,
             final Object defaultValue) {
         Object returnValue = defaultValue;
-        try {
-            final Object nodeValue = documentContext.read(jsonPath);
-            if (Objects.nonNull(nodeValue)) {
-                if (List.class.isAssignableFrom(nodeValue.getClass())) {
-                    final List<?> nodeListValue = (List<?>) nodeValue;
-                    if (!nodeListValue.isEmpty()) {
-                        returnValue = nodeListValue;
-                    }
-                } else {
-                    returnValue = nodeValue;
+        final Object nodeValue = documentContext.read(jsonPath);
+        if (Objects.nonNull(nodeValue)) {
+            if (List.class.isAssignableFrom(nodeValue.getClass())) {
+                final List<?> nodeListValue = (List<?>) nodeValue;
+                if (!nodeListValue.isEmpty()) {
+                    returnValue = nodeListValue;
                 }
+            } else {
+                returnValue = nodeValue;
             }
-        } catch (PathNotFoundException e) {
-            // consume silently
         }
         return returnValue;
     }
