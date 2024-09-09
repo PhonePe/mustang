@@ -19,6 +19,7 @@ package com.phonepe.growth.mustang.search;
 import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
 
+import com.phonepe.growth.mustang.common.Utils;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -28,7 +29,7 @@ public class QueryBuilder {
         return Query.builder()
                 .requestContext(context)
                 .parsedContext(JsonPath.parse(context.getNode()
-                        .toString()))
+                        .toString(), Utils.JSONPATH_CONFIGURATION))
                 .build();
     }
 
