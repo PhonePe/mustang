@@ -24,6 +24,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1024,6 +1027,51 @@ public class ScanTest {
         Assert.assertFalse(scan.stream()
                 .anyMatch(criteria -> criteria.getId()
                         .equals("C2")));
+    }
+
+    @Test
+    public void testMultiValueScanEqualityPositive() throws JsonMappingException, JsonProcessingException {
+        final Criteria c = mapper.readValue(
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
+                Criteria.class);
+        final String searchContext = "{\"data\":{\"A#data\":{\"transaction\":{\"type\":\"FULFILMENT\",\"amount\":29900,\"modes\":[{\"type\":\"ABC\",\"state\":null,\"amount\":29900}]}}}}";
+        final RequestContext requestContext = RequestContext.builder()
+                .node(mapper.readValue(searchContext, JsonNode.class))
+                .build();
+        engine.add("test", c);
+
+        final Set<String> scanResults = engine.scan("test", requestContext);
+        Assert.assertTrue(scanResults.contains("C1"));
+    }
+    
+    @Test
+    public void testMultiValueScanEqualityNegative() throws JsonMappingException, JsonProcessingException {
+        final Criteria c = mapper.readValue(
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
+                Criteria.class);
+        final String searchContext = "{\"data\":{\"A#data\":{\"transaction\":{\"type\":\"FULFILMENT\",\"amount\":29900,\"modes\":[{\"type\":\"ABCD\",\"state\":null,\"amount\":29900}]}}}}";
+        final RequestContext requestContext = RequestContext.builder()
+                .node(mapper.readValue(searchContext, JsonNode.class))
+                .build();
+        engine.add("test", c);
+
+        final Set<String> scanResults = engine.scan("test", requestContext);
+        Assert.assertTrue(scanResults.isEmpty());
+    }
+    
+    @Test
+    public void testMultiValueScanEqualityNegative1() throws JsonMappingException, JsonProcessingException {
+        final Criteria c = mapper.readValue(
+                "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
+                Criteria.class);
+        final String searchContext = "{\"data\":{\"A#data\":{\"transaction\":{\"type\":\"FULFILMENT\",\"amount\":29900,\"modes\":{\"type\":\"ABC\",\"state\":null,\"amount\":29900}}}}}";
+        final RequestContext requestContext = RequestContext.builder()
+                .node(mapper.readValue(searchContext, JsonNode.class))
+                .build();
+        engine.add("test", c);
+
+        final Set<String> scanResults = engine.scan("test", requestContext);
+        Assert.assertTrue(scanResults.isEmpty());
     }
 
 }
