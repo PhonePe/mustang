@@ -16,6 +16,8 @@
  */
 package com.phonepe.growth.mustang.detail.impl;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
@@ -48,6 +50,9 @@ public class EqualityDetail extends Detail {
 
     @Override
     public boolean validate(RequestContext context, Object lhsValue) {
+        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
+            return values.containsAll(((List<?>) lhsValue));
+        }
         return values.contains(lhsValue);
     }
 

@@ -23,7 +23,6 @@ import java.util.Objects;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
