@@ -31,7 +31,6 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
 		<sonar.language>java</sonar.language>
-		<sonar.buildbreaker.skip>true</sonar.buildbreaker.skip>
 		<sonar.issue.ignore.multicriteria>
 			e1
 		</sonar.issue.ignore.multicriteria>
