@@ -40,9 +40,8 @@ public class DivisionPreOperation extends PreOperation {
     public Object operate(Object lhs) {
         if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
             final double lhsNumericalValue = ((Number) lhs).doubleValue();
-            return (rhs != 0) ? (lhsNumericalValue / rhs) : 0; // DO NOT WANT TO THROW EXCEPTION
+            return (rhs != 0) ? (lhsNumericalValue / rhs) : lhs;
         }
-        // TODO revisit
         return lhs;
     }
 

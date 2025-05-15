@@ -34,7 +34,7 @@ public class SizePreOperation extends PreOperation {
         if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
             return ((List<?>) value).size();
         }
-        return value; // TODO revisit
+        return value;
     }
 
 }

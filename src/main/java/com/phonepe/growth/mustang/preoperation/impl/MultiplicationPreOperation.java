@@ -37,7 +37,6 @@ public class MultiplicationPreOperation extends PreOperation {
             final double lhsNumericalValue = ((Number) lhs).doubleValue();
             return lhsNumericalValue * rhs;
         }
-        // TODO revisit
         return lhs;
     }
 

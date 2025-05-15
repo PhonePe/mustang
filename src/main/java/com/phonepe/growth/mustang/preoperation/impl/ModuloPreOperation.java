@@ -40,7 +40,6 @@ public class ModuloPreOperation extends PreOperation {
             final long lhsNumericalValue = ((Number) lhs).longValue();
             return (rhs != 0) ? (lhsNumericalValue % rhs) : 0; // DO NOT WANT TO THROW EXCEPTION
         }
-        // TODO revisit
         return lhs;
     }
 

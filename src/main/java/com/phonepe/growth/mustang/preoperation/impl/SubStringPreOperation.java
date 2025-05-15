@@ -46,17 +46,13 @@ public class SubStringPreOperation extends PreOperation {
             return value.toString()
                     .substring(beginIndex, endIndex);
         }
-        // TODO revisit
         return value;
     }
 
     @JsonIgnore
     @ValidationMethod
     public boolean isValid() {
-        if (beginIndex > endIndex) {
-            return false;
-        }
-        return true;
+        return beginIndex < endIndex;
     }
 
 }

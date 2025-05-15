@@ -7,12 +7,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.phonepe.growth.mustang.preoperation.impl.AdditionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.DivisionPreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.EpochDatePreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.EpochDiffPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 import com.phonepe.growth.mustang.preoperation.impl.LengthPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.ModuloPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.MultiplicationPreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SizePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubStringPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubtractionPreOperation;
@@ -31,9 +29,7 @@ import lombok.Data;
         @JsonSubTypes.Type(name = PreOperationType.MODULO_TEXT, value = ModuloPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.SIZE_TEXT, value = SizePreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.LENGTH_TEXT, value = LengthPreOperation.class),
-        @JsonSubTypes.Type(name = PreOperationType.SUBSTRING_TEXT, value = SubStringPreOperation.class),
-        @JsonSubTypes.Type(name = PreOperationType.EPOCH_DATE_TEXT, value = EpochDatePreOperation.class),
-        @JsonSubTypes.Type(name = PreOperationType.EPOCH_DIFF_TEXT, value = EpochDiffPreOperation.class) })
+        @JsonSubTypes.Type(name = PreOperationType.SUBSTRING_TEXT, value = SubStringPreOperation.class), })
 @JsonPropertyOrder({ "type" })
 public abstract class PreOperation {
     @NotNull

@@ -34,7 +34,6 @@ public class LengthPreOperation extends PreOperation {
             return value.toString()
                     .length();
         }
-        // TODO revisit
         return value;
     }
 

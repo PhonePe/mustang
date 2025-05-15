@@ -80,22 +80,6 @@ public enum PreOperationType {
             return visitor.visitSubstring();
         }
 
-    },
-
-    EPOCH_DATE(PreOperationType.EPOCH_DATE_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitEpochDate();
-        }
-
-    },
-    EPOCH_DIFF(PreOperationType.EPOCH_DIFF_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitEpochDiff();
-        }
     };
 
     @Getter
@@ -110,8 +94,6 @@ public enum PreOperationType {
     public static final String SIZE_TEXT = "SIZE";
     public static final String LENGTH_TEXT = "LENGTH";
     public static final String SUBSTRING_TEXT = "SUBSTRING";
-    public static final String EPOCH_DATE_TEXT = "EPOCH_DATE";
-    public static final String EPOCH_DIFF_TEXT = "EPOCH_DIFF";
 
     public abstract <T> T visit(Visitor<T> visitor);
 
@@ -135,9 +117,6 @@ public enum PreOperationType {
 
         T visitSubstring();
 
-        T visitEpochDate();
-
-        T visitEpochDiff();
     }
 
 }
