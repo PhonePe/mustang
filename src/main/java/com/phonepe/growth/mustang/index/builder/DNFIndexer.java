@@ -33,6 +33,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.composition.impl.Conjunction;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.detail.Caveat;
@@ -43,7 +44,6 @@ import com.phonepe.growth.mustang.index.entry.extractor.DNFPostingListsExtractor
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -111,7 +111,7 @@ public class DNFIndexer {
                             // ZERO size handling
                             final Key key = Key.builder()
                                     .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME)
-                                    .preOp(PreOperation.DEFAULT_OPERATION)
+                                    .preOp(Utils.DEFAULT_PREOPERATION)
                                     .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)

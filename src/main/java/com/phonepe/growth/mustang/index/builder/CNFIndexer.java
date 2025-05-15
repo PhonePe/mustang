@@ -32,6 +32,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.Sets;
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.detail.Caveat;
@@ -42,7 +43,6 @@ import com.phonepe.growth.mustang.index.entry.extractor.CNFPostingListsExtractor
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -126,7 +126,7 @@ public class CNFIndexer {
                             // Zero size handling
                             final Key key = Key.builder()
                                     .name(ZERO_SIZE_DISJUNCTION_ENTRY_KEYNAME)
-                                    .preOp(PreOperation.DEFAULT_OPERATION)
+                                    .preOp(Utils.DEFAULT_PREOPERATION)
                                     .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)

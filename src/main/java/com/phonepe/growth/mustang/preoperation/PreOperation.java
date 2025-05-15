@@ -32,8 +32,6 @@ import lombok.Data;
         @JsonSubTypes.Type(name = PreOperationType.SUBSTRING_TEXT, value = SubStringPreOperation.class), })
 @JsonPropertyOrder({ "type" })
 public abstract class PreOperation {
-    public static final PreOperation DEFAULT_OPERATION = IdentityOperation.builder()
-            .build();
     @NotNull
     private final PreOperationType type;
 

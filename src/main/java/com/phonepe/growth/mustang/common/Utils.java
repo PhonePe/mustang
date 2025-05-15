@@ -18,6 +18,9 @@ package com.phonepe.growth.mustang.common;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.Option;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
+
 import java.util.Objects;
 
 import lombok.experimental.UtilityClass;
@@ -25,9 +28,11 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Utils {
 
-    public static final Configuration JSONPATH_CONFIGURATION =
-            Configuration.defaultConfiguration()
-                    .addOptions(Option.SUPPRESS_EXCEPTIONS);
+    public static final PreOperation DEFAULT_PREOPERATION = IdentityOperation.builder()
+            .build();
+
+    public static final Configuration JSONPATH_CONFIGURATION = Configuration.defaultConfiguration()
+            .addOptions(Option.SUPPRESS_EXCEPTIONS);
 
     public Long getRationalWeight(final Long weight) {
         if (Objects.isNull(weight) || weight == 0) {
