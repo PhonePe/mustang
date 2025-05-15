@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
 import com.phonepe.growth.mustang.preoperation.PreOperationType;
-import com.phonepe.growth.mustang.preoperation.PreOperationVisitor;
 
 import io.dropwizard.validation.ValidationMethod;
 import lombok.Builder;
@@ -33,11 +32,6 @@ public class SubStringPreOperation extends PreOperation {
         super(PreOperationType.SUBSTRING);
         this.beginIndex = beginIndex;
         this.endIndex = endIndex;
-    }
-
-    @Override
-    public <T> T accept(PreOperationVisitor<T> visitor) {
-        return visitor.visit(this);
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
 import com.phonepe.growth.mustang.preoperation.PreOperationType;
-import com.phonepe.growth.mustang.preoperation.PreOperationVisitor;
 
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +23,6 @@ public class MultiplicationPreOperation extends PreOperation {
     public MultiplicationPreOperation(@JsonProperty("rhs") double rhs) {
         super(PreOperationType.MULTIPLICATION);
         this.rhs = rhs;
-    }
-
-    @Override
-    public <T> T accept(PreOperationVisitor<T> visitor) {
-        return visitor.visit(this);
     }
 
     @Override

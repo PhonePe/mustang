@@ -42,7 +42,7 @@ import com.phonepe.growth.mustang.index.entry.extractor.CNFPostingListsExtractor
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
-import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -126,7 +126,7 @@ public class CNFIndexer {
                             // Zero size handling
                             final Key key = Key.builder()
                                     .name(ZERO_SIZE_DISJUNCTION_ENTRY_KEYNAME)
-                                    .preOp(IdentityOperation.builder().build())
+                                    .preOp(PreOperation.DEFAULT_OPERATION)
                                     .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)
