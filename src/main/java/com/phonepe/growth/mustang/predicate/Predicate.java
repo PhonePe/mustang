@@ -18,6 +18,11 @@ package com.phonepe.growth.mustang.predicate;
 
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
+import java.util.Objects;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -27,17 +32,16 @@ import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
-import java.util.Objects;
-import javax.validation.constraints.NotNull;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
-                @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
+        @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
 @JsonPropertyOrder({ "type", "lhs", "detail", "weight" })
 public abstract class Predicate {
 
@@ -66,8 +70,9 @@ public abstract class Predicate {
                 .build();
     }
 
-    public abstract boolean evaluate(RequestContext context,
-                                     Object lhsValue);
+    public abstract boolean evaluate(RequestContext context, Object lhsValue);
+
+    public abstract PreOperation getPreOperation();
 
     public abstract Detail getDetail();
 

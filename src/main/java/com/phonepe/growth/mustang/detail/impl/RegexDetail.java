@@ -57,8 +57,8 @@ public class RegexDetail extends Detail {
         return false;
     }
 
-    @ValidationMethod(message = "Regex string is invalid")
     @JsonIgnore
+    @ValidationMethod(message = "Regex string is invalid")
     public boolean isValidRegexDetail() {
         try {
             Pattern.compile(regex);

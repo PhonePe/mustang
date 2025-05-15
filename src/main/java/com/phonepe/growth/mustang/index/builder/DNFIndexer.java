@@ -43,6 +43,7 @@ import com.phonepe.growth.mustang.index.entry.extractor.DNFPostingListsExtractor
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -110,6 +111,7 @@ public class DNFIndexer {
                             // ZERO size handling
                             final Key key = Key.builder()
                                     .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME)
+                                    .preOp(IdentityOperation.builder().build())
                                     .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)

@@ -21,7 +21,6 @@ public class CriteriaUtilsTest {
     private static final String CRITERIA_ID = "TEST_CRITERIA_ID";
     private static final String CRITERIA_ID2 = "TEST_CRITERIA_ID_2";
     private static final String CRITERIA_ID3 = "TEST_CRITERIA_ID_3";
-    private static final String CRITERIA_ID4 = "TEST_CRITERIA_ID_4";
 
     private Predicate PREDICATE_A = IncludedPredicate.builder()
             .lhs("$.a")
@@ -46,11 +45,6 @@ public class CriteriaUtilsTest {
     private Predicate PREDICATE_E = IncludedPredicate.builder()
             .lhs("$.e")
             .values(Sets.newHashSet("E1", "E2"))
-            .build();
-
-    private Predicate PREDICATE_F = IncludedPredicate.builder()
-            .lhs("$.f")
-            .values(Sets.newHashSet("F1", "F2"))
             .build();
 
     private static Criteria orderCriteria(Criteria criteria) {
@@ -167,13 +161,19 @@ public class CriteriaUtilsTest {
                         .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0)))
                         .type(CompositionType.AND)
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(0)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(0)))
                                 .type(CompositionType.OR)
                                 .predicate(PREDICATE_A)
                                 .predicate(PREDICATE_B)
                                 .build())
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(1)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(1)))
                                 .type(CompositionType.OR)
                                 .predicate(PREDICATE_C)
                                 .predicate(PREDICATE_D)
@@ -313,7 +313,10 @@ public class CriteriaUtilsTest {
                         .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0)))
                         .type(CompositionType.OR)
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(0)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(0)))
                                 .type(CompositionType.AND)
                                 .predicate(PREDICATE_A)
                                 .predicate(PREDICATE_B)
@@ -568,8 +571,8 @@ public class CriteriaUtilsTest {
                         .predicate(PREDICATE_E)
                         .build())
                 .build();
-        Criteria actualCriteria = CriteriaUtils.mergeCriteria(CompositionType.OR, CRITERIA_ID3, dnfCriteria,
-                cnfCriteria);
+        Criteria actualCriteria = CriteriaUtils
+                .mergeCriteria(CompositionType.OR, CRITERIA_ID3, dnfCriteria, cnfCriteria);
         Assert.assertEquals(expectedCriteria, actualCriteria);
     }
 
@@ -652,8 +655,8 @@ public class CriteriaUtilsTest {
                         .predicate(PREDICATE_E)
                         .build())
                 .build();
-        Criteria actualCriteria = CriteriaUtils.mergeCriteria(CompositionType.AND, CRITERIA_ID3, dnfCriteria,
-                cnfCriteria);
+        Criteria actualCriteria = CriteriaUtils
+                .mergeCriteria(CompositionType.AND, CRITERIA_ID3, dnfCriteria, cnfCriteria);
         Assert.assertEquals(orderCriteria(expectedCriteria), orderCriteria(actualCriteria));
     }
 

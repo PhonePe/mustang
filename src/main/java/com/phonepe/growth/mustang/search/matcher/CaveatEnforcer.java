@@ -46,7 +46,8 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
         if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
             return ((List<?>) value).contains(key.getValue());
         }
-        return key.getValue().equals(value);
+        return key.getValue()
+                .equals(value);
     }
 
     @Override

@@ -33,6 +33,7 @@ import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,22 +50,30 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
 
     @Override
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
+        return extractPostingLists(predicate.getType(),
+                predicate.getLhs(),
+                predicate.getPreOperation(),
+                predicate.getDetail());
     }
 
     @Override
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
-        return extractPostingLists(predicate.getType(), predicate.getLhs(), predicate.getDetail());
+        return extractPostingLists(predicate.getType(),
+                predicate.getLhs(),
+                predicate.getPreOperation(),
+                predicate.getDetail());
     }
 
     private Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> extractPostingLists(final PredicateType pType,
             final String lhs,
+            final PreOperation preOperation,
             final Detail detail) {
         final Set<Object> values = detail.accept(new DetailValueExtractor());
         return values.stream()
                 .map(value -> {
                     final Key key = Key.builder()
                             .name(lhs)
+                            .preOp(preOperation)
                             .caveat(detail.getCaveat())
                             .value(value)
                             .build();
