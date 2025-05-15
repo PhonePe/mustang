@@ -44,7 +44,6 @@ import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.index.operation.IndexOperation;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import lombok.Builder;
 import lombok.Data;
