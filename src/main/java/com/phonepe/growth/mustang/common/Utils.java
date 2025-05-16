@@ -21,6 +21,7 @@ import com.jayway.jsonpath.Option;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
+import java.util.List;
 import java.util.Objects;
 
 import lombok.experimental.UtilityClass;
@@ -39,6 +40,18 @@ public class Utils {
             return 1L;
         }
         return weight;
+    }
+
+    public static boolean compare(final Object lhsValue, final Object rhsValue) {
+        if (Objects.nonNull(lhsValue)) {
+            if (List.class.isAssignableFrom(lhsValue.getClass())) {
+                return ((List<?>) lhsValue).contains(rhsValue);
+            } else if (Number.class.isAssignableFrom(lhsValue.getClass())
+                    && Number.class.isAssignableFrom(rhsValue.getClass())) {
+                return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
+            }
+        }
+        return rhsValue.equals(lhsValue);
     }
 
 }

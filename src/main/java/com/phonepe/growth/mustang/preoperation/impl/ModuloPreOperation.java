@@ -32,7 +32,7 @@ public class ModuloPreOperation extends PreOperation {
     public Object operate(Object lhs) {
         if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
             final long lhsNumericalValue = ((Number) lhs).longValue();
-            return (rhs != 0) ? (lhsNumericalValue % rhs) : 0; // DO NOT WANT TO THROW EXCEPTION
+            return (long)((rhs != 0) ? (lhsNumericalValue % rhs) : lhs); // DO NOT WANT TO THROW EXCEPTION
         }
         return lhs;
     }

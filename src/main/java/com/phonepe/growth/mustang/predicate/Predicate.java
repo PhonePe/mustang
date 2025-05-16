@@ -55,7 +55,7 @@ public abstract class Predicate {
     public boolean evaluate(final RequestContext context) {
         final Object value = getNodeValue(context.getNode(), lhs);
         if (Objects.nonNull(value)) {
-            return evaluate(context, value);
+            return evaluate(value);
         }
         return getDefaultResult();
     }
@@ -70,7 +70,7 @@ public abstract class Predicate {
                 .build();
     }
 
-    public abstract boolean evaluate(RequestContext context, Object lhsValue);
+    public abstract boolean evaluate(Object lhsValue);
 
     public abstract PreOperation getPreOperation();
 

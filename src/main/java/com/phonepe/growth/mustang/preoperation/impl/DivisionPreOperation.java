@@ -21,11 +21,11 @@ import lombok.ToString;
 public class DivisionPreOperation extends PreOperation {
     @Negative
     @Positive
-    private double rhs;
+    private long rhs;
 
     @Builder
     @JsonCreator
-    public DivisionPreOperation(@JsonProperty("rhs") double rhs) {
+    public DivisionPreOperation(@JsonProperty("rhs") long rhs) {
         super(PreOperationType.DIVISION);
         this.rhs = rhs;
     }
@@ -33,8 +33,8 @@ public class DivisionPreOperation extends PreOperation {
     @Override
     public Object operate(Object lhs) {
         if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
-            final double lhsNumericalValue = ((Number) lhs).doubleValue();
-            return (rhs != 0) ? (lhsNumericalValue / rhs) : lhs;
+            final long lhsNumericalValue = ((Number) lhs).longValue();
+            return (long) ((rhs != 0) ? (lhsNumericalValue / rhs) : lhs);
         }
         return lhs;
     }

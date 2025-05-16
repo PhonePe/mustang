@@ -69,8 +69,8 @@ public class IncludedPredicate extends Predicate {
     }
 
     @Override
-    public boolean evaluate(final RequestContext context, final Object lhsValue) {
-        return detail.validate(context, preOperation.operate(lhsValue));
+    public boolean evaluate(final Object lhsValue) {
+        return detail.validate(preOperation.operate(lhsValue));
     }
 
     @Override
