@@ -662,11 +662,13 @@ public class CriteriaUtilsTest {
     public void testValidPredicate() {
         final Predicate predicate = IncludedPredicate.builder()
                 .lhs("$.A.B")
+                .values(Sets.newHashSet("A", "B"))
                 .build();
         Assert.assertTrue(predicate.isValidPredicate());
 
         final Predicate invalidPredicate = IncludedPredicate.builder()
                 .lhs("A B")
+                .values(Sets.newHashSet("A", "B"))
                 .build();
         Assert.assertFalse(invalidPredicate.isValidPredicate());
     }
