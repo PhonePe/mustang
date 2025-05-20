@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.jayway.jsonpath.JsonPath;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.detail.Detail;
@@ -29,6 +30,7 @@ import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
+import io.dropwizard.validation.ValidationMethod;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import javax.validation.constraints.NotBlank;
@@ -64,6 +66,17 @@ public abstract class Predicate {
                 .lhsValue(getNodeValue(context.getNode(), lhs))
                 .detail(getDetail())
                 .build();
+    }
+
+    @ValidationMethod(message = "lhs path is an invalid json path")
+    @JsonIgnore
+    public boolean isValidPredicate() {
+        try {
+            JsonPath.compile(lhs);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public abstract boolean evaluate(RequestContext context,
