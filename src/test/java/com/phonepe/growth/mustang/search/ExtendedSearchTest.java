@@ -69,7 +69,7 @@ import com.phonepe.growth.mustang.preoperation.impl.SubStringPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubtractionPreOperation;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 
-public class SearchTest2 {
+public class ExtendedSearchTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
     private MustangEngine engine;
@@ -727,7 +727,9 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .preOperation(SubtractionPreOperation.builder().rhs(0.10000000001).build())
+                                .preOperation(SubtractionPreOperation.builder()
+                                        .rhs(0.10000000001)
+                                        .build())
                                 .values(Sets.newHashSet(0.10000000001, 0.30000000003))
                                 .build())
                         .build())
@@ -741,7 +743,9 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .preOperation(AdditionPreOperation.builder().rhs(0.10000000001).build())
+                                .preOperation(AdditionPreOperation.builder()
+                                        .rhs(0.10000000001)
+                                        .build())
                                 .values(Sets.newHashSet(0.10000000001, 0.30000000003))
                                 .build())
                         .build())
@@ -802,6 +806,9 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(SubtractionPreOperation.builder()
+                                        .rhs(0.000000000000001)
+                                        .build())
                                 .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
                                 .build())
                         .predicate(IncludedPredicate.builder()
@@ -819,6 +826,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(AdditionPreOperation.builder().rhs(-4.000000000000003).build())
                                 .values(Sets.newHashSet("4", "5", "6"))
                                 .build())
                         .build())
@@ -856,6 +864,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(DivisionPreOperation.builder().rhs(7).build())
                                 .values(Sets.newHashSet(1, 2, 3))
                                 .build())
                         .build())
@@ -869,6 +878,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(SubtractionPreOperation.builder().rhs(3).build())
                                 .values(Sets.newHashSet(4, 5, 6))
                                 .build())
                         .build())
@@ -951,6 +961,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(LengthPreOperation.builder().build())
                                 .values(Sets.newHashSet(1, 2, 3))
                                 .build())
                         .build())
@@ -1035,7 +1046,8 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(4, 5, 6))
+                                .preOperation(LengthPreOperation.builder().build())
+                                .values(Sets.newHashSet(1,2,3))
                                 .build())
                         .build())
                 .disjunction(Disjunction.builder()
@@ -1045,7 +1057,8 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(5, 6, 7))
+                                .preOperation(LengthPreOperation.builder().build())
+                                .values(Sets.newHashSet(1))
                                 .build())
                         .build())
                 .build();
@@ -1058,7 +1071,8 @@ public class SearchTest2 {
                 RequestContext.builder()
                         .node(mapper.valueToTree(testQuery))
                         .build());
-        assertThat(searchResults, is(empty()));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, containsInAnyOrder("C2"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -1081,6 +1095,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(ExcludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(DivisionPreOperation.builder().rhs(0).build())
                                 .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
                                 .build())
                         .predicate(ExcludedPredicate.builder()
@@ -1165,6 +1180,7 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.g")
+                                .preOperation(SubStringPreOperation.builder().beginIndex(0).build())
                                 .values(Sets.newHashSet("M"))
                                 .build())
                         .build())
@@ -1210,8 +1226,8 @@ public class SearchTest2 {
                         .node(mapper.valueToTree(testQuery))
                         .build());
         // Assertion
-        assertThat(searchResults, hasSize(2));
-        assertThat(searchResults, containsInAnyOrder("C4", "C5"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, containsInAnyOrder("C5"));
 
         engine.ratify("testsearch");
         final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
@@ -1305,6 +1321,7 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
+                                .preOperation(AdditionPreOperation.builder().rhs(1).build())
                                 .values(Sets.newHashSet(1, 2))
                                 .build())
                         .predicate(IncludedPredicate.builder()

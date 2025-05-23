@@ -34,7 +34,7 @@ public class DivisionPreOperation extends PreOperation {
     public Object operate(Object lhs) {
         if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
             final long lhsNumericalValue = ((Number) lhs).longValue();
-            return (long) ((rhs != 0) ? (lhsNumericalValue / rhs) : lhs);
+            return (long) ((rhs != 0) ? (lhsNumericalValue / rhs) : lhsNumericalValue);
         }
         return lhs;
     }
