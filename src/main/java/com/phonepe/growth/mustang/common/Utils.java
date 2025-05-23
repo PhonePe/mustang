@@ -49,6 +49,9 @@ public class Utils {
             } else if (Number.class.isAssignableFrom(lhsValue.getClass())
                     && Number.class.isAssignableFrom(rhsValue.getClass())) {
                 return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
+            } else if (Boolean.class.isAssignableFrom(lhsValue.getClass())
+                    && Boolean.class.isAssignableFrom(rhsValue.getClass())) {
+                return ((Boolean) lhsValue).booleanValue() == ((Boolean) rhsValue).booleanValue();
             }
         }
         return rhsValue.equals(lhsValue);

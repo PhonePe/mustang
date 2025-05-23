@@ -59,8 +59,12 @@ import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.preoperation.impl.AdditionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.DivisionPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.LengthPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.ModuloPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.MultiplicationPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.SizePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubStringPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubtractionPreOperation;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
@@ -466,6 +470,9 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(SubtractionPreOperation.builder()
+                                        .rhs(4)
+                                        .build())
                                 .values(Sets.newHashSet(1, 2, 3))
                                 .build())
                         .build())
@@ -479,13 +486,16 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
+                                .preOperation(AdditionPreOperation.builder()
+                                        .rhs(4)
+                                        .build())
                                 .values(Sets.newHashSet(4, 5, 6))
                                 .build())
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "P");
-        testQuery.put("n", 8);
+        testQuery.put("n", 4);
 
         engine.add("test", c1);
         engine.add("test", c2);
@@ -508,7 +518,9 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .values(Sets.newHashSet("A1", "A2"))
+                                .preOperation(LengthPreOperation.builder()
+                                        .build())
+                                .values(Sets.newHashSet(1))
                                 .build())
                         .predicate(ExcludedPredicate.builder()
                                 .lhs("$.b")
@@ -575,12 +587,19 @@ public class SearchTest2 {
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .preOperation(SubStringPreOperation.builder()
+                                        .beginIndex(0)
+                                        .endIndex(1)
+                                        .build())
                                 .values(Sets.newHashSet(8.95))
                                 .build())
                         .build())
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$['store']['book'][0]['basePrice']")
+                                .preOperation(DivisionPreOperation.builder()
+                                        .rhs(1)
+                                        .build())
                                 .values(Sets.newHashSet(8.95))
                                 .build())
                         .build())
@@ -628,6 +647,9 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .preOperation(MultiplicationPreOperation.builder()
+                                        .rhs(1)
+                                        .build())
                                 .values(Sets.newHashSet(8.95))
                                 .build())
                         .build())
@@ -643,6 +665,8 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.store.book[?(@.category == 'reference')].basePrice")
+                                .preOperation(LengthPreOperation.builder()
+                                        .build())
                                 .values(Sets.newHashSet(8.90))
                                 .build())
                         .build())
@@ -652,7 +676,9 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.store.book[?(@.category == 'reference')].price")
-                                .values(Sets.newHashSet(8.95))
+                                .preOperation(SizePreOperation.builder()
+                                        .build())
+                                .values(Sets.newHashSet(1)) // Size works on collections
                                 .build())
                         .build())
                 .build();
@@ -661,6 +687,8 @@ public class SearchTest2 {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$['store']['book'][0]['price']")
+                                .preOperation(SizePreOperation.builder()
+                                        .build())
                                 .values(Sets.newHashSet(8.95))
                                 .build())
                         .build())
@@ -699,7 +727,8 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .preOperation(SubtractionPreOperation.builder().rhs(0.10000000001).build())
+                                .values(Sets.newHashSet(0.10000000001, 0.30000000003))
                                 .build())
                         .build())
                 .build();
@@ -712,7 +741,8 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(0.1000000000001, 0.20000000000002, 0.300000000003))
+                                .preOperation(AdditionPreOperation.builder().rhs(0.10000000001).build())
+                                .values(Sets.newHashSet(0.10000000001, 0.30000000003))
                                 .build())
                         .build())
                 .build();
@@ -729,13 +759,13 @@ public class SearchTest2 {
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.n")
-                                .values(Sets.newHashSet(0.300000000003))
+                                .values(Sets.newHashSet(0.20000000002))
                                 .build())
                         .build())
                 .build();
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
-        testQuery.put("n", 0.300000000003);
+        testQuery.put("n", 0.20000000002);
         final ObjectMapper mapper = new ObjectMapper();
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)

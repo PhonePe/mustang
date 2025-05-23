@@ -1,5 +1,6 @@
 package com.phonepe.growth.mustang.preoperation.impl;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -16,20 +17,21 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class SubtractionPreOperation extends PreOperation {
-    private double rhs;
+    private BigDecimal rhs;
 
     @Builder
     @JsonCreator
     public SubtractionPreOperation(@JsonProperty("rhs") double rhs) {
         super(PreOperationType.SUBTRACTION);
-        this.rhs = rhs;
+        this.rhs = BigDecimal.valueOf(rhs);
     }
 
     @Override
     public Object operate(Object lhs) {
         if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
             final double lhsNumericalValue = ((Number) lhs).doubleValue();
-            return lhsNumericalValue - rhs;
+            return BigDecimal.valueOf(lhsNumericalValue)
+                    .subtract(rhs);
         }
         return lhs;
     }
