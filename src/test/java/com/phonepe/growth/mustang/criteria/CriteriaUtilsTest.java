@@ -9,6 +9,7 @@ import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.DNFTautologicalCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import java.util.HashSet;
@@ -658,6 +659,33 @@ public class CriteriaUtilsTest {
         Criteria actualCriteria = CriteriaUtils
                 .mergeCriteria(CompositionType.AND, CRITERIA_ID3, dnfCriteria, cnfCriteria);
         Assert.assertEquals(orderCriteria(expectedCriteria), orderCriteria(actualCriteria));
+    }
+
+    @Test
+    public void testValidPredicate() {
+        final Predicate predicate = IncludedPredicate.builder()
+                .lhs("$.A.B")
+                .values(Sets.newHashSet("A", "B"))
+                .build();
+        Assert.assertTrue(predicate.isValidPredicate());
+
+        final Predicate invalidPredicate = IncludedPredicate.builder()
+                .lhs("A B")
+                .values(Sets.newHashSet("A", "B"))
+                .build();
+        Assert.assertFalse(invalidPredicate.isValidPredicate());
+    }
+    @Test
+    public void testValidRegexDetail() {
+        final RegexDetail validRegexDetail = RegexDetail.builder()
+                .regex("A.*")
+                .build();
+        Assert.assertTrue(validRegexDetail.isValidRegexDetail());
+
+        final RegexDetail invalidRegexDetail = RegexDetail.builder()
+                .regex("(.*([0-9])$")
+                .build();
+        Assert.assertFalse(invalidRegexDetail.isValidRegexDetail());
     }
 
 }

@@ -6018,17 +6018,4 @@ public class SearchTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
-    @Test
-    public void testValidRegexDetail() {
-        final RegexDetail validRegexDetail = RegexDetail.builder()
-                .regex("A.*")
-                .build();
-        Assert.assertTrue(validRegexDetail.isValidRegexDetail());
-
-        final RegexDetail invalidRegexDetail = RegexDetail.builder()
-                .regex("(.*([0-9])$")
-                .build();
-        Assert.assertFalse(invalidRegexDetail.isValidRegexDetail());
-    }
-
 }
