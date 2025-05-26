@@ -14,7 +14,6 @@ import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;

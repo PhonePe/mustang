@@ -643,6 +643,7 @@ public class ExtendedSearchTest {
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$['store']['book'][0]['basePrice']")
+                                .preOperation(SizePreOperation.builder().build())
                                 .values(Sets.newHashSet(8.95))
                                 .build())
                         .build())
@@ -662,7 +663,7 @@ public class ExtendedSearchTest {
                 .id("C3")
                 .disjunction(Disjunction.builder()
                         .predicate(IncludedPredicate.builder()
-                                .lhs("$.store.book[?(@.category == 'reference')].price")
+                                .lhs("$.store.book[?(@.category == 'reference')].basePrice")
                                 .preOperation(SizePreOperation.builder()
                                         .build())
                                 .values(Sets.newHashSet(1)) // Size works on collections
@@ -690,8 +691,8 @@ public class ExtendedSearchTest {
                         .node(mapper.readTree(
                                 "{\"store\":{\"book\":[{\"category\":\"reference\",\"basePrice\":8.95,\"inStock\":true},{\"category\":\"fiction\",\"basePrice\":22.99,\"inStock\":false}]}}"))
                         .build());
-        assertThat(searchResults, hasSize(1));
-        assertThat(searchResults, contains("C1"));
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, containsInAnyOrder("C1","C3"));
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
