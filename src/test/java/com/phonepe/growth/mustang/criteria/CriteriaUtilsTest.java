@@ -12,6 +12,8 @@ import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import org.junit.Assert;
@@ -72,11 +74,15 @@ public class CriteriaUtilsTest {
         return UNFCriteria.builder()
                 .id(unf.getId())
                 .type(unf.getType())
-                .predicates(new HashSet<>(unf.getPredicates()))
-                .criterias(new HashSet<>(unf.getCriterias()
+                .predicates(unf.getPredicates()
+                        .stream()
+                        .sorted(Comparator.comparing(Predicate::getLhs))
+                        .toList())
+                .criterias(unf.getCriterias()
                         .stream()
                         .map(CriteriaUtilsTest::orderCriteria)
-                        .toList()))
+                        .sorted(Comparator.comparing(Criteria::getId))
+                        .toList())
                 .build();
     }
 
@@ -84,12 +90,16 @@ public class CriteriaUtilsTest {
         // Since order is not maintained in list
         return DNFCriteria.builder()
                 .id(dnf.getId())
-                .conjunctions(new HashSet<>(dnf.getConjunctions()
+                .conjunctions(dnf.getConjunctions()
                         .stream()
                         .map(conjunction -> Conjunction.builder()
-                                .predicates(new HashSet<>(conjunction.getPredicates()))
+                                .predicates(conjunction.getPredicates()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Predicate::getLhs))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toSet())))
+                        .sorted(Comparator.comparing(Conjunction::toString))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -97,12 +107,16 @@ public class CriteriaUtilsTest {
         // Since order is not maintained in list
         return CNFCriteria.builder()
                 .id(cnf.getId())
-                .disjunctions(new HashSet<>(cnf.getDisjunctions()
+                .disjunctions(cnf.getDisjunctions()
                         .stream()
                         .map(disjunction -> Disjunction.builder()
-                                .predicates(new HashSet<>(disjunction.getPredicates()))
+                                .predicates(disjunction.getPredicates()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Predicate::getLhs))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toSet())))
+                        .sorted(Comparator.comparing(Disjunction::toString))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -675,6 +689,7 @@ public class CriteriaUtilsTest {
                 .build();
         Assert.assertFalse(invalidPredicate.isValidPredicate());
     }
+
     @Test
     public void testValidRegexDetail() {
         final RegexDetail validRegexDetail = RegexDetail.builder()
