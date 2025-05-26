@@ -36,11 +36,9 @@ public class SubStringPreOperation extends PreOperation {
 
     @Override
     public Object operate(Object value) {
-        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
-            if (isValid()) {
-                return value.toString()
-                        .substring(beginIndex, endIndex);
-            }
+        if (isValid() && Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
+            return value.toString()
+                    .substring(beginIndex, endIndex);
         }
         return value;
     }
