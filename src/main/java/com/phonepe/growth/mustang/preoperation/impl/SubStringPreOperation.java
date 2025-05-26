@@ -37,8 +37,10 @@ public class SubStringPreOperation extends PreOperation {
     @Override
     public Object operate(Object value) {
         if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
-            return value.toString()
-                    .substring(beginIndex, endIndex);
+            if (isValid()) {
+                return value.toString()
+                        .substring(beginIndex, endIndex);
+            }
         }
         return value;
     }
@@ -46,7 +48,7 @@ public class SubStringPreOperation extends PreOperation {
     @JsonIgnore
     @ValidationMethod
     public boolean isValid() {
-        return beginIndex < endIndex;
+        return beginIndex <= endIndex;
     }
 
 }

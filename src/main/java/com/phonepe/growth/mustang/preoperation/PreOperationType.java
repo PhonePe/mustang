@@ -7,80 +7,17 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum PreOperationType {
 
-    IDENTITY(PreOperationType.IDENTITY_TEXT) {
+    IDENTITY(PreOperationType.IDENTITY_TEXT),
+    ADDITION(PreOperationType.ADDITION_TEXT),
+    SUBTRACTION(PreOperationType.SUBTRACTION_TEXT),
+    MULTIPLICATION(PreOperationType.MULTIPLCATION_TEXT),
+    DIVISION(PreOperationType.DIVISION_TEXT),
+    MODULO(PreOperationType.MODULO_TEXT),
 
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitNoOp();
-        }
+    SIZE(PreOperationType.SIZE_TEXT),
 
-    },
-    ADDITION(PreOperationType.ADDITION_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitAddition();
-        }
-
-    },
-    SUBTRACTION(PreOperationType.SUBTRACTION_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitSubtraction();
-        }
-
-    },
-    MULTIPLICATION(PreOperationType.MULTIPLCATION_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitMultiplication();
-        }
-
-    },
-    DIVISION(PreOperationType.DIVISION_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitDivision();
-        }
-
-    },
-    MODULO(PreOperationType.MODULO_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitModulo();
-        }
-
-    },
-
-    SIZE(PreOperationType.SIZE_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitSize();
-        }
-
-    },
-
-    LENGTH(PreOperationType.LENGTH_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitLength();
-        }
-
-    },
-    SUBSTRING(PreOperationType.SUBSTRING_TEXT) {
-
-        @Override
-        public <T> T visit(Visitor<T> visitor) {
-            return visitor.visitSubstring();
-        }
-
-    };
+    LENGTH(PreOperationType.LENGTH_TEXT),
+    SUBSTRING(PreOperationType.SUBSTRING_TEXT);
 
     @Getter
     private String value;
@@ -94,29 +31,5 @@ public enum PreOperationType {
     public static final String SIZE_TEXT = "SIZE";
     public static final String LENGTH_TEXT = "LENGTH";
     public static final String SUBSTRING_TEXT = "SUBSTRING";
-
-    public abstract <T> T visit(Visitor<T> visitor);
-
-    public interface Visitor<T> {
-
-        T visitNoOp();
-
-        T visitAddition();
-
-        T visitSubtraction();
-
-        T visitMultiplication();
-
-        T visitDivision();
-
-        T visitModulo();
-
-        T visitSize();
-
-        T visitLength();
-
-        T visitSubstring();
-
-    }
 
 }
