@@ -25,4 +25,9 @@ public class IdentityOperation extends PreOperation {
         return operand;
     }
 
+    @Override
+    public boolean canApply(Object lhsOperand) {
+        return true;
+    }
+
 }

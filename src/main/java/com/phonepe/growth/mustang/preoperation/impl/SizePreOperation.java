@@ -25,10 +25,15 @@ public class SizePreOperation extends PreOperation {
 
     @Override
     public Object operate(Object value) {
-        if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
+        if (canApply(value)) {
             return ((List<?>) value).size();
         }
         return value;
+    }
+
+    @Override
+    public boolean canApply(Object value) {
+        return Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass());
     }
 
 }

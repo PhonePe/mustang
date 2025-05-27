@@ -24,11 +24,16 @@ public class LengthPreOperation extends PreOperation {
 
     @Override
     public Object operate(Object value) {
-        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
-            return value.toString()
+        if (canApply(value)) {
+            return String.valueOf(value)
                     .length();
         }
         return value;
+    }
+
+    @Override
+    public boolean canApply(Object value) {
+        return Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass());
     }
 
 }

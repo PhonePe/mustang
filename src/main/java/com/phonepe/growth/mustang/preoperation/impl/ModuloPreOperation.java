@@ -30,11 +30,15 @@ public class ModuloPreOperation extends PreOperation {
 
     @Override
     public Object operate(Object lhs) {
-        if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
-            final long lhsNumericalValue = ((Number) lhs).longValue();
-            return (long)((rhs != 0) ? (lhsNumericalValue % rhs) : lhs); // DO NOT WANT TO THROW EXCEPTION
+        if (canApply(lhs)) {
+            return (long) (((Number) lhs).longValue() % rhs);
         }
         return lhs;
+    }
+
+    @Override
+    public boolean canApply(Object lhs) {
+        return Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass()) && rhs != 0;
     }
 
 }

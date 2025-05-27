@@ -35,6 +35,7 @@ public abstract class PreOperation {
     @NotNull
     private final PreOperationType type;
 
-    public abstract Object operate(Object lhsOperand);
+    public abstract Object operate(Object lhs);
 
+    public abstract boolean canApply(Object lhs);
 }

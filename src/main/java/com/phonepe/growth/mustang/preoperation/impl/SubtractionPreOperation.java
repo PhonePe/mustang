@@ -28,12 +28,16 @@ public class SubtractionPreOperation extends PreOperation {
 
     @Override
     public Object operate(Object lhs) {
-        if (Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass())) {
-            final double lhsNumericalValue = ((Number) lhs).doubleValue();
-            return BigDecimal.valueOf(lhsNumericalValue)
+        if (canApply(lhs)) {
+            return BigDecimal.valueOf(((Number) lhs).doubleValue())
                     .subtract(rhs);
         }
         return lhs;
+    }
+
+    @Override
+    public boolean canApply(Object lhs) {
+        return Objects.nonNull(lhs) && Number.class.isAssignableFrom(lhs.getClass());
     }
 
 }
