@@ -47,6 +47,7 @@ import com.phonepe.growth.mustang.exception.MustangException;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.preoperation.impl.AdditionPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.BinaryConversionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.DivisionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.LengthPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.ModuloPreOperation;
@@ -103,7 +104,8 @@ public class ExtendedSearchTest {
                                 .values(Sets.newHashSet("A1", "A2", "A3"))
                                 .build())
                         .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
+                                .lhs("$.x")
+                                .preOperation(BinaryConversionPreOperation.builder().build())
                                 .values(Sets.newHashSet("4", "5", "6"))
                                 .build())
                         .build())
@@ -112,6 +114,67 @@ public class ExtendedSearchTest {
         testQuery.put("a", "A1");
         testQuery.put("b", "B3");
         testQuery.put("n", 0.0000004);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        Assert.assertTrue(searchResults.contains("C1"));
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+
+    @Test
+    public void testDNFPositiveMatch1() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .preOperation(BinaryConversionPreOperation.builder().build())
+                                .values(Sets.newHashSet("00000000000000000000000001111111"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .preOperation(BinaryConversionPreOperation.builder().build())
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 127);
         testQuery.put("p", true);
 
         engine.add("test", c1);

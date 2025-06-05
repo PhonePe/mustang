@@ -13,6 +13,7 @@ public enum PreOperationType {
     MULTIPLICATION(PreOperationType.MULTIPLCATION_TEXT),
     DIVISION(PreOperationType.DIVISION_TEXT),
     MODULO(PreOperationType.MODULO_TEXT),
+    BINARY_CONVERSION(PreOperationType.BINARY_CONVERSION_TEXT),
 
     SIZE(PreOperationType.SIZE_TEXT),
 
@@ -28,6 +29,7 @@ public enum PreOperationType {
     public static final String MULTIPLCATION_TEXT = "MULTIPLCATION";
     public static final String DIVISION_TEXT = "DIVISION";
     public static final String MODULO_TEXT = "MODULO";
+    public static final String BINARY_CONVERSION_TEXT = "BINARY_CONVERSION";
     public static final String SIZE_TEXT = "SIZE";
     public static final String LENGTH_TEXT = "LENGTH";
     public static final String SUBSTRING_TEXT = "SUBSTRING";
