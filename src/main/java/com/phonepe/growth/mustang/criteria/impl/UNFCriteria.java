@@ -2,6 +2,12 @@ package com.phonepe.growth.mustang.criteria.impl;
 
 import static com.phonepe.growth.mustang.predicate.Predicate.NO_MATCH_SCORE;
 
+import java.util.List;
+import java.util.stream.DoubleStream;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.phonepe.growth.mustang.common.RequestContext;
@@ -13,11 +19,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaVisitor;
 import com.phonepe.growth.mustang.debug.DebugResult;
 import com.phonepe.growth.mustang.debug.UNFDebugResult;
 import com.phonepe.growth.mustang.predicate.Predicate;
-import java.util.List;
-import java.util.stream.DoubleStream;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

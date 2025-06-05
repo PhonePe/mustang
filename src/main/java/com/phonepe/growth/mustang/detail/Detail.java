@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
@@ -43,7 +42,7 @@ public abstract class Detail {
     @NotNull
     private final Caveat caveat;
 
-    public abstract boolean validate(final RequestContext context, final Object lhsValue);
+    public abstract boolean validate(final Object lhsValue);
 
     public abstract <T> T accept(DetailVisitor<T> visitor);
 

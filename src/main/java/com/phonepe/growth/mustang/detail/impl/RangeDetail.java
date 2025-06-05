@@ -20,7 +20,6 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
@@ -55,7 +54,7 @@ public class RangeDetail extends Detail {
     }
 
     @Override
-    public boolean validate(RequestContext context, Object lhsValue) {
+    public boolean validate(Object lhsValue) {
         boolean result = false;
         if (Number.class.isAssignableFrom(lhsValue.getClass())) {
             final double numericalValue = ((Number) lhsValue).doubleValue();

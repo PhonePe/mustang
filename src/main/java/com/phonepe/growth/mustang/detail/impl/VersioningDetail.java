@@ -16,14 +16,15 @@
  */
 package com.phonepe.growth.mustang.detail.impl;
 
+import java.util.Objects;
+
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
-import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
@@ -57,10 +58,13 @@ public class VersioningDetail extends Detail {
     }
 
     @Override
-    public boolean validate(RequestContext context, Object lhsValue) {
-        final int comparisionResult = new ComparableVersion(baseVersion)
-                .compareTo(new ComparableVersion(lhsValue.toString()));
-        return check.accept(new ComparisionInference(comparisionResult, excludeBase));
+    public boolean validate(Object lhsValue) {
+        if (Objects.nonNull(lhsValue)) {
+            final int comparisionResult = new ComparableVersion(baseVersion)
+                    .compareTo(new ComparableVersion(lhsValue.toString()));
+            return check.accept(new ComparisionInference(comparisionResult, excludeBase));
+        }
+        return false;
     }
 
     @Override

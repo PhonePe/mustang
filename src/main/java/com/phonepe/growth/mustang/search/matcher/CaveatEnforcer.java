@@ -16,11 +16,11 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
 
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.impl.ComparisionInference;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
@@ -34,7 +34,7 @@ import lombok.Data;
 @AllArgsConstructor
 public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     private final Key key;
-    private final Object value;
+    private final Object lhsValue;
 
     @Override
     public Boolean visitNone() {
@@ -43,16 +43,13 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitEquality() {
-        if (Objects.nonNull(value) && List.class.isAssignableFrom(value.getClass())) {
-            return ((List<?>) value).contains(key.getValue());
-        }
-        return key.getValue().equals(value);
+        return Utils.compare(lhsValue, key.getValue());
     }
 
     @Override
     public Boolean visitRegexMatch() {
-        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
-            return value.toString()
+        if (Objects.nonNull(lhsValue) && String.class.isAssignableFrom(lhsValue.getClass())) {
+            return lhsValue.toString()
                     .matches(String.valueOf(key.getValue()));
         }
         return false;
@@ -61,8 +58,8 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     @Override
     public Boolean visitRange() {
         boolean result = false;
-        if (Objects.nonNull(value) && Number.class.isAssignableFrom(value.getClass())) {
-            final double numericalValue = ((Number) value).doubleValue();
+        if (Objects.nonNull(lhsValue) && Number.class.isAssignableFrom(lhsValue.getClass())) {
+            final double numericalValue = ((Number) lhsValue).doubleValue();
             final RangeDetail detail = RangeDetail.of(String.valueOf(key.getValue()));
             result = detail.isIncludeLowerBound() ? (detail.getLowerBound()
                     .doubleValue() <= numericalValue)
@@ -78,13 +75,14 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitVersioning() {
-        if (Objects.nonNull(value) && String.class.isAssignableFrom(value.getClass())) {
+        if (Objects.nonNull(lhsValue) && String.class.isAssignableFrom(lhsValue.getClass())) {
             final VersioningDetail detail = VersioningDetail.of(String.valueOf(key.getValue()));
             final int comparisionResult = new ComparableVersion(detail.getBaseVersion())
-                    .compareTo(new ComparableVersion(value.toString()));
+                    .compareTo(new ComparableVersion(lhsValue.toString()));
             return detail.getCheck()
                     .accept(new ComparisionInference(comparisionResult, detail.isExcludeBase()));
         }
         return false;
     }
+
 }
