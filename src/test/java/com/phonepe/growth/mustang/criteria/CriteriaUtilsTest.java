@@ -12,7 +12,8 @@ import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
-import java.util.HashSet;
+
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +23,6 @@ public class CriteriaUtilsTest {
     private static final String CRITERIA_ID = "TEST_CRITERIA_ID";
     private static final String CRITERIA_ID2 = "TEST_CRITERIA_ID_2";
     private static final String CRITERIA_ID3 = "TEST_CRITERIA_ID_3";
-    private static final String CRITERIA_ID4 = "TEST_CRITERIA_ID_4";
 
     private Predicate PREDICATE_A = IncludedPredicate.builder()
             .lhs("$.a")
@@ -49,11 +49,6 @@ public class CriteriaUtilsTest {
             .values(Sets.newHashSet("E1", "E2"))
             .build();
 
-    private Predicate PREDICATE_F = IncludedPredicate.builder()
-            .lhs("$.f")
-            .values(Sets.newHashSet("F1", "F2"))
-            .build();
-
     private static Criteria orderCriteria(Criteria criteria) {
         return criteria.accept(new CriteriaVisitor<>() {
             @Override
@@ -78,11 +73,15 @@ public class CriteriaUtilsTest {
         return UNFCriteria.builder()
                 .id(unf.getId())
                 .type(unf.getType())
-                .predicates(new HashSet<>(unf.getPredicates()))
-                .criterias(new HashSet<>(unf.getCriterias()
+                .predicates(unf.getPredicates()
+                        .stream()
+                        .sorted(Comparator.comparing(Predicate::getLhs))
+                        .toList())
+                .criterias(unf.getCriterias()
                         .stream()
                         .map(CriteriaUtilsTest::orderCriteria)
-                        .toList()))
+                        .sorted(Comparator.comparing(Criteria::getId))
+                        .toList())
                 .build();
     }
 
@@ -90,12 +89,16 @@ public class CriteriaUtilsTest {
         // Since order is not maintained in list
         return DNFCriteria.builder()
                 .id(dnf.getId())
-                .conjunctions(new HashSet<>(dnf.getConjunctions()
+                .conjunctions(dnf.getConjunctions()
                         .stream()
                         .map(conjunction -> Conjunction.builder()
-                                .predicates(new HashSet<>(conjunction.getPredicates()))
+                                .predicates(conjunction.getPredicates()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Predicate::getLhs))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toSet())))
+                        .sorted(Comparator.comparing(Conjunction::toString))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -103,12 +106,16 @@ public class CriteriaUtilsTest {
         // Since order is not maintained in list
         return CNFCriteria.builder()
                 .id(cnf.getId())
-                .disjunctions(new HashSet<>(cnf.getDisjunctions()
+                .disjunctions(cnf.getDisjunctions()
                         .stream()
                         .map(disjunction -> Disjunction.builder()
-                                .predicates(new HashSet<>(disjunction.getPredicates()))
+                                .predicates(disjunction.getPredicates()
+                                        .stream()
+                                        .sorted(Comparator.comparing(Predicate::getLhs))
+                                        .toList())
                                 .build())
-                        .collect(Collectors.toSet())))
+                        .sorted(Comparator.comparing(Disjunction::toString))
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -168,13 +175,19 @@ public class CriteriaUtilsTest {
                         .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0)))
                         .type(CompositionType.AND)
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(0)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(0)))
                                 .type(CompositionType.OR)
                                 .predicate(PREDICATE_A)
                                 .predicate(PREDICATE_B)
                                 .build())
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(1)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(1)))
                                 .type(CompositionType.OR)
                                 .predicate(PREDICATE_C)
                                 .predicate(PREDICATE_D)
@@ -314,7 +327,10 @@ public class CriteriaUtilsTest {
                         .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0)))
                         .type(CompositionType.OR)
                         .criteria(UNFCriteria.builder()
-                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR, CRITERIA_ID, String.valueOf(0), String.valueOf(0)))
+                                .id(String.join(CriteriaUtils.UNF_CRITERIA_SEPARATOR,
+                                        CRITERIA_ID,
+                                        String.valueOf(0),
+                                        String.valueOf(0)))
                                 .type(CompositionType.AND)
                                 .predicate(PREDICATE_A)
                                 .predicate(PREDICATE_B)
@@ -569,8 +585,8 @@ public class CriteriaUtilsTest {
                         .predicate(PREDICATE_E)
                         .build())
                 .build();
-        Criteria actualCriteria = CriteriaUtils.mergeCriteria(CompositionType.OR, CRITERIA_ID3, dnfCriteria,
-                cnfCriteria);
+        Criteria actualCriteria = CriteriaUtils
+                .mergeCriteria(CompositionType.OR, CRITERIA_ID3, dnfCriteria, cnfCriteria);
         Assert.assertEquals(expectedCriteria, actualCriteria);
     }
 
@@ -653,8 +669,8 @@ public class CriteriaUtilsTest {
                         .predicate(PREDICATE_E)
                         .build())
                 .build();
-        Criteria actualCriteria = CriteriaUtils.mergeCriteria(CompositionType.AND, CRITERIA_ID3, dnfCriteria,
-                cnfCriteria);
+        Criteria actualCriteria = CriteriaUtils
+                .mergeCriteria(CompositionType.AND, CRITERIA_ID3, dnfCriteria, cnfCriteria);
         Assert.assertEquals(orderCriteria(expectedCriteria), orderCriteria(actualCriteria));
     }
 
@@ -672,6 +688,7 @@ public class CriteriaUtilsTest {
                 .build();
         Assert.assertFalse(invalidPredicate.isValidPredicate());
     }
+
     @Test
     public void testValidRegexDetail() {
         final RegexDetail validRegexDetail = RegexDetail.builder()

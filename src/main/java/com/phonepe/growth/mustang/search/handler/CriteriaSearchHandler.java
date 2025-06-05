@@ -15,8 +15,8 @@
  */
 package com.phonepe.growth.mustang.search.handler;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,12 +58,9 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o, n) -> o));
 
-        final Set<String> tautologicalCriteriaKeys = indexGroup.getTautologicalCriterias().keySet();
-        for (String criteriaKey : tautologicalCriteriaKeys) {
-            if (!searchResults.containsKey(criteriaKey)) {
-                searchResults.put(criteriaKey, 0.0);
-            }
-        }
+        indexGroup.getTautologicalCriterias()
+                .keySet()
+                .forEach(criteriaKey -> searchResults.computeIfAbsent(criteriaKey, x -> 0.0));
         return searchResults;
     }
 
@@ -97,7 +94,9 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
 
     @Override
     public Matches visitUNF() {
-        throw new UnsupportedOperationException("UNFCriteria should not be present here");
+        return Matches.builder()
+                .probables(Collections.emptyMap())
+                .build();
     }
 
     private void extractValuesForPaths() {
