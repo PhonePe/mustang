@@ -19,6 +19,7 @@ package com.phonepe.growth.mustang.debug;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 
+import com.phonepe.growth.mustang.preoperation.PreOperation;
 import lombok.Builder;
 import lombok.Data;
 
@@ -29,5 +30,6 @@ public class PredicateDebugResult {
     private PredicateType type;
     private String lhs;
     private Object lhsValue;
+    private PreOperation preOperation;
     private Detail detail;
 }
