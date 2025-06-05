@@ -1,5 +1,6 @@
 package com.phonepe.growth.mustang.preoperation;
 
+import com.phonepe.growth.mustang.preoperation.impl.BinaryConversionPreOperation;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -27,6 +28,7 @@ import lombok.Data;
         @JsonSubTypes.Type(name = PreOperationType.MULTIPLCATION_TEXT, value = MultiplicationPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.DIVISION_TEXT, value = DivisionPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.MODULO_TEXT, value = ModuloPreOperation.class),
+        @JsonSubTypes.Type(name = PreOperationType.BINARY_CONVERSION_TEXT, value = BinaryConversionPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.SIZE_TEXT, value = SizePreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.LENGTH_TEXT, value = LengthPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.SUBSTRING_TEXT, value = SubStringPreOperation.class), })
