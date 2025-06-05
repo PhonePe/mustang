@@ -24,7 +24,7 @@ import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.phonepe.growth.mustang.common.RequestContext;
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
@@ -32,6 +32,7 @@ import com.phonepe.growth.mustang.detail.DetailVisitor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -39,6 +40,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class EqualityDetail extends Detail {
     @NotEmpty
+    @Singular
     private final Set<Object> values;
 
     @Builder
@@ -49,11 +51,15 @@ public class EqualityDetail extends Detail {
     }
 
     @Override
-    public boolean validate(RequestContext context, Object lhsValue) {
+    public boolean validate(Object lhsValue) {
         if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
             return values.containsAll(((List<?>) lhsValue));
         }
-        return values.contains(lhsValue);
+        return values.stream()
+                .map(rhsValue -> Utils.compare(lhsValue, rhsValue))
+                .filter(x -> x)
+                .findFirst()
+                .orElse(false);
     }
 
     @Override

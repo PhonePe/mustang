@@ -41,9 +41,12 @@ import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 public class IndexTest {
 
+    private static final IdentityOperation IDENTITY_OPERATION = IdentityOperation.builder()
+            .build();
     private final ObjectMapper mapper = new ObjectMapper();
     private MustangEngine engine;
 
@@ -120,6 +123,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key key = Key.builder()
                 .name("ZZZ")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
@@ -218,6 +222,7 @@ public class IndexTest {
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
@@ -233,6 +238,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key key = Key.builder()
                 .name("$.b")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("B1")
                 .upperBoundScore(0)
@@ -241,13 +247,14 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertEquals("C1", index.getDnfInvertedIndex()
-                .getTable()
-                .get(0)
-                .get(key)
-                .firstEntry()
-                .getValue()
-                .getEId());
+        Assert.assertEquals("C1",
+                index.getDnfInvertedIndex()
+                        .getTable()
+                        .get(0)
+                        .get(key)
+                        .firstEntry()
+                        .getValue()
+                        .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(4,
@@ -257,6 +264,7 @@ public class IndexTest {
                         .size());
         final Key akeyC3 = Key.builder()
                 .name("$.a")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
@@ -274,6 +282,7 @@ public class IndexTest {
                         .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
@@ -295,6 +304,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key aKey = Key.builder()
                 .name("$.a")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .upperBoundScore(0)
@@ -403,6 +413,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
@@ -444,6 +455,7 @@ public class IndexTest {
                 .getIndexGroup("test");
         final Key key = Key.builder()
                 .name("ZZZ")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
@@ -568,6 +580,7 @@ public class IndexTest {
         /* Asserions for keys in k = 0 */
         final Key zKey = Key.builder()
                 .name("ZZZ")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.NONE)
                 .value(0)
                 .upperBoundScore(0)
@@ -583,6 +596,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key key = Key.builder()
                 .name("$.b")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("B2")
                 .upperBoundScore(0)
@@ -591,13 +605,14 @@ public class IndexTest {
                 .getTable()
                 .get(0)
                 .containsKey(key));
-        Assert.assertEquals("C2", index.getCnfInvertedIndex()
-                .getTable()
-                .get(0)
-                .get(key)
-                .firstEntry()
-                .getValue()
-                .getEId());
+        Assert.assertEquals("C2",
+                index.getCnfInvertedIndex()
+                        .getTable()
+                        .get(0)
+                        .get(key)
+                        .firstEntry()
+                        .getValue()
+                        .getEId());
 
         /* Asserions for keys in k = 1 */
         Assert.assertEquals(6,
@@ -607,6 +622,7 @@ public class IndexTest {
                         .size());
         final Key bkey = Key.builder()
                 .name("$.b")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("B1")
                 .upperBoundScore(0)
@@ -624,6 +640,7 @@ public class IndexTest {
                         .size());
         final Key keyK2 = Key.builder()
                 .name("$.a")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("A1")
                 .order(0)
@@ -646,6 +663,7 @@ public class IndexTest {
                 .containsKey(zKey));
         final Key aKey = Key.builder()
                 .name("$.user_id")
+                .preOp(IDENTITY_OPERATION)
                 .caveat(Caveat.EQUALITY)
                 .value("22")
                 .order(1)

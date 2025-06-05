@@ -16,6 +16,12 @@
  */
 package com.phonepe.growth.mustang.predicate.impl;
 
+import java.util.Objects;
+import java.util.Set;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -26,10 +32,9 @@ import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
-import java.util.Objects;
-import java.util.Set;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,23 +46,31 @@ import lombok.ToString;
 public class IncludedPredicate extends Predicate {
     @Valid
     @NotNull
+    private PreOperation preOperation;
+    @Valid
+    @NotNull
     private Detail detail;
 
     @Builder
     @JsonCreator
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
-                             @JsonProperty("weight") Long weight,
-                             @JsonProperty("detail") Detail detail,
-                             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
+            @JsonProperty("weight") Long weight,
+            @JsonProperty("preOperation") PreOperation preOperation,
+            @JsonProperty("detail") Detail detail,
+            @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight));
-        this.detail = Objects.nonNull(detail) ? detail : EqualityDetail.builder()
-                .values(values)
-                .build();
+        this.preOperation = Objects.nonNull(preOperation) ? preOperation
+                : IdentityOperation.builder()
+                        .build();
+        this.detail = Objects.nonNull(detail) ? detail
+                : EqualityDetail.builder()
+                        .values(values)
+                        .build();
     }
 
     @Override
-    public boolean evaluate(final RequestContext context, final Object lhsValue) {
-        return detail.validate(context, lhsValue);
+    public boolean evaluate(final Object lhsValue) {
+        return detail.validate(preOperation.operate(lhsValue));
     }
 
     @Override
@@ -72,9 +85,7 @@ public class IncludedPredicate extends Predicate {
 
     @Override
     public long getScore(final RequestContext context) {
-        return evaluate(context)
-               ? getWeight()
-               : (long) NO_MATCH_SCORE;
+        return evaluate(context) ? getWeight() : (long) NO_MATCH_SCORE;
     }
 
 }

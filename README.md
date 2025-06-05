@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.2.2</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 
@@ -107,6 +107,7 @@ Criteria dnf = DNFCriteria.builder()
                 .conjunction(Conjunction.builder()
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.a")
+				.preOperation(SubStringPreOperation.builder().beginIndex(1).endIndex(2).build()) // OPTIONAL
                                 .detail(EqualityDetail.builder()
                                         .values(Sets.newHashSet("A1", "A2", "A3"))
                                         .build())
@@ -120,6 +121,7 @@ Criteria dnf = DNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
+				.preOperation(ModuloPreOperation.builder().rhs(4).build()) //OPTIONAL
                                 .detail(RangeDetail.builder() // example for less_than
                                         .upperBound(3)
                                         .build())
@@ -155,6 +157,7 @@ Criteria cnf = CNFCriteria.builder()
                                 .build())
                         .predicate(IncludedPredicate.builder()
                                 .lhs("$.x")
+				.preOperation(DivisionPreOperation.builder().rhs(4).build()) // OPTIONAL
                                 .detail(RangeDetail.builder() // Example for lesser_than_equals
                                         .upperBound(7)
                                         .includeUpperBound(true)
