@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.predicate;
 
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
+import com.phonepe.growth.mustang.preoperation.PreOperation;
 import java.util.Objects;
 
 import javax.validation.constraints.NotBlank;
@@ -43,7 +44,7 @@ import lombok.Data;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(name = PredicateType.INCLUDED_TEXT, value = IncludedPredicate.class),
         @JsonSubTypes.Type(name = PredicateType.EXCLUDED_TEXT, value = ExcludedPredicate.class), })
-@JsonPropertyOrder({ "type", "lhs", "detail", "weight" })
+@JsonPropertyOrder({ "type", "lhs", "preOperation", "detail", "weight" })
 public abstract class Predicate {
 
     public static final double NO_MATCH_SCORE = -1.0D;
@@ -67,6 +68,7 @@ public abstract class Predicate {
                 .type(type)
                 .lhs(lhs)
                 .lhsValue(getNodeValue(context.getNode(), lhs))
+                .preOperation(getPreOperation())
                 .detail(getDetail())
                 .build();
     }
@@ -85,6 +87,8 @@ public abstract class Predicate {
     public abstract boolean evaluate(Object lhsValue);
 
     public abstract Detail getDetail();
+
+    public abstract PreOperation getPreOperation();
 
     @JsonIgnore
     public abstract boolean getDefaultResult();
