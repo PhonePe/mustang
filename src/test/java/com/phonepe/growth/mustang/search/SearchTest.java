@@ -6207,8 +6207,76 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
-    
-    
+
+    @Test
+    public void testDNFMultiValuePositiveTestCase1() throws JsonMappingException, JsonProcessingException {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Set.of("A1"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Set.of("B1"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.c.modes[*].type")
+                                        .detail(EqualSetDetail.builder()
+                                                .values(Set.of("C1", "C2", "C3"))
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualSetDetail.builder()
+                                        .values(Set.of("A2"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(SubSetDetail.builder()
+                                        .values(Set.of("B2"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.c.modes[0].type")
+                                        .detail(SuperSetDetail.builder()
+                                                .values(Set.of("C1", "C2", "C3"))
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+
+        String testQuery = """
+                {"a":"A1","b":"B1","c":{"modes":[{"type":"C1","value":"V1"},{"type":"C2","value":"V2"},{"type":"C3","value":"V3"}]}}
+                """;
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.readValue(testQuery, JsonNode.class))
+                        .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
     @Test
     public void testDNFMultiValueSingleEclipsingNeutralised() throws JsonMappingException, JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
