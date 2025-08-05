@@ -34,6 +34,24 @@ public enum Caveat {
             return visitor.visitEquality();
         }
     },
+    SUBSET(Caveat.SUBSET_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitSubSet();
+        }
+    },
+    EQUALSET(Caveat.EQUALSET_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitEqualSet();
+        }
+    },
+    SUPERSET(Caveat.SUPERSET_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitSuperSet();
+        }
+    },
     REGEX(Caveat.REGEX_TEXT) {
         @Override
         public <T> T visit(Visitor<T> visitor) {
@@ -58,6 +76,9 @@ public enum Caveat {
 
     public static final String NONE_TEXT = "TEXT";
     public static final String EQUALITY_TEXT = "EQUALITY";
+    public static final String SUBSET_TEXT = "SUBSET";
+    public static final String EQUALSET_TEXT = "EQUALSET";
+    public static final String SUPERSET_TEXT = "SUEPRSET";
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
     public static final String VERSIONING_TEXT = "VERSIONING";
@@ -69,6 +90,12 @@ public enum Caveat {
         T visitNone();
 
         T visitEquality();
+
+        T visitSubSet();
+
+        T visitEqualSet();
+
+        T visitSuperSet();
 
         T visitRegexMatch();
 

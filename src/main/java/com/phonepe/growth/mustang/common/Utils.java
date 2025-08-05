@@ -45,16 +45,22 @@ public class Utils {
     public static boolean compare(final Object lhsValue, final Object rhsValue) {
         if (Objects.nonNull(lhsValue)) {
             if (List.class.isAssignableFrom(lhsValue.getClass())) {
-                return ((List<?>) lhsValue).contains(rhsValue);
-            } else if (Number.class.isAssignableFrom(lhsValue.getClass())
-                    && Number.class.isAssignableFrom(rhsValue.getClass())) {
-                return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
-            } else if (Boolean.class.isAssignableFrom(lhsValue.getClass())
-                    && Boolean.class.isAssignableFrom(rhsValue.getClass())) {
-                return ((Boolean) lhsValue).booleanValue() == ((Boolean) rhsValue).booleanValue();
+                return compareNatively(((List<?>) lhsValue).get(0), rhsValue);
             }
+            return compareNatively(lhsValue, rhsValue);
         }
         return rhsValue.equals(lhsValue);
+    }
+
+    private static boolean compareNatively(final Object lhsValue, final Object rhsValue) {
+        if (Number.class.isAssignableFrom(lhsValue.getClass()) && Number.class.isAssignableFrom(rhsValue.getClass())) {
+            return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
+        } else if (Boolean.class.isAssignableFrom(lhsValue.getClass())
+                && Boolean.class.isAssignableFrom(rhsValue.getClass())) {
+            return ((Boolean) lhsValue).booleanValue() == ((Boolean) rhsValue).booleanValue();
+        }
+        return rhsValue.equals(lhsValue);
+
     }
 
 }

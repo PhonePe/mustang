@@ -54,9 +54,12 @@ import com.phonepe.growth.mustang.criteria.impl.UNFCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.TautologicalCriteria;
 import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.CheckType;
+import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
+import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
+import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 import com.phonepe.growth.mustang.exception.ErrorCode;
 import com.phonepe.growth.mustang.exception.MustangException;
@@ -5734,7 +5737,7 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(SuperSetDetail.builder()
                                                 .values(Set.of("D1"))
                                                 .build())
                                         .weight(1L)
@@ -5799,7 +5802,7 @@ public class SearchTest {
                                         .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.d")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(EqualSetDetail.builder()
                                                 .values(Set.of("D1", "D3"))
                                                 .build())
                                         .weight(1L)
@@ -5812,7 +5815,7 @@ public class SearchTest {
         testQuery.put("b", "B3");
         testQuery.put("n", 0.000000000000003);
         testQuery.put("p", true);
-        testQuery.put("d", List.of("D2", "D1"));
+        testQuery.put("d", List.of("D3", "D1"));
 
         engine.add("test", c11);
         final Set<String> searchResults = engine.search("test",
@@ -6034,7 +6037,7 @@ public class SearchTest {
                                 .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(SuperSetDetail.builder()
                                                 .values(Set.of("C1", "C2", "C3"))
                                                 .build())
                                         .build()))
@@ -6051,7 +6054,7 @@ public class SearchTest {
                                 .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(SubSetDetail.builder()
                                                 .values(Set.of("C1", "C2", "C3"))
                                                 .build())
                                         .build()))
@@ -6069,8 +6072,7 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.readValue(testQuery, JsonNode.class))
                         .build());
-        assertThat(searchResults, hasSize(1));
-        assertThat(searchResults, contains("C1"));
+        assertThat(searchResults, empty());
 
         engine.ratify("test");
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
@@ -6156,7 +6158,7 @@ public class SearchTest {
                                 .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(EqualSetDetail.builder()
                                                 .values(Set.of("C1", "C2", "C3"))
                                                 .build())
                                         .build()))
@@ -6179,7 +6181,7 @@ public class SearchTest {
                                 .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
-                                        .detail(EqualityDetail.builder()
+                                        .detail(SubSetDetail.builder()
                                                 .values(Set.of("C1", "C2", "C3"))
                                                 .build())
                                         .build()))
