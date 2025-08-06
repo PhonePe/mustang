@@ -81,8 +81,11 @@ Further, Mustang allows for logical grouping of `Criteria`(s) when indexing thro
 Below table summarizes `Caveat` support across data types -
 
 | `Caveat `    | Data Types Supported      |
-| :--------   | :------------------------ |
+| :--------    | :------------------------ |
 | `EQUALITY`   | String, Number, Boolean   |
+| `SUBSET`     | Collections - Lists, Sets |
+| `SUPERSET`   | Collections - Lists, Sets |
+| `EQUALSET`   | Collections - Lists, Sets |     
 | `REGEX`      | String                    |
 | `RANGE`      | Number                    |
 | `VERSIONING` | String                    |
