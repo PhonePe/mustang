@@ -46,7 +46,7 @@ public class Utils {
 
     public static boolean compare(final Object lhsValue, final Object rhsValue) {
         if (Objects.nonNull(lhsValue)) {
-            if (List.class.isAssignableFrom(lhsValue.getClass())) {
+            if (isCollection(lhsValue)) {
                 return compareNatively(((List<?>) lhsValue).get(0), rhsValue);
             }
             return compareNatively(lhsValue, rhsValue);
