@@ -16,9 +16,7 @@
  */
 package com.phonepe.growth.mustang.search.matcher;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.maven.artifact.versioning.ComparableVersion;
 
@@ -50,27 +48,17 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
 
     @Override
     public Boolean visitSubSet() {
-        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
-            return ((Set<?>) key.getValue()).containsAll((List<?>) lhsValue);
-        }
-        return false;
+        return Utils.isSubSet(lhsValue, key.getValue());
     }
 
     @Override
     public Boolean visitEqualSet() {
-        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
-            return ((Set<?>) key.getValue()).containsAll((List<?>) lhsValue)
-                    && ((List<?>) lhsValue).containsAll((Set<?>) key.getValue());
-        }
-        return false;
+        return Utils.areEqualSets(lhsValue, key.getValue());
     }
 
     @Override
     public Boolean visitSuperSet() {
-        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
-            return ((List<?>) lhsValue).containsAll((Set<?>) key.getValue());
-        }
-        return false;
+        return Utils.isSuperSet(lhsValue, key.getValue());
     }
 
     @Override

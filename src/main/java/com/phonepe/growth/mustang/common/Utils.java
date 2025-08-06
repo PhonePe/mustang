@@ -23,6 +23,7 @@ import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.experimental.UtilityClass;
 
@@ -61,6 +62,28 @@ public class Utils {
         }
         return rhsValue.equals(lhsValue);
 
+    }
+
+    public static boolean isSubSet(Object lhsValue, Object rhsValue) {
+        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
+            return ((Set<?>) rhsValue).containsAll((List<?>) lhsValue);
+        }
+        return false;
+    }
+
+    public static boolean areEqualSets(Object lhsValue, Object rhsValue) {
+        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
+            return ((Set<?>) rhsValue).containsAll((List<?>) lhsValue)
+                    && ((List<?>) lhsValue).containsAll((Set<?>) rhsValue);
+        }
+        return false;
+    }
+
+    public static boolean isSuperSet(Object lhsValue, Object rhsValue) {
+        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
+            return ((List<?>) lhsValue).containsAll((Set<?>) rhsValue);
+        }
+        return false;
     }
 
 }

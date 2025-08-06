@@ -16,14 +16,13 @@
  */
 package com.phonepe.growth.mustang.detail.impl;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
@@ -51,10 +50,7 @@ public class EqualSetDetail extends Detail {
 
     @Override
     public boolean validate(Object lhsValue) {
-        if (Objects.nonNull(lhsValue) && List.class.isAssignableFrom(lhsValue.getClass())) {
-            return ((List<?>) lhsValue).containsAll(values) && values.containsAll((List<?>) lhsValue);
-        }
-        return false;
+        return Utils.areEqualSets(lhsValue, values);
     }
 
     @Override
