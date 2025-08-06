@@ -6307,7 +6307,7 @@ public class SearchTest {
                 .disjunction(Disjunction.builder()
                         .predicates(List.of(IncludedPredicate.builder()
                                 .lhs("$.a")
-                                .detail(EqualSetDetail.builder()
+                                .detail(SuperSetDetail.builder()
                                         .values(Set.of("A2"))
                                         .build())
                                 .build(),
