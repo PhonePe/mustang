@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import com.phonepe.growth.mustang.detail.DetailVisitor;
+import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
+import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
+import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
@@ -30,6 +33,21 @@ public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
     @Override
     public Set<Object> visit(EqualityDetail detail) {
         return detail.getValues();
+    }
+
+    @Override
+    public Set<Object> visit(SubSetDetail detail) {
+        return Collections.singleton(detail.getValues());
+    }
+
+    @Override
+    public Set<Object> visit(EqualSetDetail detail) {
+        return Collections.singleton(detail.getValues());
+    }
+
+    @Override
+    public Set<Object> visit(SuperSetDetail detail) {
+        return Collections.singleton(detail.getValues());
     }
 
     @Override

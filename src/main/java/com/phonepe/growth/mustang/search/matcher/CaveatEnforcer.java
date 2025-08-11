@@ -47,6 +47,21 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     }
 
     @Override
+    public Boolean visitSubSet() {
+        return Utils.isSubSet(lhsValue, key.getValue());
+    }
+
+    @Override
+    public Boolean visitEqualSet() {
+        return Utils.areEqualSets(lhsValue, key.getValue());
+    }
+
+    @Override
+    public Boolean visitSuperSet() {
+        return Utils.isSuperSet(lhsValue, key.getValue());
+    }
+
+    @Override
     public Boolean visitRegexMatch() {
         if (Objects.nonNull(lhsValue) && String.class.isAssignableFrom(lhsValue.getClass())) {
             return lhsValue.toString()

@@ -21,8 +21,10 @@ import com.jayway.jsonpath.Option;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import lombok.experimental.UtilityClass;
 
@@ -44,17 +46,56 @@ public class Utils {
 
     public static boolean compare(final Object lhsValue, final Object rhsValue) {
         if (Objects.nonNull(lhsValue)) {
-            if (List.class.isAssignableFrom(lhsValue.getClass())) {
-                return ((List<?>) lhsValue).contains(rhsValue);
-            } else if (Number.class.isAssignableFrom(lhsValue.getClass())
-                    && Number.class.isAssignableFrom(rhsValue.getClass())) {
-                return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
-            } else if (Boolean.class.isAssignableFrom(lhsValue.getClass())
-                    && Boolean.class.isAssignableFrom(rhsValue.getClass())) {
-                return ((Boolean) lhsValue).booleanValue() == ((Boolean) rhsValue).booleanValue();
+            if (isCollection(lhsValue)) {
+                return compareNatively(((List<?>) lhsValue).get(0), rhsValue);
             }
+            return compareNatively(lhsValue, rhsValue);
         }
         return rhsValue.equals(lhsValue);
+    }
+
+    private static boolean compareNatively(final Object lhsValue, final Object rhsValue) {
+        if (isNumber(lhsValue) && isNumber(rhsValue)) {
+            return ((Number) lhsValue).doubleValue() == ((Number) rhsValue).doubleValue();
+        } else if (isBoolean(lhsValue) && isBoolean(rhsValue)) {
+            return ((Boolean) lhsValue).booleanValue() == ((Boolean) rhsValue).booleanValue();
+        }
+        return rhsValue.equals(lhsValue);
+
+    }
+
+    public static boolean isSubSet(Object lhsValue, Object rhsValue) {
+        if (isCollection(lhsValue)) {
+            return ((Set<?>) rhsValue).containsAll((Collection<?>) lhsValue);
+        }
+        return false;
+    }
+
+    public static boolean areEqualSets(Object lhsValue, Object rhsValue) {
+        if (isCollection(lhsValue)) {
+            return ((Set<?>) rhsValue).containsAll((Collection<?>) lhsValue)
+                    && ((Collection<?>) lhsValue).containsAll((Set<?>) rhsValue);
+        }
+        return false;
+    }
+
+    public static boolean isSuperSet(Object lhsValue, Object rhsValue) {
+        if (isCollection(lhsValue)) {
+            return ((Collection<?>) lhsValue).containsAll((Set<?>) rhsValue);
+        }
+        return false;
+    }
+
+    private static boolean isCollection(Object value) {
+        return Objects.nonNull(value) && Collection.class.isAssignableFrom(value.getClass());
+    }
+
+    private static boolean isBoolean(Object value) {
+        return Boolean.class.isAssignableFrom(value.getClass());
+    }
+
+    private static boolean isNumber(Object value) {
+        return Number.class.isAssignableFrom(value.getClass());
     }
 
 }

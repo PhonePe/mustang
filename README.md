@@ -35,7 +35,7 @@ on the number of advertisements that can be shown on a given page and only the â
 <dependency>
   <groupId>com.phonepe.growth</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.4.0</version>
+  <version>2.5.0</version>
 </dependency>
 ```
 
@@ -81,8 +81,11 @@ Further, Mustang allows for logical grouping of `Criteria`(s) when indexing thro
 Below table summarizes `Caveat` support across data types -
 
 | `Caveat `    | Data Types Supported      |
-| :--------   | :------------------------ |
+| :--------    | :------------------------ |
 | `EQUALITY`   | String, Number, Boolean   |
+| `SUBSET`     | Collections - Lists, Sets |
+| `SUPERSET`   | Collections - Lists, Sets |
+| `EQUALSET`   | Collections - Lists, Sets |     
 | `REGEX`      | String                    |
 | `RANGE`      | Number                    |
 | `VERSIONING` | String                    |
