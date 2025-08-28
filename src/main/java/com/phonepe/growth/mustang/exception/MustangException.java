@@ -37,4 +37,17 @@ public class MustangException extends RuntimeException {
         super(cause);
         this.errorCode = errorCode;
     }
+
+    public static MustangException propagate(final ErrorCode errorCode, final Throwable throwable) {
+        if (throwable instanceof MustangException) {
+            return (MustangException) throwable;
+        } else if (throwable.getCause() instanceof MustangException) {
+            return (MustangException) throwable.getCause();
+        }
+        return new MustangException(errorCode, throwable);
+    }
+
+    public static MustangException propagate(final Throwable throwable) {
+        return propagate(ErrorCode.INTERNAL_ERROR, throwable);
+    }
 }
