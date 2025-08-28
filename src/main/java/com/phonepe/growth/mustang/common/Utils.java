@@ -16,15 +16,17 @@
  */
 package com.phonepe.growth.mustang.common;
 
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.Option;
-import com.phonepe.growth.mustang.preoperation.PreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.phonepe.growth.mustang.exception.MustangException;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import lombok.experimental.UtilityClass;
 
@@ -42,6 +44,17 @@ public class Utils {
             return 1L;
         }
         return weight;
+    }
+
+    public static <T> T executeSecurely(final ReentrantReadWriteLock.WriteLock lock, SecureExecution<T> block) {
+        try {
+            lock.lock();
+            return block.execute();
+        } catch (Exception exception) {
+            throw MustangException.propagate(exception);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public static boolean compare(final Object lhsValue, final Object rhsValue) {
