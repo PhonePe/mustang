@@ -59,36 +59,36 @@ public class MustangEngine {
             .build();
     private final AsyncProcessor processor = AsyncProcessor.getInstance();
 
-    public synchronized void importIndexGroup(final String indexname, final String info) {
-        indexingFacde.importIndexGroup(indexname, info, mapper);
-    }
-
-    public synchronized String exportIndexGroup(final String indexName) {
-        return indexingFacde.exportIndexGroup(indexName, mapper);
-    }
-
-    public synchronized String snapshot(final String indexName) {
-        return indexingFacde.snapshot(indexName, mapper);
-    }
-
-    public synchronized void add(final String indexName, final Criteria criteria) {
+    public void add(final String indexName, final Criteria criteria) {
         indexingFacde.add(indexName, criteria);
     }
 
-    public synchronized void add(final String indexName, final List<Criteria> criterias) {
+    public void add(final String indexName, final List<Criteria> criterias) {
         indexingFacde.add(indexName, criterias);
     }
 
-    public synchronized void update(final String indexName, final Criteria criteria) {
+    public void update(final String indexName, final Criteria criteria) {
         indexingFacde.update(indexName, criteria);
     }
 
-    public synchronized void delete(final String indexName, final Criteria criteria) {
+    public void delete(final String indexName, final Criteria criteria) {
         indexingFacde.delete(indexName, criteria);
     }
 
-    public synchronized void replaceIndex(final String oldIndex, final String newIndex) {
+    public void replaceIndex(final String oldIndex, final String newIndex) {
         indexingFacde.replace(oldIndex, newIndex);
+    }
+
+    public void importIndexGroup(final String indexname, final String info) {
+        indexingFacde.importIndexGroup(indexname, info, mapper);
+    }
+
+    public String exportIndexGroup(final String indexName) {
+        return indexingFacde.exportIndexGroup(indexName, mapper);
+    }
+
+    public String snapshot(final String indexName) {
+        return indexingFacde.snapshot(indexName, mapper);
     }
 
     public Set<String> search(final String indexName, final RequestContext context) {
