@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.common;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -33,11 +34,17 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Utils {
 
+    public static final Set<Object> MARKER = Collections.singleton("-");
+
     public static final PreOperation DEFAULT_PREOPERATION = IdentityOperation.builder()
             .build();
 
     public static final Configuration JSONPATH_CONFIGURATION = Configuration.defaultConfiguration()
             .addOptions(Option.SUPPRESS_EXCEPTIONS);
+
+    public static Boolean checkExistence(Object lhsValue) {
+        return Objects.nonNull(lhsValue);
+    }
 
     public Long getRationalWeight(final Long weight) {
         if (Objects.isNull(weight) || weight == 0) {

@@ -28,6 +28,20 @@ public enum Caveat {
             return visitor.visitNone();
         }
     },
+    EXISTENCE(Caveat.EXISTENCE_TEXT) {
+
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitExistence();
+        }
+    },
+    NON_EXISTENCE(Caveat.NON_EXISTENCE_TEXT) {
+
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitNonExistence();
+        }
+    },
     EQUALITY(Caveat.EQUALITY_TEXT) {
         @Override
         public <T> T visit(Visitor<T> visitor) {
@@ -75,6 +89,8 @@ public enum Caveat {
     private final String value;
 
     public static final String NONE_TEXT = "TEXT";
+    public static final String EXISTENCE_TEXT = "EXISTENCE";
+    public static final String NON_EXISTENCE_TEXT = "NON_EXISTENCE";
     public static final String EQUALITY_TEXT = "EQUALITY";
     public static final String SUBSET_TEXT = "SUBSET";
     public static final String EQUALSET_TEXT = "EQUALSET";
@@ -88,6 +104,10 @@ public enum Caveat {
     public interface Visitor<T> {
 
         T visitNone();
+
+        T visitExistence();
+
+        T visitNonExistence();
 
         T visitEquality();
 

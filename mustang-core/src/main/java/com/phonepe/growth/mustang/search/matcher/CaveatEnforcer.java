@@ -42,6 +42,16 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     }
 
     @Override
+    public Boolean visitExistence() {
+        return Utils.checkExistence(lhsValue);
+    }
+
+    @Override
+    public Boolean visitNonExistence() {
+        return !Utils.checkExistence(lhsValue);
+    }
+
+    @Override
     public Boolean visitEquality() {
         return Utils.compare(lhsValue, key.getValue());
     }

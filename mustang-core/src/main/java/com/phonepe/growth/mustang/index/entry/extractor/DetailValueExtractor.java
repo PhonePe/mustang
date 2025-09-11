@@ -19,16 +19,29 @@ package com.phonepe.growth.mustang.index.entry.extractor;
 import java.util.Collections;
 import java.util.Set;
 
+import com.phonepe.growth.mustang.common.Utils;
 import com.phonepe.growth.mustang.detail.DetailVisitor;
 import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
 import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.growth.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 
 public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
+
+    @Override
+    public Set<Object> visit(ExistenceDetail detail) {
+        return Utils.MARKER;
+    }
+
+    @Override
+    public Set<Object> visit(NonExistenceDetail detail) {
+        return Utils.MARKER;
+    }
 
     @Override
     public Set<Object> visit(EqualityDetail detail) {

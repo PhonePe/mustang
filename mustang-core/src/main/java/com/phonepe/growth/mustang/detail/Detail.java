@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.growth.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
@@ -35,7 +37,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "caveat")
-@JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = EqualityDetail.class),
+@JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = ExistenceDetail.class),
+        @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = NonExistenceDetail.class),
+        @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = EqualityDetail.class),
         @JsonSubTypes.Type(name = Caveat.SUBSET_TEXT, value = SubSetDetail.class),
         @JsonSubTypes.Type(name = Caveat.EQUALSET_TEXT, value = EqualSetDetail.class),
         @JsonSubTypes.Type(name = Caveat.SUPERSET_TEXT, value = SuperSetDetail.class),

@@ -16,15 +16,21 @@
  */
 package com.phonepe.growth.mustang.detail;
 
-import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
-import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.growth.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
+import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
+import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 
 public interface DetailVisitor<T> {
+
+    T visit(ExistenceDetail detail);
+
+    T visit(NonExistenceDetail detail);
 
     T visit(EqualityDetail detail);
 
