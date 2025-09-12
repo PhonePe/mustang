@@ -56,6 +56,8 @@ import com.phonepe.growth.mustang.criteria.tautology.UNFTautologicalCriteria;
 import com.phonepe.growth.mustang.detail.impl.CheckType;
 import com.phonepe.growth.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.growth.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
@@ -4270,6 +4272,67 @@ public class SearchTest {
     }
 
     @Test
+    public void testDNFPositiveExistenceMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(ExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(ExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(NonExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .detail(ExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        assertThat(searchResults, hasSize(2));
+        assertThat(searchResults, contains("C1", "C2"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        System.out.println(ratificationResult.getAnamolyDetails());
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
     public void testDNFPositiveRangeCheck() throws Exception {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -6079,8 +6142,7 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
-    
-    
+
     @Test
     public void testDNFMultiValueSingleEclipsing1() throws JsonMappingException, JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
@@ -6137,8 +6199,7 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
-    
-    
+
     @Test
     public void testDNFMultiValueMultiEclipsing() throws JsonMappingException, JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
@@ -6151,11 +6212,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualSetDetail.builder()
@@ -6174,11 +6235,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(SubSetDetail.builder()
@@ -6220,11 +6281,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualSetDetail.builder()
@@ -6243,11 +6304,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(SubSetDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(SubSetDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[0].type")
                                         .detail(SuperSetDetail.builder()
@@ -6289,11 +6350,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualSetDetail.builder()
@@ -6312,11 +6373,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(SubSetDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(SubSetDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[0].type")
                                         .detail(SuperSetDetail.builder()
@@ -6345,7 +6406,7 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
-    
+
     @Test
     public void testCNFMultiValueNegativeTestCase() throws JsonMappingException, JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
@@ -6358,11 +6419,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualSetDetail.builder()
@@ -6381,11 +6442,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(SubSetDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(SubSetDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[0].type")
                                         .detail(SuperSetDetail.builder()
@@ -6426,11 +6487,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualityDetail.builder()
@@ -6449,11 +6510,11 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualityDetail.builder()
@@ -6482,8 +6543,7 @@ public class SearchTest {
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
-    
-    
+
     @Test
     public void testDNFMultiValueMultiEclipsingNeutralised() throws JsonMappingException, JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
@@ -6496,17 +6556,17 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.d")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("D1"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D1"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualityDetail.builder()
@@ -6525,17 +6585,17 @@ public class SearchTest {
                                         .build())
                                 .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("B2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.b")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("B2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
-                                .lhs("$.d")
-                                .detail(EqualityDetail.builder()
-                                        .values(Set.of("D2"))
-                                        .build())
-                                .build(),
+                                        .lhs("$.d")
+                                        .detail(EqualityDetail.builder()
+                                                .values(Set.of("D2"))
+                                                .build())
+                                        .build(),
                                 IncludedPredicate.builder()
                                         .lhs("$.c.modes[*].type")
                                         .detail(EqualityDetail.builder()

@@ -42,8 +42,8 @@ public class Utils {
     public static final Configuration JSONPATH_CONFIGURATION = Configuration.defaultConfiguration()
             .addOptions(Option.SUPPRESS_EXCEPTIONS);
 
-    public static Boolean checkExistence(Object lhsValue) {
-        return Objects.nonNull(lhsValue);
+    public static boolean checkExistence(Object value) {
+        return Objects.nonNull(value);
     }
 
     public Long getRationalWeight(final Long weight) {

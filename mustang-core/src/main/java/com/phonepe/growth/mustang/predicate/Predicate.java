@@ -18,9 +18,6 @@ package com.phonepe.growth.mustang.predicate;
 
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
-import com.phonepe.growth.mustang.preoperation.PreOperation;
-import java.util.Objects;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +31,7 @@ import com.phonepe.growth.mustang.debug.PredicateDebugResult;
 import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import io.dropwizard.validation.ValidationMethod;
 import lombok.AllArgsConstructor;
@@ -55,11 +53,7 @@ public abstract class Predicate {
     private Long weight;
 
     public boolean evaluate(final RequestContext context) {
-        final Object value = getNodeValue(context.getNode(), lhs);
-        if (Objects.nonNull(value)) {
-            return evaluate(value);
-        }
-        return getDefaultResult();
+        return evaluate(getNodeValue(context.getNode(), lhs));
     }
 
     public PredicateDebugResult debug(final RequestContext context) {

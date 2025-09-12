@@ -56,7 +56,7 @@ public class RangeDetail extends Detail {
     @Override
     public boolean validate(Object lhsValue) {
         boolean result = false;
-        if (Number.class.isAssignableFrom(lhsValue.getClass())) {
+        if (Objects.nonNull(lhsValue) && Number.class.isAssignableFrom(lhsValue.getClass())) {
             final double numericalValue = ((Number) lhsValue).doubleValue();
             result = includeLowerBound ? (lowerBound.doubleValue() <= numericalValue)
                     : (lowerBound.doubleValue() < numericalValue);
