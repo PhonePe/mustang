@@ -84,9 +84,6 @@ public abstract class Predicate {
 
     public abstract PreOperation getPreOperation();
 
-    @JsonIgnore
-    public abstract boolean getDefaultResult();
-
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 
     public abstract long getScore(RequestContext context);

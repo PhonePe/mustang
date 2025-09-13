@@ -74,11 +74,6 @@ public class ExcludedPredicate extends Predicate {
     }
 
     @Override
-    public boolean getDefaultResult() {
-        return true;
-    }
-
-    @Override
     public <T> T accept(PredicateVisitor<T> visitor) {
         return visitor.visit(this);
     }
