@@ -1,5 +1,7 @@
 package com.phonepe.growth.mustang.preoperation;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,9 +15,10 @@ import com.phonepe.growth.mustang.preoperation.impl.MultiplicationPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SizePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubStringPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubtractionPreOperation;
-import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @AllArgsConstructor
@@ -31,6 +34,7 @@ import lombok.Data;
         @JsonSubTypes.Type(name = PreOperationType.LENGTH_TEXT, value = LengthPreOperation.class),
         @JsonSubTypes.Type(name = PreOperationType.SUBSTRING_TEXT, value = SubStringPreOperation.class), })
 @JsonPropertyOrder({ "type" })
+@EqualsAndHashCode(of = { "type" })
 public abstract class PreOperation {
     @NotNull
     private final PreOperationType type;

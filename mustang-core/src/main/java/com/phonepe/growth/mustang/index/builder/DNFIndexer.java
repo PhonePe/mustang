@@ -111,7 +111,7 @@ public class DNFIndexer {
                             // ZERO size handling
                             final Key key = Key.builder()
                                     .name(ZERO_SIZE_CONJUNCTION_ENTRY_KEYNAME)
-                                    .preOp(Utils.DEFAULT_PREOPERATION)
+                                    .preOps(Utils.DEFAULT_PREOPERATION)
                                     .caveat(Caveat.NONE)
                                     .value(0)
                                     .upperBoundScore(0)

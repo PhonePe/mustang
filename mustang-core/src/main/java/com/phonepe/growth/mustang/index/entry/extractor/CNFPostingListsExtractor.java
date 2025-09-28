@@ -29,6 +29,7 @@ import com.phonepe.growth.mustang.preoperation.PreOperation;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -57,7 +58,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     public Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> visit(IncludedPredicate predicate) {
         return extractPostingLists(predicate.getType(),
                 predicate.getLhs(),
-                predicate.getPreOperation(),
+                predicate.getPreOperations(),
                 predicate.getDetail());
     }
 
@@ -65,13 +66,13 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     public Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
         return extractPostingLists(predicate.getType(),
                 predicate.getLhs(),
-                predicate.getPreOperation(),
+                predicate.getPreOperations(),
                 predicate.getDetail());
     }
 
     private Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> extractPostingLists(final PredicateType pType,
             final String lhs,
-            final PreOperation preOperation,
+            final List<PreOperation> preOperations,
             final Detail detail) {
 
         final DisjunctionPostingEntry postingEntry = DisjunctionPostingEntry.builder()
@@ -99,7 +100,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                     if (keys.isEmpty()) {
                         return Key.builder()
                                 .name(lhs)
-                                .preOp(preOperation)
+                                .preOps(preOperations)
                                 .caveat(detail.getCaveat())
                                 .value(value)
                                 .order(0)
@@ -117,7 +118,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                             .findFirst()
                             .orElse(Key.builder()
                                     .name(lhs)
-                                    .preOp(preOperation)
+                                    .preOps(preOperations)
                                     .caveat(detail.getCaveat())
                                     .value(value)
                                     .order(counter.get())
@@ -126,7 +127,7 @@ public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
                 .map(key -> {
                     final Key baseKey = Key.builder()
                             .name(key.getName())
-                            .preOp(preOperation)
+                            .preOps(preOperations)
                             .caveat(detail.getCaveat())
                             .value(key.getValue())
                             .build();

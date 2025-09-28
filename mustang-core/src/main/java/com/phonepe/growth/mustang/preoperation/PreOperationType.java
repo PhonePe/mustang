@@ -18,7 +18,10 @@ public enum PreOperationType {
     SIZE(PreOperationType.SIZE_TEXT),
 
     LENGTH(PreOperationType.LENGTH_TEXT),
-    SUBSTRING(PreOperationType.SUBSTRING_TEXT);
+    SUBSTRING(PreOperationType.SUBSTRING_TEXT),
+
+    TO_DATETIME(PreOperationType.TO_DATETIME_TEXT),
+    FROM_DATETIME(PreOperationType.FROM_DATETIME_TEXT);
 
     @Getter
     private String value;
@@ -33,5 +36,7 @@ public enum PreOperationType {
     public static final String SIZE_TEXT = "SIZE";
     public static final String LENGTH_TEXT = "LENGTH";
     public static final String SUBSTRING_TEXT = "SUBSTRING";
+    public static final String TO_DATETIME_TEXT = "TO_DATETIME";
+    public static final String FROM_DATETIME_TEXT = "FROM_DATETIME";
 
 }

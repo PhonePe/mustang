@@ -36,8 +36,8 @@ public class Utils {
 
     public static final Set<Object> MARKER = Collections.singleton("-");
 
-    public static final PreOperation DEFAULT_PREOPERATION = IdentityOperation.builder()
-            .build();
+    public static final List<PreOperation> DEFAULT_PREOPERATION = List.of(IdentityOperation.builder()
+            .build());
 
     public static final Configuration JSONPATH_CONFIGURATION = Configuration.defaultConfiguration()
             .addOptions(Option.SUPPRESS_EXCEPTIONS);

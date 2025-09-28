@@ -17,6 +17,7 @@
 package com.phonepe.growth.mustang.index.entry.extractor;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -52,7 +53,7 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(IncludedPredicate predicate) {
         return extractPostingLists(predicate.getType(),
                 predicate.getLhs(),
-                predicate.getPreOperation(),
+                predicate.getPreOperations(),
                 predicate.getDetail());
     }
 
@@ -60,20 +61,20 @@ public class DNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeM
     public Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> visit(ExcludedPredicate predicate) {
         return extractPostingLists(predicate.getType(),
                 predicate.getLhs(),
-                predicate.getPreOperation(),
+                predicate.getPreOperations(),
                 predicate.getDetail());
     }
 
     private Map<Key, TreeMap<Integer, ConjunctionPostingEntry>> extractPostingLists(final PredicateType pType,
             final String lhs,
-            final PreOperation preOperation,
+            final List<PreOperation> preOperations,
             final Detail detail) {
         final Set<Object> values = detail.accept(new DetailValueExtractor());
         return values.stream()
                 .map(value -> {
                     final Key key = Key.builder()
                             .name(lhs)
-                            .preOp(preOperation)
+                            .preOps(preOperations)
                             .caveat(detail.getCaveat())
                             .value(value)
                             .build();

@@ -56,12 +56,12 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             indexGroup.getTautologicalCriterias()
                     .put(dnf.getId(), dnf);
         } else {
-            final DNFIndexer dnfIndexer = DNFIndexer.builder()
+            DNFIndexer.builder()
                     .criteria(dnf)
                     .indexGroup(indexGroup)
                     .operation(operation)
-                    .build();
-            dnfIndexer.index();
+                    .build()
+                    .index();
         }
         return null;
     }
@@ -73,38 +73,38 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
             indexGroup.getTautologicalCriterias()
                     .put(cnf.getId(), cnf);
         } else {
-            final CNFIndexer cnfIndexer = CNFIndexer.builder()
+            CNFIndexer.builder()
                     .criteria(cnf)
                     .indexGroup(indexGroup)
                     .operation(operation)
-                    .build();
-            cnfIndexer.index();
+                    .build()
+                    .index();
         }
         return null;
     }
 
     @Override
     public Void visit(UNFCriteria unf) {
-        Criteria normalizedCriteria = CriteriaUtils.getNormalizedCriteria(unf);
-        if (normalizedCriteria instanceof CNFCriteria){
+        final Criteria normalizedCriteria = CriteriaUtils.getNormalizedCriteria(unf);
+        if (normalizedCriteria instanceof CNFCriteria) {
             return this.visit((CNFCriteria) normalizedCriteria);
-        }else if (normalizedCriteria instanceof DNFCriteria){
+        } else if (normalizedCriteria instanceof DNFCriteria) {
             return this.visit((DNFCriteria) normalizedCriteria);
-        }else {
-            throw new AssertionError("Should never happen");
         }
+        throw new AssertionError("Should never happen");
     }
 
     public static <T, S> Map<T, TreeMap<Integer, S>> compactPostingLists(List<Map<T, TreeMap<Integer, S>>> maps) {
         final List<Map.Entry<T, TreeMap<Integer, S>>> tempResult = maps.stream()
                 .collect(ArrayList::new, (set, map) -> set.addAll(map.entrySet()), (set1, set2) -> set1.addAll(set2));
         return tempResult.stream()
-                .collect(Collectors.groupingBy(Map.Entry::getKey, LinkedHashMap::new,
-                    Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
-                        final TreeMap<Integer, S> combined = new TreeMap<>(s1);
-                        combined.putAll(s2);
-                        return combined;
-                    }))));
+                .collect(Collectors.groupingBy(Map.Entry::getKey,
+                        LinkedHashMap::new,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.reducing(new TreeMap<>(), (s1, s2) -> {
+                            final TreeMap<Integer, S> combined = new TreeMap<>(s1);
+                            combined.putAll(s2);
+                            return combined;
+                        }))));
     }
 
 }

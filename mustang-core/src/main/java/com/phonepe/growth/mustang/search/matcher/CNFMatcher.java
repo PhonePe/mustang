@@ -22,6 +22,7 @@ import com.phonepe.growth.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.growth.mustang.predicate.PredicateType;
+import com.phonepe.growth.mustang.preoperation.ChainOperator;
 import com.phonepe.growth.mustang.search.Query;
 import java.util.Arrays;
 import java.util.Collections;
@@ -174,8 +175,7 @@ public class CNFMatcher {
                 .stream()
                 .filter(key -> key.getCaveat()
                         .visit(new CaveatEnforcer(key,
-                                key.getPreOp()
-                                        .operate(pathValues.get(key.getName())))));
+                                ChainOperator.operate(key.getPreOps(), pathValues.get(key.getName())))));
     }
 
     private void initializeCurrentEntriesCNF(

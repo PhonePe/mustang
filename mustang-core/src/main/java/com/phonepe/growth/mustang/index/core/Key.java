@@ -16,9 +16,10 @@
  */
 package com.phonepe.growth.mustang.index.core;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
@@ -31,14 +32,14 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@EqualsAndHashCode(of = { "name", "preOp", "caveat", "value", "order" })
+@EqualsAndHashCode(of = { "name", "preOps", "caveat", "value", "order" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class Key {
     @NotBlank
     private String name;
-    @NotBlank
-    private PreOperation preOp;
+    @NotNull
+    private List<PreOperation> preOps;
     @NotNull
     private Caveat caveat;
     @NotNull

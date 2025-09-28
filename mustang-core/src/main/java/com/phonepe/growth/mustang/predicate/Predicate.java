@@ -18,6 +18,8 @@ package com.phonepe.growth.mustang.predicate;
 
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -62,7 +64,7 @@ public abstract class Predicate {
                 .type(type)
                 .lhs(lhs)
                 .lhsValue(getNodeValue(context.getNode(), lhs))
-                .preOperation(getPreOperation())
+                .preOperations(getPreOperations())
                 .detail(getDetail())
                 .build();
     }
@@ -82,7 +84,7 @@ public abstract class Predicate {
 
     public abstract Detail getDetail();
 
-    public abstract PreOperation getPreOperation();
+    public abstract List<PreOperation> getPreOperations();
 
     public abstract <T> T accept(PredicateVisitor<T> visitor);
 

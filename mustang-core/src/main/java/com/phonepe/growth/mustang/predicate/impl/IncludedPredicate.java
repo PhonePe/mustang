@@ -16,6 +16,7 @@
  */
 package com.phonepe.growth.mustang.predicate.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,12 +33,14 @@ import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
 import com.phonepe.growth.mustang.predicate.Predicate;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
+import com.phonepe.growth.mustang.preoperation.ChainOperator;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 @Data
@@ -45,8 +48,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class IncludedPredicate extends Predicate {
     @Valid
-    @NotNull
-    private PreOperation preOperation;
+    @Singular
+    private List<PreOperation> preOperations;
     @Valid
     @NotNull
     private Detail detail;
@@ -56,12 +59,14 @@ public class IncludedPredicate extends Predicate {
     public IncludedPredicate(@JsonProperty("lhs") String lhs,
             @JsonProperty("weight") Long weight,
             @JsonProperty("preOperation") PreOperation preOperation,
+            @JsonProperty("preOperations") List<PreOperation> preOperations,
             @JsonProperty("detail") Detail detail,
             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight));
-        this.preOperation = Objects.nonNull(preOperation) ? preOperation
-                : IdentityOperation.builder()
-                        .build();
+        this.preOperations = Objects.nonNull(preOperations) ? preOperations
+                : List.of(Objects.nonNull(preOperation) ? preOperation
+                        : IdentityOperation.builder()
+                                .build());
         this.detail = Objects.nonNull(detail) ? detail
                 : EqualityDetail.builder()
                         .values(values)
@@ -70,7 +75,7 @@ public class IncludedPredicate extends Predicate {
 
     @Override
     public boolean evaluate(final Object lhsValue) {
-        return detail.validate(preOperation.operate(lhsValue));
+        return detail.validate(ChainOperator.operate(preOperations, lhsValue));
     }
 
     @Override
