@@ -2,25 +2,28 @@ package com.phonepe.central.mustang.service.impl;
 
 import java.util.Set;
 
+import com.phonepe.central.mustang.request.SearchRequest;
 import com.phonepe.central.mustang.service.SearchService;
 import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.RequestContext;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class SearchServiceImpl implements SearchService {
-    private MustangEngine engine;
+    private final MustangEngine engine;
 
-    public SearchServiceImpl(MustangEngine enigne) {
+    public SearchServiceImpl(final MustangEngine enigne) {
         this.engine = enigne;
     }
 
     @Override
-    public Set<String> search(String indexname, RequestContext context, boolean score) {
-        return engine.search(indexname, context, score);
-    }
-
-    @Override
-    public Set<String> search(String indexName, RequestContext context, int topN) {
-        return engine.search(indexName, context, topN);
+    public Set<String> search(final SearchRequest request) {
+        if (request.isScore()) {
+            return engine.search(request.getIndexName(), request.getRequestContext(), request.isScore());
+        }
+        return engine.search(request.getIndexName(), request.getRequestContext());
     }
 
 }

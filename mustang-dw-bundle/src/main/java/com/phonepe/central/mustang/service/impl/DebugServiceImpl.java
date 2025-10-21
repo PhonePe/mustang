@@ -1,49 +1,53 @@
 package com.phonepe.central.mustang.service.impl;
 
+import com.phonepe.central.mustang.request.DebugRequest;
+import com.phonepe.central.mustang.request.IndexExportRequest;
+import com.phonepe.central.mustang.request.IndexImportRequest;
+import com.phonepe.central.mustang.request.IndexRatificationRequest;
+import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.service.DebugService;
 import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.debug.DebugResult;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 
-public class DebugServiceImpl implements DebugService {
-    private MustangEngine engine;
+import lombok.Builder;
+import lombok.Data;
 
-    public DebugServiceImpl(MustangEngine engine) {
+@Data
+@Builder
+public class DebugServiceImpl implements DebugService {
+
+    private final MustangEngine engine;
+
+    public DebugServiceImpl(final MustangEngine engine) {
         this.engine = engine;
     }
 
     @Override
-    public DebugResult debug(Criteria criteria, RequestContext context) {
-        return engine.debug(criteria, context);
+    public DebugResult debug(final DebugRequest debugRequest) {
+        return engine.debug(debugRequest.getCriteria(), debugRequest.getRequestContext());
     }
 
     @Override
-    public String exportIndex(String indexName) {
-        return engine.exportIndexGroup(indexName);
+    public String exportIndex(final IndexExportRequest request) {
+        return engine.exportIndexGroup(request.getIndexName());
     }
 
     @Override
-    public boolean importIndex(String indexName, String importedIndex) {
-        engine.importIndexGroup(indexName, importedIndex);
+    public boolean importIndex(final IndexImportRequest importRequest) {
+        engine.importIndexGroup(importRequest.getIndexName(), importRequest.getImportedIndex());
         return true;
     }
 
     @Override
-    public String snapshot(String indexName) {
-        return engine.snapshot(indexName);
+    public String snapshot(final IndexSnapshotRequest request) {
+        return engine.snapshot(request.getIndexName());
     }
 
     @Override
-    public boolean ratify(String indexName) {
-        engine.ratify(indexName);
-        return true;
-    }
-
-    @Override
-    public RatificationResult getRatificationResult(String indexName) {
-        return engine.getRatificationResult(indexName);
+    public RatificationResult ratify(final IndexRatificationRequest request) {
+        engine.ratify(request.getIndexName(), request.isFullFledged());
+        return engine.getRatificationResult(request.getIndexName());
     }
 
 }
