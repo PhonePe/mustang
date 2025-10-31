@@ -38,6 +38,7 @@ import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.QueryBuilder;
 import com.phonepe.growth.mustang.search.SearchFacade;
 import com.phonepe.growth.mustang.search.ranking.RankingStrategy;
+import com.phonepe.growth.mustang.similarity.SimilarityDetector;
 import com.phonepe.growth.mustang.similarity.SimilarityStats;
 
 import lombok.AllArgsConstructor;
@@ -93,8 +94,12 @@ public class MustangEngine {
     }
 
     public SimilarityStats checkSimilarity(final String indexName, Criteria criteria) {
-        // TODO
-        return null;
+        return SimilarityDetector.builder()
+                .mapper(mapper)
+                .indexGroup(indexingFacde.getIndexGroup(indexName))
+                .criteria(criteria)
+                .build()
+                .checkSimilarity();
     }
 
     public Set<String> search(final String indexName, final RequestContext context) {

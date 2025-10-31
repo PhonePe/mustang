@@ -9,7 +9,7 @@ import lombok.experimental.UtilityClass;
 public class ChainOperator {
 
     public static Object operate(final List<PreOperation> operations, final Object value) {
-        final AtomicReference<Object> outcome = new AtomicReference<Object>(value);
+        final AtomicReference<Object> outcome = new AtomicReference<>(value);
         operations.forEach(operation -> outcome.getAndSet(operation.operate(outcome.get())));
         return outcome.get();
     }

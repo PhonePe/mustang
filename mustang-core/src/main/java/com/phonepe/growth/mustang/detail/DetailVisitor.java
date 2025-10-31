@@ -38,7 +38,7 @@ public interface DetailVisitor<T> {
 
     T visit(EqualSetDetail detail);
 
-    T visit(SuperSetDetail details);
+    T visit(SuperSetDetail detail);
 
     T visit(RegexDetail detail);
 
