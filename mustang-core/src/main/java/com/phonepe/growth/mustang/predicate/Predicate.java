@@ -19,7 +19,9 @@ package com.phonepe.growth.mustang.predicate;
 import static com.phonepe.growth.mustang.json.JsonUtils.getNodeValue;
 
 import java.util.List;
+import java.util.Objects;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -34,6 +36,7 @@ import com.phonepe.growth.mustang.detail.Detail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import io.dropwizard.validation.ValidationMethod;
 import lombok.AllArgsConstructor;
@@ -78,6 +81,14 @@ public abstract class Predicate {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    protected @Valid List<PreOperation> extractPreoperations(PreOperation preOperation,
+            List<PreOperation> preOperations) {
+        return Objects.nonNull(preOperations) ? preOperations
+                : List.of(Objects.nonNull(preOperation) ? preOperation
+                        : IdentityOperation.builder()
+                                .build());
     }
 
     public abstract boolean evaluate(Object lhsValue);

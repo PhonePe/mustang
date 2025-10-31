@@ -35,7 +35,6 @@ import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
 import com.phonepe.growth.mustang.preoperation.ChainOperator;
 import com.phonepe.growth.mustang.preoperation.PreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.IdentityOperation;
 
 import lombok.Builder;
 import lombok.Data;
@@ -63,10 +62,7 @@ public class IncludedPredicate extends Predicate {
             @JsonProperty("detail") Detail detail,
             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight));
-        this.preOperations = Objects.nonNull(preOperations) ? preOperations
-                : List.of(Objects.nonNull(preOperation) ? preOperation
-                        : IdentityOperation.builder()
-                                .build());
+        this.preOperations = super.extractPreoperations(preOperation, preOperations);
         this.detail = Objects.nonNull(detail) ? detail
                 : EqualityDetail.builder()
                         .values(values)

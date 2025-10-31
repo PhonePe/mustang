@@ -57,24 +57,6 @@ public class SimilarityDetector {
         return criteria.accept(new CriteriaVisitorImpl());
     }
 
-    private JsonNode getJsonNodeFromAssignment(final Map<String, Object> assignment) {
-        final Map<String, Object> deNormalisedAssignment = assignment.entrySet()
-                .stream()
-                .map(entry -> Pair.of(entry.getKey()
-                        .substring(2), entry.getValue()))
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-        return mapper.valueToTree(deNormalisedAssignment);
-    }
-
-    private Set<String> getSearchResults(final Query query) {
-        return CriteriaSearchHandler.builder()
-                .indexGroup(indexGroup)
-                .query(query)
-                .build()
-                .handle()
-                .keySet();
-    }
-
     private final class CriteriaVisitorImpl implements CriteriaVisitor<SimilarityStats> {
 
         @Override
@@ -83,14 +65,14 @@ public class SimilarityDetector {
             final List<JsonNode> allContexts = dnf.getConjunctions()
                     .stream()
                     .map(cnj -> {
-                        final Map<String, Set<Pair<String, Object>>> map = cnj.getPredicates()
+                        final Map<String, Set<Pair<String, Object>>> buckets = cnj.getPredicates()
                                 .stream()
                                 .map(predicate -> predicate.accept(new PredicateVisitorImpl()))
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.groupingBy(Pair::getKey,
                                         Collectors.mapping(x -> x, Collectors.toSet())));
 
-                        final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(map.values()
+                        final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(buckets.values()
                                 .stream()
                                 .collect(Collectors.toList()));
 
@@ -121,9 +103,9 @@ public class SimilarityDetector {
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.toSet());
 
-                        final Map<String, Set<Pair<String, Object>>> map = Map.of(uuid, sets);
+                        final Map<String, Set<Pair<String, Object>>> buckets = Map.of(uuid, sets);
 
-                        final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(map.values()
+                        final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(buckets.values()
                                 .stream()
                                 .collect(Collectors.toList()));
 
@@ -146,6 +128,24 @@ public class SimilarityDetector {
             throw new UnsupportedOperationException("Similarity detection is not supported");
         }
 
+        private JsonNode getJsonNodeFromAssignment(final Map<String, Object> assignment) {
+            final Map<String, Object> deNormalisedAssignment = assignment.entrySet()
+                    .stream()
+                    .map(entry -> Pair.of(entry.getKey()
+                            .substring(2), entry.getValue()))
+                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            return mapper.valueToTree(deNormalisedAssignment);
+        }
+
+        private Set<String> getSearchResults(final Query query) {
+            return CriteriaSearchHandler.builder()
+                    .indexGroup(indexGroup)
+                    .query(query)
+                    .build()
+                    .handle()
+                    .keySet();
+        }
+
         private SimilarityStats extractSimilarities(final List<JsonNode> allContexts) {
             final List<Similarity> similarities = allContexts.stream()
                     .map(jsonNode -> {
@@ -154,7 +154,7 @@ public class SimilarityDetector {
                                 .build());
                         final Set<String> searchResults = getSearchResults(query);
 
-                        if (searchResults.size() > 0) {
+                        if (!searchResults.isEmpty()) {
                             return Optional.of(Similarity.builder()
                                     .context(jsonNode)
                                     .similarCriterias(searchResults)
