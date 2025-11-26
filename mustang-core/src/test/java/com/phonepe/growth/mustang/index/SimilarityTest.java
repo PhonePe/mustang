@@ -19,6 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,7 +27,9 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -36,6 +39,13 @@ import com.phonepe.growth.mustang.composition.impl.Disjunction;
 import com.phonepe.growth.mustang.criteria.Criteria;
 import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.growth.mustang.detail.impl.CheckType;
+import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.RangeDetail;
+import com.phonepe.growth.mustang.detail.impl.RegexDetail;
+import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
+import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
+import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.preoperation.impl.BinaryConversionPreOperation;
@@ -189,6 +199,319 @@ public class SimilarityTest {
                 .map(similarity -> similarity.getSimilarCriterias())
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
+    }
+
+    @Test
+    public void testDNFPositiveRangeCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .upperBound(0.000000000000003)
+                                        .includeUpperBound(true)
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", 0.000000000000003);
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+
+        similarityStats = engine.checkSimilarity("test", c2);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C2"));
+
+    }
+
+    @Test
+    public void testDNFPositiveVersioningCheck() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("A.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(EqualityDetail.builder()
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.ABOVE)
+                                        .baseVersion("5.7.40")
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.BELOW)
+                                        .baseVersion("5.7.40")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c3 = DNFCriteria.builder()
+                .id("C3")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.x")
+                                .detail(VersioningDetail.builder()
+                                        .check(CheckType.BELOW)
+                                        .baseVersion("1.2")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("b", "B3");
+        testQuery.put("n", "5.7.40");
+        testQuery.put("x", 1.2); // Not a number and hence shall fail
+        testQuery.put("p", true);
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        engine.add("test", c3);
+
+        SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+
+        similarityStats = engine.checkSimilarity("test", c2);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C2"));
+
+        similarityStats = engine.checkSimilarity("test", c3);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C3"));
+    }
+
+    // @Test -- REVISIT
+    public void testDNFMultiValueSingleEclipsing() throws JsonMappingException, JsonProcessingException {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Set.of("A1"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.c.modes[*].type")
+                                        .detail(SuperSetDetail.builder()
+                                                .values(Set.of("C1", "C2", "C3"))
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicates(List.of(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(EqualityDetail.builder()
+                                        .values(Set.of("A2"))
+                                        .build())
+                                .build(),
+                                IncludedPredicate.builder()
+                                        .lhs("$.c.modes[*].type")
+                                        .detail(SubSetDetail.builder()
+                                                .values(Set.of("C1", "C2", "C3"))
+                                                .build())
+                                        .build()))
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+
+        similarityStats = engine.checkSimilarity("test", c2);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C2"));
+    }
+
+    @Test
+    public void testDNFPositiveRegexMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(RegexDetail.builder()
+                                        .regex("ABC.*")
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+
+        final SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+    }
+
+    @Test
+    public void testCNFPositiveRangeMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000003)
+                                        .includeLowerBound(true)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A4", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet("4", "5", "6"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .detail(RangeDetail.builder()
+                                        .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+
+        similarityStats = engine.checkSimilarity("test", c2);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C2"));
+
     }
 
 }

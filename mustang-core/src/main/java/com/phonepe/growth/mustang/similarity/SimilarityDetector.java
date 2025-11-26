@@ -8,11 +8,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.curiousoddman.rgxgen.RgxGen;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
 import com.phonepe.growth.mustang.criteria.Criteria;
@@ -31,6 +34,7 @@ import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
 import com.phonepe.growth.mustang.detail.impl.SuperSetDetail;
 import com.phonepe.growth.mustang.detail.impl.VersioningDetail;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.json.JsonUtils;
 import com.phonepe.growth.mustang.predicate.PredicateVisitor;
 import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
@@ -78,9 +82,9 @@ public class SimilarityDetector {
 
                         return cartesianProduct.stream()
                                 .map(list -> {
-                                    final Map<String, Object> collect2 = list.stream()
+                                    final Map<String, Object> assignment = list.stream()
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-                                    return getJsonNodeFromAssignment(collect2);
+                                    return getJsonNodeFromAssignment(assignment);
                                 })
                                 .collect(Collectors.toList());
                     })
@@ -111,9 +115,9 @@ public class SimilarityDetector {
 
                         return cartesianProduct.stream()
                                 .map(list -> {
-                                    final Map<String, Object> collect2 = list.stream()
+                                    final Map<String, Object> assignment = list.stream()
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-                                    return getJsonNodeFromAssignment(collect2);
+                                    return getJsonNodeFromAssignment(assignment);
                                 })
                                 .collect(Collectors.toList());
                     })
@@ -129,12 +133,12 @@ public class SimilarityDetector {
         }
 
         private JsonNode getJsonNodeFromAssignment(final Map<String, Object> assignment) {
-            final Map<String, Object> deNormalisedAssignment = assignment.entrySet()
+            final JsonNode node = mapper.createObjectNode();
+            assignment.entrySet()
                     .stream()
-                    .map(entry -> Pair.of(entry.getKey()
-                            .substring(2), entry.getValue()))
-                    .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-            return mapper.valueToTree(deNormalisedAssignment);
+                    .forEach(entry -> JsonUtils.merge((ObjectNode) node,
+                            JsonUtils.createNode(mapper, entry.getKey(), entry.getValue())));
+            return node;
         }
 
         private Set<String> getSearchResults(final Query query) {
@@ -229,7 +233,11 @@ public class SimilarityDetector {
 
         @Override
         public Set<Object> visit(RegexDetail detail) {
-            return Set.of(detail.getRegex()); // TODO : Review
+            final RgxGen rgxGen = RgxGen.parse(detail.getRegex());
+            return IntStream.rangeClosed(0, 5)
+                    .boxed()
+                    .map(x -> rgxGen.generate())
+                    .collect(Collectors.toSet());
         }
 
         @Override

@@ -94,7 +94,7 @@ public enum Caveat {
     public static final String EQUALITY_TEXT = "EQUALITY";
     public static final String SUBSET_TEXT = "SUBSET";
     public static final String EQUALSET_TEXT = "EQUALSET";
-    public static final String SUPERSET_TEXT = "SUEPRSET";
+    public static final String SUPERSET_TEXT = "SUPERSET";
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
     public static final String VERSIONING_TEXT = "VERSIONING";
