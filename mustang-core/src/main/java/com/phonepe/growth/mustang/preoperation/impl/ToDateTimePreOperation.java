@@ -35,7 +35,6 @@ public class ToDateTimePreOperation extends PreOperation {
             try {
                 return getFormatter().parse(lhs.toString());
             } catch (Exception e) {
-                // ignore;
             }
         }
         return lhs;

@@ -14,7 +14,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.curiousoddman.rgxgen.RgxGen;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
@@ -136,7 +135,7 @@ public class SimilarityDetector {
             final JsonNode node = mapper.createObjectNode();
             assignment.entrySet()
                     .stream()
-                    .forEach(entry -> JsonUtils.merge((ObjectNode) node,
+                    .forEach(entry -> JsonUtils.merge(node,
                             JsonUtils.createNode(mapper, entry.getKey(), entry.getValue())));
             return node;
         }

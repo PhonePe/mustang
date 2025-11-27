@@ -85,10 +85,10 @@ public abstract class Predicate {
 
     protected @Valid List<PreOperation> extractPreoperations(PreOperation preOperation,
             List<PreOperation> preOperations) {
-        return Objects.nonNull(preOperations) ? preOperations
-                : List.of(Objects.nonNull(preOperation) ? preOperation
-                        : IdentityOperation.builder()
-                                .build());
+        final List<PreOperation> fallback = List.of(Objects.nonNull(preOperation) ? preOperation
+                : IdentityOperation.builder()
+                        .build());
+        return Objects.nonNull(preOperations) ? preOperations : fallback;
     }
 
     public abstract boolean evaluate(Object lhsValue);

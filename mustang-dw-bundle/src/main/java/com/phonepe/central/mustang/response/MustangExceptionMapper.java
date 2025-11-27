@@ -12,16 +12,16 @@ public class MustangExceptionMapper implements ExceptionMapper<MustangException>
         return switch (e.getErrorCode()) {
         case INTERNAL_ERROR -> Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON_TYPE)
-                .entity(getKairosException(e))
+                .entity(getMustangException(e))
                 .build();
         default -> Response.status(Response.Status.BAD_REQUEST)
                 .type(MediaType.APPLICATION_JSON_TYPE)
-                .entity(getKairosException(e))
+                .entity(getMustangException(e))
                 .build();
         };
     }
 
-    private MustangResponse<String> getKairosException(final MustangException e) {
+    private MustangResponse<String> getMustangException(final MustangException e) {
         return MustangResponse.<String>builder()
                 .success(false)
                 .errorCode(e.getErrorCode())

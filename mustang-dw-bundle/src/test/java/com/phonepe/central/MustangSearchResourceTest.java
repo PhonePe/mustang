@@ -80,6 +80,16 @@ public class MustangSearchResourceTest {
                 .build())
                 .getData();
         assertThat(searchResults, contains("C1"));
+
+        final Set<String> searchResults1 = resource.search(SearchRequest.builder()
+                .indexName("test")
+                .requestContext(RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build())
+                .score(true)
+                .build())
+                .getData();
+        assertThat(searchResults1, contains("C1"));
     }
 
 }

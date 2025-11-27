@@ -99,7 +99,7 @@ public class JsonUtils {
             } else if (primaryValue.isObject()) {
                 JsonNode backupValue = backup.get(fieldName);
                 if (backupValue.isObject()) {
-                    merge((ObjectNode) primaryValue, backupValue.deepCopy());
+                    merge(primaryValue, backupValue.deepCopy());
                 }
             }
         }
