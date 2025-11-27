@@ -41,6 +41,8 @@ import com.phonepe.growth.mustang.criteria.impl.CNFCriteria;
 import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
 import com.phonepe.growth.mustang.detail.impl.CheckType;
 import com.phonepe.growth.mustang.detail.impl.EqualityDetail;
+import com.phonepe.growth.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.growth.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.growth.mustang.detail.impl.RangeDetail;
 import com.phonepe.growth.mustang.detail.impl.RegexDetail;
 import com.phonepe.growth.mustang.detail.impl.SubSetDetail;
@@ -490,6 +492,66 @@ public class SimilarityTest {
                                 .lhs("$.n")
                                 .detail(RangeDetail.builder()
                                         .lowerBound(0.000000000000002)
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+
+        SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C1"));
+
+        similarityStats = engine.checkSimilarity("test", c2);
+        assertThat(similarityStats.getSimilarities()
+                .stream()
+                .map(similarity -> similarity.getSimilarCriterias())
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet()), hasItem("C2"));
+
+    }
+
+    @Test
+    public void testDNFPositiveExistenceMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(ExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(ExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet(true))
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(NonExistenceDetail.builder()
+                                        .build())
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .detail(ExistenceDetail.builder()
                                         .build())
                                 .build())
                         .build())
