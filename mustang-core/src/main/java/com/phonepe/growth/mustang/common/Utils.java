@@ -118,6 +118,7 @@ public class Utils {
         return Number.class.isAssignableFrom(value.getClass());
     }
 
+    @UtilityClass
     public static class Constants {
         public static final String ERA_AD = "AD";
         public static final String ERA_BC = "BC";

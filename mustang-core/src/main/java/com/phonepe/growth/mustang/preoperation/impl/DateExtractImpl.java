@@ -15,7 +15,7 @@ public class DateExtractImpl implements DateExtracts.Visitor<Object> {
 
     @Override
     public Object visitEra() {
-        return instance.get(Calendar.ERA) == 1 ? Constants.ERA_AD : Constants.ERA_AD;
+        return instance.get(Calendar.ERA) == 1 ? Constants.ERA_AD : Constants.ERA_BC;
     }
 
     @Override

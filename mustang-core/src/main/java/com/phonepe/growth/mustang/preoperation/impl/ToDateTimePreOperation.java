@@ -36,11 +36,10 @@ public class ToDateTimePreOperation extends PreOperation {
     public Object operate(Object lhs) {
         if (canApply(lhs)) {
             try {
-                final long time = ZonedDateTime.parse(lhs.toString(), getFormatter())
-                        .toEpochSecond() * 1000L;
-                return time; // epoch in millis
+                return ZonedDateTime.parse(lhs.toString(), getFormatter())
+                        .toEpochSecond() * 1000L; // epoch in millis
             } catch (Exception e) {
-                log.error(String.format("Error while parsing the date string - {} for the format - {}",
+                log.error(String.format("Error while parsing the date string - {%s} for the format - {%s}",
                         lhs.toString(),
                         getFormatter()), e);
                 return lhs;
@@ -54,7 +53,7 @@ public class ToDateTimePreOperation extends PreOperation {
             return DateTimeFormatter.ofPattern(dateTimeFormat);
         } catch (Exception e) {
             log.error(
-                    String.format("Error with datetime pattern - {}. Using ISO_OFFSET_DATE_TIME instead ",
+                    String.format("Error with datetime pattern - {%s}. Using ISO_OFFSET_DATE_TIME instead ",
                             dateTimeFormat),
                     e);
             return DateTimeFormatter.ISO_OFFSET_DATE_TIME;
