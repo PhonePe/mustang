@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import com.phonepe.growth.mustang.common.RequestContext;
@@ -38,6 +37,7 @@ import com.phonepe.growth.mustang.index.builder.CNFIndexer;
 import com.phonepe.growth.mustang.index.builder.DNFIndexer;
 import com.phonepe.growth.mustang.index.core.Key;
 import com.phonepe.growth.mustang.index.group.IndexGroup;
+import com.phonepe.growth.mustang.json.JsonUtils;
 import com.phonepe.growth.mustang.scan.Scanner;
 import com.phonepe.growth.mustang.search.Query;
 import com.phonepe.growth.mustang.search.QueryBuilder;
@@ -63,8 +63,8 @@ public class Ratifier {
         final Pair<Map<Integer, Key>, Map<Key, Integer>> keyIndex = buildIndex(allKeys);
         final Map<String, Set<Integer>> keyGroups = groupKeys(allKeys, keyIndex);
 
-        final Set<List<Integer>> cartesianProductCombinations = Sets.cartesianProduct(
-                new ArrayList<>(keyGroups.values()));
+        final Set<List<Integer>> cartesianProductCombinations = Sets
+                .cartesianProduct(new ArrayList<>(keyGroups.values()));
 
         final Set<Set<Integer>> subSetCombinations = fullFledged ? IntStream.range(1,
                 keyGroups.values()
@@ -107,7 +107,7 @@ public class Ratifier {
                         .get(i))
                 .collect(Collectors.toMap(Key::getName, Key::getValue, (o, n) -> n));
         final RequestContext context = RequestContext.builder()
-                .node(getJsonNodeFromAssignment(assigment))
+                .node(JsonUtils.getJsonNodeFromAssignment(mapper, assigment))
                 .build();
         final Query query = QueryBuilder.buildQuery(context);
         final Set<String> searchResults = getSearchResults(query);
@@ -166,15 +166,6 @@ public class Ratifier {
                 .collect(Collectors.groupingBy(Key::getName,
                         Collectors.mapping(x -> keyIndex.getValue()
                                 .get(x), Collectors.toSet())));
-    }
-
-    private JsonNode getJsonNodeFromAssignment(final Map<String, Object> assignment) {
-        final Map<String, Object> deNormalisedAssignment = assignment.entrySet()
-                .stream()
-                .map(entry -> Pair.of(entry.getKey()
-                        .substring(2), entry.getValue()))
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-        return mapper.valueToTree(deNormalisedAssignment);
     }
 
     private Set<String> getSearchResults(final Query query) {

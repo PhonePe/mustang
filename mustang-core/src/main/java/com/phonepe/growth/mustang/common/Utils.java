@@ -118,4 +118,12 @@ public class Utils {
         return Number.class.isAssignableFrom(value.getClass());
     }
 
+    public static class Constants {
+        public static final String ERA_AD = "AD";
+        public static final String ERA_BC = "BC";
+
+        public static final String AM = "AM";
+        public static final String PM = "PM";
+    }
+
 }

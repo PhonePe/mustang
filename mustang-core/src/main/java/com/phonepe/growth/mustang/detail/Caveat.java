@@ -88,7 +88,7 @@ public enum Caveat {
     @Getter
     private final String value;
 
-    public static final String NONE_TEXT = "TEXT";
+    public static final String NONE_TEXT = "NONE";
     public static final String EXISTENCE_TEXT = "EXISTENCE";
     public static final String NON_EXISTENCE_TEXT = "NON_EXISTENCE";
     public static final String EQUALITY_TEXT = "EQUALITY";

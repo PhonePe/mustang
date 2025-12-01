@@ -18,6 +18,7 @@ package com.phonepe.growth.mustang.json;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,6 +39,15 @@ public class JsonUtils {
         return getNodeValue(JsonPath.parse(node.toString(), Utils.JSONPATH_CONFIGURATION),
                 JsonPath.compile(path),
                 null);
+    }
+
+    public static JsonNode getJsonNodeFromAssignment(final ObjectMapper mapper, final Map<String, Object> assignment) {
+        final JsonNode node = mapper.createObjectNode();
+        assignment.entrySet()
+                .stream()
+                .forEach(
+                        entry -> JsonUtils.merge(node, JsonUtils.createNode(mapper, entry.getKey(), entry.getValue())));
+        return node;
     }
 
     public static Object getNodeValue(final DocumentContext documentContext,

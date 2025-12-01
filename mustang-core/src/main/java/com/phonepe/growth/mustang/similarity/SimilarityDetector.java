@@ -83,7 +83,7 @@ public class SimilarityDetector {
                                 .map(list -> {
                                     final Map<String, Object> assignment = list.stream()
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-                                    return getJsonNodeFromAssignment(assignment);
+                                    return JsonUtils.getJsonNodeFromAssignment(mapper, assignment);
                                 })
                                 .collect(Collectors.toList());
                     })
@@ -116,7 +116,7 @@ public class SimilarityDetector {
                                 .map(list -> {
                                     final Map<String, Object> assignment = list.stream()
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-                                    return getJsonNodeFromAssignment(assignment);
+                                    return JsonUtils.getJsonNodeFromAssignment(mapper, assignment);
                                 })
                                 .collect(Collectors.toList());
                     })
@@ -129,15 +129,6 @@ public class SimilarityDetector {
         @Override
         public SimilarityStats visit(UNFCriteria unf) {
             throw new UnsupportedOperationException("Similarity detection is not supported");
-        }
-
-        private JsonNode getJsonNodeFromAssignment(final Map<String, Object> assignment) {
-            final JsonNode node = mapper.createObjectNode();
-            assignment.entrySet()
-                    .stream()
-                    .forEach(entry -> JsonUtils.merge(node,
-                            JsonUtils.createNode(mapper, entry.getKey(), entry.getValue())));
-            return node;
         }
 
         private Set<String> getSearchResults(final Query query) {

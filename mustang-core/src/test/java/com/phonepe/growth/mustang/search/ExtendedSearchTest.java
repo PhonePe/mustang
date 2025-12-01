@@ -22,6 +22,9 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +52,9 @@ import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.preoperation.impl.AdditionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.BinaryConversionPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.DateExtractImpl;
+import com.phonepe.growth.mustang.preoperation.impl.DateExtracts;
+import com.phonepe.growth.mustang.preoperation.impl.DateTimePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.DivisionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.LengthPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.ModuloPreOperation;
@@ -56,6 +62,7 @@ import com.phonepe.growth.mustang.preoperation.impl.MultiplicationPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SizePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubStringPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.SubtractionPreOperation;
+import com.phonepe.growth.mustang.preoperation.impl.ToDateTimePreOperation;
 import com.phonepe.growth.mustang.ratify.RatificationResult;
 
 public class ExtendedSearchTest {
@@ -834,6 +841,85 @@ public class ExtendedSearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("n", 0.20000000002);
+        final ObjectMapper mapper = new ObjectMapper();
+        final MustangEngine engine = MustangEngine.builder()
+                .mapper(mapper)
+                .build();
+        engine.add("testsearch", c1);
+        engine.add("testsearch", c2);
+        engine.add("testsearch", c3);
+        final Set<String> searchResults = engine.search("testsearch",
+                RequestContext.builder()
+                        .node(mapper.valueToTree(testQuery))
+                        .build());
+        /* Assertions for multiple matches */
+        assertThat(searchResults, hasSize(3));
+        assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
+
+        engine.ratify("testsearch");
+        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFSearchingMultipleMatchForPreOpChain() {
+        final Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2"))
+                                .build())
+                        .predicate(ExcludedPredicate.builder()
+                                .lhs("$.b")
+                                .values(Sets.newHashSet("B1", "B2"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .preOperation(SubtractionPreOperation.builder()
+                                        .rhs(0.10000000001)
+                                        .build())
+                                .values(Sets.newHashSet(0.10000000001, 0.30000000003))
+                                .build())
+                        .build())
+                .build();
+        final Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.d")
+                                .preOperations(List.of(ToDateTimePreOperation.builder()
+                                        .dateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME.toString())
+                                        .build(),
+                                        DateTimePreOperation.builder()
+                                                .extract(DateExtracts.YEAR)
+                                                .build()))
+                                .values(Sets.newHashSet(2025))
+                                .build())
+                        .build())
+                .build();
+        final Criteria c3 = CNFCriteria.builder()
+                .id("C3")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .values(Sets.newHashSet("A1", "A2", "A3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.p")
+                                .values(Sets.newHashSet("P1", "P2", "P3"))
+                                .build())
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.n")
+                                .values(Sets.newHashSet(0.20000000002))
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+        testQuery.put("n", 0.20000000002);
+        testQuery.put("d", "2025-11-28T10:44:39.472601+05:30");
         final ObjectMapper mapper = new ObjectMapper();
         final MustangEngine engine = MustangEngine.builder()
                 .mapper(mapper)
@@ -2083,6 +2169,55 @@ public class ExtendedSearchTest {
         final RatificationResult ratificationResult = engine.getRatificationResult("test");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDateExtractsImpl() {
+
+        ZonedDateTime zdt = ZonedDateTime.parse("2025-11-28T14:12:39.473702+05:30",
+                DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        Calendar instance = Calendar.getInstance();
+        instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
+        DateExtractImpl impl = DateExtractImpl.builder()
+                .instance(instance)
+                .build();
+
+        assertThat(impl.visitEra(), is("AD"));
+        assertThat(impl.visitYear(), is(2025));
+        assertThat(impl.visitMonth(), is(11));
+        assertThat(impl.visitDayOfMonth(), is(28));
+        assertThat(impl.visitDayOfWeek(), is(6));
+        assertThat(impl.visitDayOfWeekInMonth(), is(4));
+        assertThat(impl.visitDayOfYear(), is(332));
+        assertThat(impl.visitDate(), is(28));
+        assertThat(impl.visitHour(), is(2));
+        assertThat(impl.visitHourOfDay(), is(14));
+        assertThat(impl.visitMinute(), is(12));
+        assertThat(impl.visitSecond(), is(39));
+        assertThat(impl.visitAmPm(), is("PM"));
+
+        zdt = ZonedDateTime.parse("2025-11-28T10:44:00+05:30", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+        instance = Calendar.getInstance();
+        instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
+        impl = DateExtractImpl.builder()
+                .instance(instance)
+                .build();
+
+        assertThat(impl.visitEra(), is("AD"));
+        assertThat(impl.visitYear(), is(2025));
+        assertThat(impl.visitMonth(), is(11));
+        assertThat(impl.visitDayOfMonth(), is(28));
+        assertThat(impl.visitDayOfWeek(), is(6));
+        assertThat(impl.visitDayOfWeekInMonth(), is(4));
+        assertThat(impl.visitDayOfYear(), is(332));
+        assertThat(impl.visitDate(), is(28));
+        assertThat(impl.visitHour(), is(10));
+        assertThat(impl.visitHourOfDay(), is(10));
+        assertThat(impl.visitMinute(), is(44));
+        assertThat(impl.visitSecond(), is(0));
+        assertThat(impl.visitAmPm(), is("AM"));
     }
 
 }
