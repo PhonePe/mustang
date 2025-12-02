@@ -62,8 +62,7 @@ public class ToDateTimePreOperation extends PreOperation {
 
     @Override
     public boolean canApply(Object lhs) {
-        return Objects.nonNull(lhs)
-                && (String.class.isAssignableFrom(lhs.getClass()) || Number.class.isAssignableFrom(lhs.getClass()));
+        return Objects.nonNull(lhs) && String.class.isAssignableFrom(lhs.getClass());
     }
 
 }
