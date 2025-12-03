@@ -1,6 +1,7 @@
 package com.phonepe.growth.mustang.preoperation.impl;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import static com.phonepe.growth.mustang.common.Utils.Constants;
 
@@ -105,7 +106,6 @@ public class DateExtractImpl implements DateExtracts.Visitor<Object> {
 
     @Override
     public Object visitDiffWithEpoch() {
-        return Calendar.getInstance()
-                .getTimeInMillis() - instance.getTimeInMillis();
+        return new Date().getTime() - instance.getTimeInMillis();
     }
 }

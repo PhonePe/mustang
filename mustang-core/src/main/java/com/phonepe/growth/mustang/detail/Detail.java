@@ -37,8 +37,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "caveat")
-@JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = ExistenceDetail.class),
-        @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = NonExistenceDetail.class),
+@JsonSubTypes({ @JsonSubTypes.Type(name = Caveat.EXISTENCE_TEXT, value = ExistenceDetail.class),
+        @JsonSubTypes.Type(name = Caveat.NON_EXISTENCE_TEXT, value = NonExistenceDetail.class),
         @JsonSubTypes.Type(name = Caveat.EQUALITY_TEXT, value = EqualityDetail.class),
         @JsonSubTypes.Type(name = Caveat.SUBSET_TEXT, value = SubSetDetail.class),
         @JsonSubTypes.Type(name = Caveat.EQUALSET_TEXT, value = EqualSetDetail.class),

@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -2174,6 +2175,8 @@ public class ExtendedSearchTest {
     @Test
     public void testDateExtractsImpl() {
 
+        final Date now = new Date();
+
         ZonedDateTime zdt = ZonedDateTime.parse("2025-11-28T14:12:39.473702+05:30",
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
@@ -2196,6 +2199,8 @@ public class ExtendedSearchTest {
         assertThat(impl.visitMinute(), is(12));
         assertThat(impl.visitSecond(), is(39));
         assertThat(impl.visitAmPm(), is("PM"));
+        assertThat(Long.valueOf(impl.visitDiffWithEpoch()
+                .toString()) >= now.getTime() - zdt.toEpochSecond() * 1000L, is(true));
 
         zdt = ZonedDateTime.parse("2025-11-28T10:44:00+05:30", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
@@ -2218,6 +2223,8 @@ public class ExtendedSearchTest {
         assertThat(impl.visitMinute(), is(44));
         assertThat(impl.visitSecond(), is(0));
         assertThat(impl.visitAmPm(), is("AM"));
+        assertThat(Long.valueOf(impl.visitDiffWithEpoch()
+                .toString()) >= now.getTime() - zdt.toEpochSecond() * 1000L, is(true));
     }
 
 }
