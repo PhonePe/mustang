@@ -13,7 +13,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.phonepe.central.mustang.request.DebugRequest;
 import com.phonepe.central.mustang.request.IndexExportRequest;
-import com.phonepe.central.mustang.request.IndexImportRequest;
 import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.resources.MustangDebugResource;
@@ -89,21 +88,6 @@ public class MustangDebugResourceTest {
                 .indexName("test")
                 .build())
                 .getData());
-    }
-
-    @Test
-    public void testImportIndex() {
-        final String exportedIndex = resource.exportIndex(IndexExportRequest.builder()
-                .indexName("test")
-                .build())
-                .getData();
-
-        Assert.assertTrue(resource.importIndex(IndexImportRequest.builder()
-                .indexName("testNew")
-                .importedIndex(exportedIndex)
-                .build())
-                .getData()
-                .booleanValue());
     }
 
     @Test

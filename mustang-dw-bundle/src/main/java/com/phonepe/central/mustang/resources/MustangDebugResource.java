@@ -13,7 +13,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.phonepe.central.mustang.MustangBundle;
 import com.phonepe.central.mustang.request.DebugRequest;
 import com.phonepe.central.mustang.request.IndexExportRequest;
-import com.phonepe.central.mustang.request.IndexImportRequest;
 import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.response.MustangResponse;
@@ -27,7 +26,7 @@ import io.swagger.annotations.Authorization;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = "Mustang APIs", authorizations = { @Authorization("O-Bearer") })
-@Path("/v1/mustang")
+@Path("/mustang/v1/")
 public class MustangDebugResource {
     private DebugService service;
 
@@ -60,20 +59,6 @@ public class MustangDebugResource {
         return MustangResponse.<String>builder()
                 .success(true)
                 .data(service.exportIndex(request))
-                .build();
-    }
-
-    @POST
-    @Path("/index/import")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Mustang Debug APIs", authorizations = { @Authorization("O-Bearer") })
-    @ResponseMetered
-    @Timed
-    @RolesAllowed(MustangBundle.MUSTANG_PERMISSION)
-    public MustangResponse<Boolean> importIndex(@Valid final IndexImportRequest request) {
-        return MustangResponse.<Boolean>builder()
-                .success(true)
-                .data(service.importIndex(request))
                 .build();
     }
 

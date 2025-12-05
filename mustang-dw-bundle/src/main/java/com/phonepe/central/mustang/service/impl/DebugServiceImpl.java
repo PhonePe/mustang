@@ -2,7 +2,6 @@ package com.phonepe.central.mustang.service.impl;
 
 import com.phonepe.central.mustang.request.DebugRequest;
 import com.phonepe.central.mustang.request.IndexExportRequest;
-import com.phonepe.central.mustang.request.IndexImportRequest;
 import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.service.DebugService;
@@ -31,12 +30,6 @@ public class DebugServiceImpl implements DebugService {
     @Override
     public String exportIndex(final IndexExportRequest request) {
         return engine.exportIndexGroup(request.getIndexName());
-    }
-
-    @Override
-    public boolean importIndex(final IndexImportRequest importRequest) {
-        engine.importIndexGroup(importRequest.getIndexName(), importRequest.getImportedIndex());
-        return true;
     }
 
     @Override

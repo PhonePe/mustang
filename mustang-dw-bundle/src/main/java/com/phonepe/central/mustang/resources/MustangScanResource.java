@@ -26,7 +26,7 @@ import io.swagger.annotations.Authorization;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Api(value = "Mustang APIs", authorizations = { @Authorization("O-Bearer") })
-@Path("/v1/mustang/scan")
+@Path("/mustang/v1/scan")
 public class MustangScanResource {
 
     private final ScanService service;
