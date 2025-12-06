@@ -62,7 +62,7 @@ public class IncludedPredicate extends Predicate {
             @JsonProperty("detail") Detail detail,
             @JsonProperty(access = Access.WRITE_ONLY, value = "values") Set<Object> values) {
         super(PredicateType.INCLUDED, lhs, Utils.getRationalWeight(weight));
-        this.preOperations = super.extractPreoperations(preOperation, preOperations);
+        this.preOperations = super.extractPreOperations(preOperation, preOperations);
         this.detail = Objects.nonNull(detail) ? detail
                 : EqualityDetail.builder()
                         .values(values)

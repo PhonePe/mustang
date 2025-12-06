@@ -19,6 +19,7 @@ package com.phonepe.growth.mustang.index.core;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.phonepe.growth.mustang.detail.Caveat;
@@ -38,7 +39,7 @@ import lombok.NoArgsConstructor;
 public class Key {
     @NotBlank
     private String name;
-    @NotNull
+    @NotEmpty
     private List<PreOperation> preOps;
     @NotNull
     private Caveat caveat;

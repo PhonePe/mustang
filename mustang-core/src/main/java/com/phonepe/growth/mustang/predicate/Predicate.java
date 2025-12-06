@@ -83,7 +83,7 @@ public abstract class Predicate {
         }
     }
 
-    protected @Valid List<PreOperation> extractPreoperations(PreOperation preOperation,
+    protected @Valid List<PreOperation> extractPreOperations(PreOperation preOperation,
             List<PreOperation> preOperations) {
         final List<PreOperation> fallback = List.of(Objects.nonNull(preOperation) ? preOperation
                 : IdentityOperation.builder()
