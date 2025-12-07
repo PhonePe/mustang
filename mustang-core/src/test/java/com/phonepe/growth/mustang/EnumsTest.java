@@ -11,7 +11,7 @@ import com.phonepe.growth.mustang.criteria.CriteriaForm;
 import com.phonepe.growth.mustang.detail.Caveat;
 import com.phonepe.growth.mustang.predicate.PredicateType;
 import com.phonepe.growth.mustang.preoperation.PreOperationType;
-import com.phonepe.growth.mustang.preoperation.impl.DateExtracts;
+import com.phonepe.growth.mustang.preoperation.impl.DateExtractionType;
 
 public class EnumsTest {
 
@@ -45,9 +45,9 @@ public class EnumsTest {
 
     @Test
     public void testEnumDateExtracts() {
-        Arrays.asList(DateExtracts.values())
+        Arrays.asList(DateExtractionType.values())
                 .stream()
-                .forEach(x -> assertThat(DateExtracts.valueOf(x.getValue()), is(x)));
+                .forEach(x -> assertThat(DateExtractionType.valueOf(x.getValue()), is(x)));
     }
 
 }

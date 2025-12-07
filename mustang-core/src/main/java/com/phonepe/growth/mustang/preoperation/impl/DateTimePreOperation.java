@@ -21,11 +21,11 @@ import lombok.ToString;
 public class DateTimePreOperation extends PreOperation {
 
     @NotNull
-    private DateExtracts extract;
+    private DateExtractionType extract;
 
     @Builder
     @JsonCreator
-    public DateTimePreOperation(@JsonProperty("extract") DateExtracts extract) {
+    public DateTimePreOperation(@JsonProperty("extract") DateExtractionType extract) {
         super(PreOperationType.DATETIME);
         this.extract = extract;
     }
@@ -35,7 +35,7 @@ public class DateTimePreOperation extends PreOperation {
         if (canApply(lhs)) {
             final Calendar instance = Calendar.getInstance();
             instance.setTimeInMillis(((Number) lhs).longValue());
-            return extract.accept(DateExtractImpl.builder()
+            return extract.accept(DateExtractionImpl.builder()
                     .instance(instance)
                     .build());
         }

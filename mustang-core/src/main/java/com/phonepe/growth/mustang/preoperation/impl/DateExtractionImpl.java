@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DateExtractImpl implements DateExtracts.Visitor<Object> {
+public class DateExtractionImpl implements DateExtractionType.Visitor<Object> {
 
     private Calendar instance;
 

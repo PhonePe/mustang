@@ -53,8 +53,8 @@ import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.growth.mustang.preoperation.impl.AdditionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.BinaryConversionPreOperation;
-import com.phonepe.growth.mustang.preoperation.impl.DateExtractImpl;
-import com.phonepe.growth.mustang.preoperation.impl.DateExtracts;
+import com.phonepe.growth.mustang.preoperation.impl.DateExtractionImpl;
+import com.phonepe.growth.mustang.preoperation.impl.DateExtractionType;
 import com.phonepe.growth.mustang.preoperation.impl.DateTimePreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.DivisionPreOperation;
 import com.phonepe.growth.mustang.preoperation.impl.LengthPreOperation;
@@ -894,7 +894,7 @@ public class ExtendedSearchTest {
                                         .dateTimeFormat(DateTimeFormatter.ISO_OFFSET_DATE_TIME.toString())
                                         .build(),
                                         DateTimePreOperation.builder()
-                                                .extract(DateExtracts.YEAR)
+                                                .extract(DateExtractionType.YEAR)
                                                 .build()))
                                 .values(Sets.newHashSet(2025))
                                 .build())
@@ -2182,7 +2182,7 @@ public class ExtendedSearchTest {
 
         Calendar instance = Calendar.getInstance();
         instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
-        DateExtractImpl impl = DateExtractImpl.builder()
+        DateExtractionImpl impl = DateExtractionImpl.builder()
                 .instance(instance)
                 .build();
 
@@ -2206,7 +2206,7 @@ public class ExtendedSearchTest {
 
         instance = Calendar.getInstance();
         instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
-        impl = DateExtractImpl.builder()
+        impl = DateExtractionImpl.builder()
                 .instance(instance)
                 .build();
 
