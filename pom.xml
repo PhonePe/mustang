@@ -1,31 +1,35 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<groupId>com.phonepe.growth</groupId>
+	<modelVersion>4.0.0</modelVersion>
 	<artifactId>mustang</artifactId>
-	<version>2.5.3-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>com.phonepe.central</groupId>
 		<artifactId>cp-parent-pom</artifactId>
-		<version>1.0.17</version>
+		<version>1.0.26</version>
 	</parent>
 
+	<modules>
+		<module>mustang-core</module>
+		<module>mustang-dw-bundle</module>
+	</modules>
+
 	<properties>
-		<!--        Java related properties -->
+		<!-- Java related properties -->
 		<jdk.source.version>17</jdk.source.version>
 		<jdk.target.version>17</jdk.target.version>
 		<jdk.release.version>17</jdk.release.version>
-		<!--        Maven related properties -->
+		<!-- Maven related properties -->
 		<maven.compiler.plugin.version>3.9.0</maven.compiler.plugin.version>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<maven.deploy.skip>false</maven.deploy.skip>
-
-		<lombok.version>1.18.22</lombok.version>
 		<jackson.version>2.13.3</jackson.version>
 		<mockito.version>4.3.1</mockito.version>
-
 		<!-- Sonar-JaCoCo properties -->
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
@@ -34,37 +38,34 @@
 		<sonar.issue.ignore.multicriteria>
 			e1
 		</sonar.issue.ignore.multicriteria>
+
+
 		<!-- Stream is not used rule -->
 		<sonar.issue.ignore.multicriteria.e1.ruleKey>java:S3958</sonar.issue.ignore.multicriteria.e1.ruleKey>
 		<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
-
 	</properties>
+
 
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard</groupId>
 			<artifactId>dropwizard-validation</artifactId>
-			<version>2.0.23</version>
 			<exclusions>
 				<exclusion>
 					<groupId>io.dropwizard</groupId>
@@ -81,9 +82,15 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>32.0.0-android</version>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-core</artifactId>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -91,9 +98,26 @@
 			<version>3.11</version>
 		</dependency>
 		<dependency>
+			<groupId>io.appform.functionmetrics</groupId>
+			<artifactId>function-metrics</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.squareup.okhttp3</groupId>
+					<artifactId>okhttp</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
-			<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -120,19 +144,72 @@
 		</dependency>
 	</dependencies>
 
+
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
+					<compilerArgument>-parameters</compilerArgument>
 					<source>${jdk.source.version}</source>
 					<target>${jdk.target.version}</target>
 					<release>${jdk.release.version}</release>
-					<showWarnings>true</showWarnings>
-					<debug>false</debug>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>dev.aspectj</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.13.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>${cpp.aspectjrt.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${cpp.aspectjrt.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<complianceLevel>17</complianceLevel>
+					<source>${jdk.source.version}</source>
+					<target>${jdk.target.version}</target>
+					<showWeaveInfo>true</showWeaveInfo>
+					<forceAjcCompile>true</forceAjcCompile>
+					<sources />
+					<weaveDirectories>
+						<weaveDirectory>${project.build.directory}/classes</weaveDirectory>
+					</weaveDirectories>
+					<verbose>true</verbose>
+					<Xlint>ignore</Xlint>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>io.appform.functionmetrics</groupId>
+							<artifactId>function-metrics</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
