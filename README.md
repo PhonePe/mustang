@@ -33,9 +33,9 @@ on the number of advertisements that can be shown on a given page and only the â
 
 ```xml
 <dependency>
-  <groupId>com.phonepe.growth</groupId>
+  <groupId>com.phonepe.central</groupId>
   <artifactId>mustang</artifactId>
-  <version>2.5.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -292,6 +292,14 @@ A specific `Criteria` can also be evaluated against a given `context` to pull ou
 boolean result = evaluate(criteria, context);
 ```
 
+#### Support for checking a `Criteria`'s similarity / overlap in an `IndexGroup` before indexing.
+
+A specific `Criteria` can be checked for similarity / overlaps prior to its indexing with already indexed ones in an `IndexGroup`
+
+```java
+SimilarityStats similarityStats = checkSimilarity(indexName, criteria);
+```
+
 #### Index Replacement
 
 At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index ground-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
@@ -310,10 +318,13 @@ engine.ratify(indexName); // This triggers the ratification process in the backg
 RatificationResult result = engine.getRatificationResult(indexName); // Check back the results after a while
 ```
 
+#### API Support for Observability & Debuggability
+With 3.0.0, Mustang is upgraded to a multi-module project. The core-engine stays intact, and a Dropwizard bundle module introduces APIs to allow access read-only actions on the core `MustangEngine`.
+
 
 #### Note on backward compatibility
 
-`2.0.0` and above are fully backward compatible with `1.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `2.0.0` and above.
+`3.0.0` and above are fully backward compatible with `2.x.y`. Necessary transformations are implicitly taken care of. So, all clients are recommended to upgrade to `3.0.0` and above.
 
 
 
