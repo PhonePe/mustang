@@ -155,6 +155,26 @@ public class UtilsTest {
     }
 
     @Test
+    public void testGetNodeValueWithNonEmptyList() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("items", Arrays.asList("A", "B", "C"));
+        JsonNode node = mapper.valueToTree(data);
+        Object result = Utils.getNodeValue(node, "$.items");
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result instanceof List);
+        Assert.assertEquals(3, ((List<?>) result).size());
+    }
+
+    @Test
+    public void testGetNodeValueWithEmptyList() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("items", Collections.emptyList());
+        JsonNode node = mapper.valueToTree(data);
+        Object result = Utils.getNodeValue(node, "$.items");
+        Assert.assertNull(result);
+    }
+
+    @Test
     public void testConstants() {
         Assert.assertEquals("AD", Utils.Constants.ERA_AD);
         Assert.assertEquals("BC", Utils.Constants.ERA_BC);
