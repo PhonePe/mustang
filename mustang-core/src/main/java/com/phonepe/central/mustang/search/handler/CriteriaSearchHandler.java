@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.collect.Maps;
+import com.phonepe.central.mustang.common.Utils;
 import com.phonepe.central.mustang.criteria.CriteriaForm;
 import com.phonepe.central.mustang.index.IndexGroup;
 import com.phonepe.central.mustang.search.Query;
@@ -102,7 +103,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
         indexGroup.getAllPaths()
                 .entrySet()
                 .forEach(entry -> pathValues.put(entry.getKey(),
-                        com.phonepe.central.mustang.common.Utils.getNodeValue(query.getParsedContext(), entry.getValue(), null)));
+                        Utils.getNodeValue(query.getParsedContext(), entry.getValue(), null)));
     }
 
 }
