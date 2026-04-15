@@ -17,13 +17,13 @@ import com.google.common.collect.Sets;
 import com.phonepe.central.mustang.request.SearchRequest;
 import com.phonepe.central.mustang.resources.MustangSearchResource;
 import com.phonepe.central.mustang.service.impl.SearchServiceImpl;
-import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.common.RequestContext;
-import com.phonepe.growth.mustang.composition.impl.Conjunction;
-import com.phonepe.growth.mustang.criteria.Criteria;
-import com.phonepe.growth.mustang.criteria.impl.DNFCriteria;
-import com.phonepe.growth.mustang.predicate.impl.ExcludedPredicate;
-import com.phonepe.growth.mustang.predicate.impl.IncludedPredicate;
+import com.phonepe.central.mustang.MustangEngine;
+import com.phonepe.central.mustang.common.RequestContext;
+import com.phonepe.central.mustang.composition.impl.Conjunction;
+import com.phonepe.central.mustang.criteria.Criteria;
+import com.phonepe.central.mustang.criteria.impl.DNFCriteria;
+import com.phonepe.central.mustang.predicate.impl.ExcludedPredicate;
+import com.phonepe.central.mustang.predicate.impl.IncludedPredicate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MustangSearchResourceTest {

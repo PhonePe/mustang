@@ -7,7 +7,6 @@ import com.phonepe.central.mustang.response.MustangExceptionMapper;
 import com.phonepe.central.mustang.service.impl.DebugServiceImpl;
 import com.phonepe.central.mustang.service.impl.ScanServiceImpl;
 import com.phonepe.central.mustang.service.impl.SearchServiceImpl;
-import com.phonepe.growth.mustang.MustangEngine;
 
 import io.dropwizard.Configuration;
 import io.dropwizard.ConfiguredBundle;

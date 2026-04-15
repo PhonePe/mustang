@@ -17,8 +17,8 @@ import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.response.MustangResponse;
 import com.phonepe.central.mustang.service.DebugService;
-import com.phonepe.growth.mustang.debug.DebugResult;
-import com.phonepe.growth.mustang.ratify.RatificationResult;
+import com.phonepe.central.mustang.debug.DebugResult;
+import com.phonepe.central.mustang.ratify.RatificationResult;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

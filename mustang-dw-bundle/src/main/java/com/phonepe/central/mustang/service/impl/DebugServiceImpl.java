@@ -5,9 +5,9 @@ import com.phonepe.central.mustang.request.IndexExportRequest;
 import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
 import com.phonepe.central.mustang.service.DebugService;
-import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.debug.DebugResult;
-import com.phonepe.growth.mustang.ratify.RatificationResult;
+import com.phonepe.central.mustang.MustangEngine;
+import com.phonepe.central.mustang.debug.DebugResult;
+import com.phonepe.central.mustang.ratify.RatificationResult;
 
 import lombok.Builder;
 import lombok.Data;

@@ -4,8 +4,8 @@ import com.phonepe.central.mustang.request.DebugRequest;
 import com.phonepe.central.mustang.request.IndexExportRequest;
 import com.phonepe.central.mustang.request.IndexRatificationRequest;
 import com.phonepe.central.mustang.request.IndexSnapshotRequest;
-import com.phonepe.growth.mustang.debug.DebugResult;
-import com.phonepe.growth.mustang.ratify.RatificationResult;
+import com.phonepe.central.mustang.debug.DebugResult;
+import com.phonepe.central.mustang.ratify.RatificationResult;
 
 public interface DebugService {
 

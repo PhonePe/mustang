@@ -6,8 +6,8 @@ import java.util.Set;
 import com.phonepe.central.mustang.request.ScanCriteriaRequest;
 import com.phonepe.central.mustang.request.ScanIndexRequest;
 import com.phonepe.central.mustang.service.ScanService;
-import com.phonepe.growth.mustang.MustangEngine;
-import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.central.mustang.MustangEngine;
+import com.phonepe.central.mustang.criteria.Criteria;
 
 import lombok.Builder;
 import lombok.Data;

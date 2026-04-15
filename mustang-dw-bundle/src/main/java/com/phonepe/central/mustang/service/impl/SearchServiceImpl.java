@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.phonepe.central.mustang.request.SearchRequest;
 import com.phonepe.central.mustang.service.SearchService;
-import com.phonepe.growth.mustang.MustangEngine;
+import com.phonepe.central.mustang.MustangEngine;
 
 import lombok.Builder;
 import lombok.Data;

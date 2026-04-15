@@ -18,7 +18,7 @@ import com.phonepe.central.mustang.request.ScanCriteriaRequest;
 import com.phonepe.central.mustang.request.ScanIndexRequest;
 import com.phonepe.central.mustang.response.MustangResponse;
 import com.phonepe.central.mustang.service.ScanService;
-import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.central.mustang.criteria.Criteria;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

@@ -6,8 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.phonepe.central.mustang.response.MustangExceptionMapper;
-import com.phonepe.growth.mustang.exception.ErrorCode;
-import com.phonepe.growth.mustang.exception.MustangException;
+import com.phonepe.central.mustang.exception.ErrorCode;
+import com.phonepe.central.mustang.exception.MustangException;
 
 public class MustangExceptionMapperTest {
     private MustangExceptionMapper exceptionMapper = new MustangExceptionMapper();

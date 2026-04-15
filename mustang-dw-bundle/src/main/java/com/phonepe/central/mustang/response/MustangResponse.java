@@ -1,6 +1,6 @@
 package com.phonepe.central.mustang.response;
 
-import com.phonepe.growth.mustang.exception.ErrorCode;
+import com.phonepe.central.mustang.exception.ErrorCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

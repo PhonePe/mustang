@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.phonepe.central.mustang.request.ScanCriteriaRequest;
 import com.phonepe.central.mustang.request.ScanIndexRequest;
-import com.phonepe.growth.mustang.criteria.Criteria;
+import com.phonepe.central.mustang.criteria.Criteria;
 
 public interface ScanService {
 

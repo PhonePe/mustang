@@ -4,7 +4,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import com.phonepe.growth.mustang.exception.MustangException;
+import com.phonepe.central.mustang.exception.MustangException;
 
 public class MustangExceptionMapper implements ExceptionMapper<MustangException> {
     @Override

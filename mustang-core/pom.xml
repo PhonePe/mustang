@@ -16,13 +16,60 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.phonepe.central</groupId>
+			<artifactId>mustang-models</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-core</artifactId>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.appform.functionmetrics</groupId>
+			<artifactId>function-metrics</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.squareup.okhttp3</groupId>
+					<artifactId>okhttp</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.github.curious-odd-man</groupId>
 			<artifactId>rgxgen</artifactId>
-			<version>3.1</version>
+			<version>${rgxgen.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -35,6 +82,50 @@
 				<configuration>
 					<skip>false</skip>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>dev.aspectj</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>${aspectj-maven-plugin.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>${cpp.aspectjrt.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${cpp.aspectjrt.version}</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<complianceLevel>17</complianceLevel>
+					<source>${jdk.source.version}</source>
+					<target>${jdk.target.version}</target>
+					<showWeaveInfo>true</showWeaveInfo>
+					<forceAjcCompile>true</forceAjcCompile>
+					<sources />
+					<weaveDirectories>
+						<weaveDirectory>${project.build.directory}/classes</weaveDirectory>
+					</weaveDirectories>
+					<verbose>true</verbose>
+					<Xlint>ignore</Xlint>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>io.appform.functionmetrics</groupId>
+							<artifactId>function-metrics</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
