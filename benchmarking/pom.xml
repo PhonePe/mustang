@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.phonepe.growth.mustang</groupId>
+    <groupId>com.phonepe.mustang.benchmark</groupId>
     <artifactId>benchmark</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -20,7 +20,7 @@
         <!--
             Java source/target to use for compilation.
           -->
-        <javac.target>1.8</javac.target>
+        <javac.target>17</javac.target>
 
         <!--
             Name of the benchmark Uber-JAR to generate.
@@ -30,7 +30,7 @@
         <!--
             JMH version used to benchmark in this project.
           -->
-        <mustang.version>2.4.0-SNAPSHOT</mustang.version>
+        <mustang.version>3.0.1-SNAPSHOT</mustang.version>
 
 
     </properties>
@@ -48,8 +48,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.phonepe.growth</groupId>
-            <artifactId>mustang</artifactId>
+            <groupId>com.phonepe</groupId>
+            <artifactId>mustang-core</artifactId>
             <version>${mustang.version}</version>
         </dependency>
     </dependencies>

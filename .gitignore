@@ -13,3 +13,6 @@
 
 benchmarking/.idea/
 benchmarking/target/
+
+# Zensical docs build output
+docs/site/

@@ -1,103 +1,332 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>mustang</artifactId>
-	<version>3.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.phonepe.central</groupId>
-		<artifactId>cp-parent-pom</artifactId>
-		<version>1.0.26</version>
-	</parent>
+    <groupId>com.phonepe</groupId>
+    <artifactId>mustang</artifactId>
+    <version>3.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-	<modules>
-		<module>mustang-models</module>
-		<module>mustang-core</module>
-		<module>mustang-dw-bundle</module>
-	</modules>
+    <name>mustang</name>
+    <description>Search engine for Rules — Indexing boolean expressions at scale</description>
+    <url>https://github.com/PhonePe/mustang</url>
 
-	<properties>
-		<!-- Java related properties -->
-		<jdk.source.version>17</jdk.source.version>
-		<jdk.target.version>17</jdk.target.version>
-		<jdk.release.version>17</jdk.release.version>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-		<!-- Maven plugin versions -->
-		<maven.compiler.plugin.version>3.9.0</maven.compiler.plugin.version>
-		<aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
-		<maven.javadoc.skip>true</maven.javadoc.skip>
-		<maven.deploy.skip>false</maven.deploy.skip>
+    <scm>
+        <connection>scm:git:git://github.com/PhonePe/mustang.git</connection>
+        <developerConnection>scm:git:ssh://github.com/PhonePe/mustang.git</developerConnection>
+        <url>https://github.com/PhonePe/mustang/tree/main</url>
+    </scm>
 
-		<!-- Core dependency versions -->
-		<jackson.version>2.13.3</jackson.version>
-		<slf4j.version>1.7.36</slf4j.version>
-		<commons-lang3.version>3.11</commons-lang3.version>
-		<maven-artifact.version>3.8.5</maven-artifact.version>
-		<rgxgen.version>3.1</rgxgen.version>
+    <developers>
+        <developer>
+            <id>phonepe</id>
+            <name>PhonePe Engineering</name>
+            <organization>PhonePe</organization>
+            <organizationUrl>https://www.phonepe.com</organizationUrl>
+        </developer>
+    </developers>
 
-		<!-- Test dependency versions -->
-		<mockito.version>4.3.1</mockito.version>
-		<hamcrest.version>2.2</hamcrest.version>
+    <modules>
+        <module>mustang-models</module>
+        <module>mustang-core</module>
+        <module>mustang-dw-bundle</module>
+    </modules>
 
-		<!-- Sonar-JaCoCo properties -->
-		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
-		<sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
-		<sonar.language>java</sonar.language>
-		<sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
-		<!-- Stream is not used rule -->
-		<sonar.issue.ignore.multicriteria.e1.ruleKey>java:S3958</sonar.issue.ignore.multicriteria.e1.ruleKey>
-		<sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
-	</properties>
+    <properties>
+        <!-- Java related properties -->
+        <jdk.source.version>17</jdk.source.version>
+        <jdk.target.version>17</jdk.target.version>
+        <jdk.release.version>17</jdk.release.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+        <!-- Maven plugin versions -->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
+        <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+        <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
+        <maven.gpg.plugin.version>3.1.0</maven.gpg.plugin.version>
+        <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
+        <central.publishing.plugin.version>0.5.0</central.publishing.plugin.version>
+        <aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+        <maven.deploy.skip>false</maven.deploy.skip>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<skip>false</skip>
-				</configuration>
-			</plugin>
+        <!-- AspectJ version -->
+        <aspectjrt.version>1.9.21</aspectjrt.version>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
-				<configuration>
-					<compilerArgument>-parameters</compilerArgument>
-					<source>${jdk.source.version}</source>
-					<target>${jdk.target.version}</target>
-					<release>${jdk.release.version}</release>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- Core dependency versions -->
+        <jackson.version>2.16.1</jackson.version>
+        <slf4j.version>2.0.12</slf4j.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <maven-artifact.version>3.9.6</maven-artifact.version>
+        <rgxgen.version>3.1</rgxgen.version>
+        <jsonpath.version>2.9.0</jsonpath.version>
+        <dropwizard.version>2.1.12</dropwizard.version>
+        <functionmetrics.version>1.0.5</functionmetrics.version>
+        <dropwizard-swagger.version>2.0.12-1</dropwizard-swagger.version>
+
+        <!-- Test dependency versions -->
+        <mockito.version>5.10.0</mockito.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <junit.version>4.13.2</junit.version>
+
+        <!-- Sonar / JaCoCo -->
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPaths>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPaths>
+        <sonar.language>java</sonar.language>
+        <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
+        <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S3958</sonar.issue.ignore.multicriteria.e1.ruleKey>
+        <sonar.issue.ignore.multicriteria.e1.resourceKey>**/*.java</sonar.issue.ignore.multicriteria.e1.resourceKey>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Jackson BOM -->
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Dropwizard BOM -->
+            <dependency>
+                <groupId>io.dropwizard</groupId>
+                <artifactId>dropwizard-bom</artifactId>
+                <version>${dropwizard.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Lombok -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.30</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- AspectJ -->
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectjrt.version}</version>
+            </dependency>
+
+            <!-- Commons Lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <!-- Maven Artifact (for version comparison) -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>${maven-artifact.version}</version>
+            </dependency>
+
+            <!-- JSON Path -->
+            <dependency>
+                <groupId>com.jayway.jsonpath</groupId>
+                <artifactId>json-path</artifactId>
+                <version>${jsonpath.version}</version>
+            </dependency>
+
+            <!-- Rgxgen -->
+            <dependency>
+                <groupId>com.github.curious-odd-man</groupId>
+                <artifactId>rgxgen</artifactId>
+                <version>${rgxgen.version}</version>
+            </dependency>
+
+            <!-- Function Metrics (AspectJ-based) -->
+            <dependency>
+                <groupId>io.appform.functionmetrics</groupId>
+                <artifactId>function-metrics</artifactId>
+                <version>${functionmetrics.version}</version>
+            </dependency>
+
+            <!-- Dropwizard Swagger -->
+            <dependency>
+                <groupId>com.smoketurner</groupId>
+                <artifactId>dropwizard-swagger</artifactId>
+                <version>${dropwizard-swagger.version}</version>
+            </dependency>
+
+            <!-- SLF4J -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- Test: JUnit -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Test: Mockito -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Test: Hamcrest -->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>${jdk.source.version}</source>
+                    <target>${jdk.target.version}</target>
+                    <release>${jdk.release.version}</release>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven.deploy.plugin.version}</version>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven.source.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <doclint>none</doclint>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Maven Central release profile — activated when publishing -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central.publishing.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com/</url>
+        </repository>
+    </distributionManagement>
 
 </project>
