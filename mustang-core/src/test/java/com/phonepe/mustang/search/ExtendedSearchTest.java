@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.is;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -2180,7 +2181,7 @@ public class ExtendedSearchTest {
         ZonedDateTime zdt = ZonedDateTime.parse("2025-11-28T14:12:39.473702+05:30",
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-        Calendar instance = Calendar.getInstance();
+        Calendar instance = Calendar.getInstance(TimeZone.getTimeZone(zdt.getZone()));
         instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
         DateExtractionImpl impl = DateExtractionImpl.builder()
                 .instance(instance)
@@ -2204,7 +2205,7 @@ public class ExtendedSearchTest {
 
         zdt = ZonedDateTime.parse("2025-11-28T10:44:00+05:30", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
-        instance = Calendar.getInstance();
+        instance = Calendar.getInstance(TimeZone.getTimeZone(zdt.getZone()));
         instance.setTimeInMillis(zdt.toEpochSecond() * 1000L);
         impl = DateExtractionImpl.builder()
                 .instance(instance)
