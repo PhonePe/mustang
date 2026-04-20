@@ -77,7 +77,10 @@ For each search:
 ## Building and running
 
 ```bash
-# Build the benchmarks JAR
+# Install mustang-core to your local Maven repository first (not on Maven Central yet)
+mvn install -f ../pom.xml -DskipTests
+
+# Build the benchmarks uber-JAR
 cd benchmarking
 mvn clean package -DskipTests
 

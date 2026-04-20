@@ -166,8 +166,7 @@ public class CNFMatcher {
         final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
         return getMatchingKeys(map).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
-                .stream()
-                .toArray(Map.Entry[]::new);
+                .toArray(Entry[]::new);
     }
 
     private Stream<Key> getMatchingKeys(final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {

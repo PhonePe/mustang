@@ -13,6 +13,7 @@
 
 benchmarking/.idea/
 benchmarking/target/
+benchmarking/dependency-reduced-pom.xml
 
 # Zensical docs build output
 docs/site/

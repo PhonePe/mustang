@@ -6,7 +6,7 @@
 
     <groupId>com.phonepe</groupId>
     <artifactId>mustang</artifactId>
-    <version>3.0.1-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>mustang</name>
@@ -29,12 +29,50 @@
 
     <developers>
         <developer>
-            <id>phonepe</id>
-            <name>PhonePe Engineering</name>
-            <organization>PhonePe</organization>
-            <organizationUrl>https://www.phonepe.com</organizationUrl>
+            <id>MISBMS</id>
+            <name>Mohammed Irfanulla S</name>
+            <email>mohammed.irfanulla.s1@gmail.com</email>
+            <roles>
+                <role>owner</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>tshan10</id>
+            <name>Shantanu Tiwari</name>
+            <email>tshantanu510@gmail.com</email>
+            <roles>
+                <role>owner</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rahul.s</id>
+            <name>Rahul Sharma</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>F1reb0lt</id>
+            <name>Sidharth</name>
+            <email>rajat.sid25@gmail.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
         </developer>
     </developers>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <modules>
         <module>mustang-models</module>
@@ -321,12 +359,4 @@
             </build>
         </profile>
     </profiles>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <url>https://central.sonatype.com/</url>
-        </repository>
-    </distributionManagement>
-
 </project>
