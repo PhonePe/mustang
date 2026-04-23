@@ -343,20 +343,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>${maven.sonar.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>sonar-run</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sonar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.maven.plugin.version}</version>
