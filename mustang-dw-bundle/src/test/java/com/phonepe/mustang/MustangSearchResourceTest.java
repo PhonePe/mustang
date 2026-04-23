@@ -33,7 +33,6 @@ import com.google.common.collect.Sets;
 import com.phonepe.mustang.request.SearchRequest;
 import com.phonepe.mustang.resources.MustangSearchResource;
 import com.phonepe.mustang.service.impl.SearchServiceImpl;
-import com.phonepe.mustang.MustangEngine;
 import com.phonepe.mustang.common.RequestContext;
 import com.phonepe.mustang.composition.impl.Conjunction;
 import com.phonepe.mustang.criteria.Criteria;

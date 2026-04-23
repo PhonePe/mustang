@@ -33,7 +33,6 @@ import com.phonepe.mustang.request.IndexRatificationRequest;
 import com.phonepe.mustang.request.IndexSnapshotRequest;
 import com.phonepe.mustang.resources.MustangDebugResource;
 import com.phonepe.mustang.service.impl.DebugServiceImpl;
-import com.phonepe.mustang.MustangEngine;
 import com.phonepe.mustang.common.RequestContext;
 import com.phonepe.mustang.composition.impl.Conjunction;
 import com.phonepe.mustang.criteria.Criteria;

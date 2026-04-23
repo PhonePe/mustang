@@ -86,10 +86,10 @@ public class CriteriaIndexBuilder implements CriteriaVisitor<Void> {
     @Override
     public Void visit(UNFCriteria unf) {
         final Criteria normalizedCriteria = CriteriaUtils.getNormalizedCriteria(unf);
-        if (normalizedCriteria instanceof CNFCriteria) {
-            return this.visit((CNFCriteria) normalizedCriteria);
-        } else if (normalizedCriteria instanceof DNFCriteria) {
-            return this.visit((DNFCriteria) normalizedCriteria);
+        if (normalizedCriteria instanceof CNFCriteria cnfCriteria) {
+            return this.visit(cnfCriteria);
+        } else if (normalizedCriteria instanceof DNFCriteria dnfCriteria) {
+            return this.visit(dnfCriteria);
         }
         throw new AssertionError("Should never happen");
     }

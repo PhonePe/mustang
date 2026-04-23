@@ -17,9 +17,7 @@
 package com.phonepe.mustang.json;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,13 +46,13 @@ public class JsonUtils {
             return child;
         }
 
-        if (value instanceof JsonNode) {
-            child.set(paths[paths.length - 1], (JsonNode) value);
-        } else if (value instanceof Number) {
+        if (value instanceof JsonNode jsonNode) {
+            child.set(paths[paths.length - 1], jsonNode);
+        } else if (value instanceof Number number) {
             if (Double.class.isAssignableFrom(value.getClass())) {
-                child.put(paths[paths.length - 1], ((Number) value).doubleValue());
+                child.put(paths[paths.length - 1], number.doubleValue());
             } else {
-                child.put(paths[paths.length - 1], ((Number) value).longValue());
+                child.put(paths[paths.length - 1], number.longValue());
             }
         } else if (value instanceof Boolean) {
             child.put(paths[paths.length - 1], Boolean.valueOf(value.toString()));
@@ -73,10 +71,10 @@ public class JsonUtils {
             if (primaryValue == null || !primaryValue.isObject()) {
                 JsonNode backupValue = backup.get(fieldName)
                         .deepCopy();
-                if (primary instanceof ArrayNode) {
-                    ((ArrayNode) primary).set(0, backupValue);
-                } else if (primary instanceof ObjectNode) {
-                    ((ObjectNode) primary).set(fieldName, backupValue);
+                if (primary instanceof ArrayNode arrayNode) {
+                    arrayNode.set(0, backupValue);
+                } else if (primary instanceof ObjectNode objectNode) {
+                    objectNode.set(fieldName, backupValue);
                 }
             } else if (primaryValue.isObject()) {
                 JsonNode backupValue = backup.get(fieldName);
@@ -91,7 +89,7 @@ public class JsonUtils {
         ObjectNode parent = null;
         for (int i = paths.length - 2; i > 0; i--) {
             final String currentPath = paths[i];
-            if (currentPath.length() == 0) {
+            if (currentPath.isEmpty()) {
                 continue;
             }
             parent = mapper.createObjectNode();

@@ -39,7 +39,7 @@ public class EvaluationTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();

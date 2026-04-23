@@ -45,7 +45,7 @@ public class Scanner {
                 .values()
                 .stream()
                 .filter(criteria -> criteria.evaluate(context))
-                .collect(Collectors.toList());
+                .toList();
         return Stream.of(scanResults,
                 indexGroup.getTautologicalCriterias()
                         .values())

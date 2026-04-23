@@ -50,7 +50,7 @@ public class IndexTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
@@ -918,7 +918,7 @@ public class IndexTest {
     }
 
     @Test
-    public void testDeleteOnNonIndexedCriteria() throws Exception {
+    public void testDeleteOnNonIndexedCriteria() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()

@@ -45,8 +45,8 @@ import org.apache.commons.lang3.tuple.Pair;
 @AllArgsConstructor
 public class CNFPostingListsExtractor implements PredicateVisitor<Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> {
 
-    private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.valueOf(k1.getOrder())
-            .compareTo(k2.getOrder());
+    private static final Comparator<Key> KEY_ORDER_COMPARATOR = (k1, k2) -> Integer.compare(k1.getOrder(),
+            k2.getOrder());
     private final Integer iId;
     private final String eId;
     private final int order;

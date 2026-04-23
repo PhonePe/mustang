@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
@@ -1009,7 +1008,7 @@ public class ScanTest {
     }
 
     @Test
-    public void testMultiValueScanEqualityPositive() throws JsonMappingException, JsonProcessingException {
+    public void testMultiValueScanEqualityPositive() throws JsonProcessingException {
         final Criteria c = mapper.readValue(
                 "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
                 Criteria.class);
@@ -1024,7 +1023,7 @@ public class ScanTest {
     }
     
     @Test
-    public void testMultiValueScanEqualityNegative() throws JsonMappingException, JsonProcessingException {
+    public void testMultiValueScanEqualityNegative() throws JsonProcessingException {
         final Criteria c = mapper.readValue(
                 "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
                 Criteria.class);
@@ -1039,7 +1038,7 @@ public class ScanTest {
     }
     
     @Test
-    public void testMultiValueScanEqualityNegative1() throws JsonMappingException, JsonProcessingException {
+    public void testMultiValueScanEqualityNegative1() throws JsonProcessingException {
         final Criteria c = mapper.readValue(
                 "{\"form\":\"DNF\",\"id\":\"C1\",\"conjunctions\":[{\"type\":\"AND\",\"predicates\":[{\"type\":\"INCLUDED\",\"lhs\":\"$.data.A#data.transaction.modes[*].type\",\"detail\":{\"caveat\":\"EQUALITY\",\"values\":[\"ABC\",\"XYZ\"]},\"weight\":1}]}]}",
                 Criteria.class);

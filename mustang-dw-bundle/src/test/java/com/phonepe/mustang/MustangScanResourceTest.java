@@ -36,7 +36,6 @@ import com.phonepe.mustang.request.ScanCriteriaRequest;
 import com.phonepe.mustang.request.ScanIndexRequest;
 import com.phonepe.mustang.resources.MustangScanResource;
 import com.phonepe.mustang.service.impl.ScanServiceImpl;
-import com.phonepe.mustang.MustangEngine;
 import com.phonepe.mustang.common.RequestContext;
 import com.phonepe.mustang.composition.impl.Conjunction;
 import com.phonepe.mustang.criteria.Criteria;

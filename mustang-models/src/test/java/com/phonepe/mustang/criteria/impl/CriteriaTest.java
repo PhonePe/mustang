@@ -25,7 +25,6 @@ import com.phonepe.mustang.composition.impl.Disjunction;
 import com.phonepe.mustang.criteria.CriteriaForm;
 import com.phonepe.mustang.criteria.CriteriaVisitor;
 import com.phonepe.mustang.debug.DebugResult;
-import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,11 +43,6 @@ public class CriteriaTest {
     private IncludedPredicate included(String lhs, Object... vals) {
         Set<Object> values = new HashSet<>(Arrays.asList(vals));
         return IncludedPredicate.builder().lhs(lhs).values(values).build();
-    }
-
-    private ExcludedPredicate excluded(String lhs, Object... vals) {
-        Set<Object> values = new HashSet<>(Arrays.asList(vals));
-        return ExcludedPredicate.builder().lhs(lhs).values(values).build();
     }
 
     // --- DNFCriteria ---

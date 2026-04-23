@@ -18,7 +18,6 @@ package com.phonepe.mustang;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -127,7 +126,7 @@ public class MustangEngine {
     public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
         return criterias.stream()
                 .filter(criteria -> criteria.evaluate(context))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean evaluate(final Criteria criteria, final RequestContext context) {
@@ -146,7 +145,7 @@ public class MustangEngine {
         return criterias.stream()
                 .sequential()
                 .map(criteria -> Pair.of(criteria.getId(), criteria.getScore(context)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void ratify(final String indexName) {

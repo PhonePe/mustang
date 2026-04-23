@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -52,6 +50,7 @@ import com.phonepe.mustang.predicate.impl.ExcludedPredicate;
 import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.mustang.preoperation.impl.BinaryConversionPreOperation;
 import com.phonepe.mustang.preoperation.impl.SubtractionPreOperation;
+import com.phonepe.mustang.similarity.Similarity;
 import com.phonepe.mustang.similarity.SimilarityStats;
 
 public class SimilarityTest {
@@ -60,7 +59,7 @@ public class SimilarityTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         engine = MustangEngine.builder()
                 .mapper(mapper)
@@ -68,7 +67,7 @@ public class SimilarityTest {
     }
 
     @Test
-    public void testDNFPositiveMatch() throws Exception {
+    public void testDNFPositiveMatch() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -130,21 +129,21 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), contains("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), contains("C2"));
 
     }
 
     @Test
-    public void testCNFPositiveMatch() throws Exception {
+    public void testCNFPositiveMatch() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()
@@ -191,20 +190,20 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
     }
 
     @Test
-    public void testDNFPositiveRangeCheck() throws Exception {
+    public void testDNFPositiveRangeCheck() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -260,21 +259,21 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
 
     }
 
     @Test
-    public void testDNFPositiveVersioningCheck() throws Exception {
+    public void testDNFPositiveVersioningCheck() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -349,27 +348,27 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
 
         similarityStats = engine.checkSimilarity("test", c3);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C3"));
     }
 
     // @Test -- REVISIT
-    public void testDNFMultiValueSingleEclipsing() throws JsonMappingException, JsonProcessingException {
+    public void testDNFMultiValueSingleEclipsing() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -411,20 +410,20 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
     }
 
     @Test
-    public void testDNFPositiveRegexMatch() throws Exception {
+    public void testDNFPositiveRegexMatch() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -454,13 +453,13 @@ public class SimilarityTest {
         final SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
     }
 
     @Test
-    public void testCNFPositiveRangeMatch() throws Exception {
+    public void testCNFPositiveRangeMatch() {
         Criteria c1 = CNFCriteria.builder()
                 .id("C1")
                 .disjunction(Disjunction.builder()
@@ -503,21 +502,21 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
 
     }
 
     @Test
-    public void testDNFPositiveExistenceMatch() throws Exception {
+    public void testDNFPositiveExistenceMatch() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -563,14 +562,14 @@ public class SimilarityTest {
         SimilarityStats similarityStats = engine.checkSimilarity("test", c1);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C1"));
 
         similarityStats = engine.checkSimilarity("test", c2);
         assertThat(similarityStats.getSimilarities()
                 .stream()
-                .map(similarity -> similarity.getSimilarCriterias())
+                .map(Similarity::getSimilarCriterias)
                 .flatMap(Set::stream)
                 .collect(Collectors.toSet()), hasItem("C2"));
 

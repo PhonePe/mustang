@@ -73,7 +73,7 @@ public class ExtendedSearchTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         engine = MustangEngine.builder()
                 .mapper(mapper)
@@ -328,6 +328,7 @@ public class ExtendedSearchTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
+    @SuppressWarnings("java:S4144")
     @Test
     public void testDnfMultipleMatch1() {
         Criteria c1 = DNFCriteria.builder()
@@ -843,23 +844,23 @@ public class ExtendedSearchTest {
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");
         testQuery.put("n", 0.20000000002);
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
-        final Set<String> searchResults = engine.search("testsearch",
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -922,23 +923,23 @@ public class ExtendedSearchTest {
         testQuery.put("a", "A1");
         testQuery.put("n", 0.20000000002);
         testQuery.put("d", "2025-11-28T10:44:39.472601+05:30");
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
-        final Set<String> searchResults = engine.search("testsearch",
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         /* Assertions for multiple matches */
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1369,16 +1370,16 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
-        engine.add("testsearch", c4);
-        engine.add("testsearch", c5);
-        engine.add("testsearch", c6);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
+        localEngine.add("testsearch", c4);
+        localEngine.add("testsearch", c5);
+        localEngine.add("testsearch", c6);
 
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
@@ -1386,16 +1387,16 @@ public class ExtendedSearchTest {
         testQuery.put("s", "CA");// C2 value
         testQuery.put("g", "M");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, containsInAnyOrder("C5"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1538,32 +1539,32 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
-        engine.add("testsearch", c4);
-        engine.add("testsearch", c5);
-        engine.add("testsearch", c6);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
+        localEngine.add("testsearch", c4);
+        localEngine.add("testsearch", c5);
+        localEngine.add("testsearch", c6);
 
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", 1);// C1 value
         testQuery.put("c", 2);// C2 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C3", "C4", "C5"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1618,29 +1619,29 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1722,29 +1723,29 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, hasSize(3));
         assertThat(searchResults, containsInAnyOrder("C1", "C2", "C3"));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1825,26 +1826,26 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
         // Search query for same criteria
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A10");// Negative value
         testQuery.put("n", 0.300000000003);// Postive value
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, is(empty()));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -1904,28 +1905,28 @@ public class ExtendedSearchTest {
                         .build())
                 .build();
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        final MustangEngine engine = MustangEngine.builder()
-                .mapper(mapper)
+        final ObjectMapper localMapper = new ObjectMapper();
+        final MustangEngine localEngine = MustangEngine.builder()
+                .mapper(localMapper)
                 .build();
-        engine.add("testsearch", c1);
-        engine.add("testsearch", c2);
-        engine.add("testsearch", c3);
+        localEngine.add("testsearch", c1);
+        localEngine.add("testsearch", c2);
+        localEngine.add("testsearch", c3);
         // Request Map
         Map<String, Object> testQuery = Maps.newHashMap();
         testQuery.put("a", "A1");// C1 value
         testQuery.put("d", "D1");// C2 value
         testQuery.put("p", "P1");// C3 value
         // Search query for same criteria
-        final Set<String> searchResults = engine.search("testsearch",
+        final Set<String> searchResults = localEngine.search("testsearch",
                 RequestContext.builder()
-                        .node(mapper.valueToTree(testQuery))
+                        .node(localMapper.valueToTree(testQuery))
                         .build());
         // Assertion
         assertThat(searchResults, is(empty()));
 
-        engine.ratify("testsearch");
-        final RatificationResult ratificationResult = engine.getRatificationResult("testsearch");
+        localEngine.ratify("testsearch");
+        final RatificationResult ratificationResult = localEngine.getRatificationResult("testsearch");
         assertThat(ratificationResult.getStatus(), is(true));
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
@@ -2173,6 +2174,7 @@ public class ExtendedSearchTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
     }
 
+    @SuppressWarnings("java:S5961")
     @Test
     public void testDateExtractsImpl() {
 

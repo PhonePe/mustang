@@ -39,10 +39,10 @@ public class MustangException extends RuntimeException {
     }
 
     public static MustangException propagate(final ErrorCode errorCode, final Throwable throwable) {
-        if (throwable instanceof MustangException) {
-            return (MustangException) throwable;
-        } else if (throwable.getCause() instanceof MustangException) {
-            return (MustangException) throwable.getCause();
+        if (throwable instanceof MustangException mustangException) {
+            return mustangException;
+        } else if (throwable.getCause() instanceof MustangException mustangException) {
+            return mustangException;
         }
         return new MustangException(errorCode, throwable);
     }

@@ -25,8 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,7 +64,7 @@ public class ExportImportTest {
     private MustangEngine engine;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         engine = MustangEngine.builder()
                 .mapper(mapper)
@@ -74,7 +72,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testExportImport() throws IOException {
+    public void testExportImport() {
 
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
@@ -163,11 +161,11 @@ public class ExportImportTest {
         Criteria c9 = TautologicalCriteria.generate(CriteriaForm.CNF, "C9");
 
         // Index ingestion
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        final ObjectMapper localMapper = new ObjectMapper();
+        localMapper.setSerializationInclusion(Include.NON_NULL);
+        localMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        localMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
+        localMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         engine.add("testsearch", c1);
         engine.add("testsearch", c11);
@@ -186,7 +184,7 @@ public class ExportImportTest {
         testQuery.put("g", "M");
         // Search query for same criteria
         final RequestContext request = RequestContext.builder()
-                .node(mapper.valueToTree(testQuery))
+                .node(localMapper.valueToTree(testQuery))
                 .build();
         final Set<String> searchResults = engine.search("testsearch", request);
         assertThat(searchResults, hasSize(6));
@@ -200,7 +198,7 @@ public class ExportImportTest {
         assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
 
         final MustangEngine engine1 = MustangEngine.builder()
-                .mapper(mapper)
+                .mapper(localMapper)
                 .build();
         engine1.importIndexGroup("testsearch", indexGroup);
 
@@ -220,7 +218,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testExportNonExistantIndexGroup() throws IOException {
+    public void testExportNonExistantIndexGroup() {
         try {
             engine.exportIndexGroup("nonExistent");
             Assert.fail("should have thrown exception");
@@ -230,7 +228,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testImportFailureDueToPreExistence() throws IOException {
+    public void testImportFailureDueToPreExistence() {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -258,7 +256,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testExportFailure() throws IOException {
+    public void testExportFailure() throws JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -271,16 +269,16 @@ public class ExportImportTest {
                         .build())
                 .build();
         final ObjectMapper mapperMock = mock(ObjectMapper.class);
-        final MustangEngine engine = MustangEngine.builder()
+        final MustangEngine localEngine = MustangEngine.builder()
                 .mapper(mapperMock)
                 .build();
-        engine.add("test", c1);
+        localEngine.add("test", c1);
 
         doThrow(JsonProcessingException.class).when(mapperMock)
                 .writeValueAsString(Mockito.any());
 
         try {
-            engine.exportIndexGroup("test");
+            localEngine.exportIndexGroup("test");
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
             assertEquals(ErrorCode.INDEX_EXPORT_ERROR, e.getErrorCode());
@@ -288,7 +286,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testImportFailure() throws IOException {
+    public void testImportFailure() throws JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -321,7 +319,7 @@ public class ExportImportTest {
     }
 
     @Test
-    public void testSnapshotFailure() throws IOException {
+    public void testSnapshotFailure() throws JsonProcessingException {
         Criteria c1 = DNFCriteria.builder()
                 .id("C1")
                 .conjunction(Conjunction.builder()
@@ -334,16 +332,16 @@ public class ExportImportTest {
                         .build())
                 .build();
         final ObjectMapper mapperMock = mock(ObjectMapper.class);
-        final MustangEngine engine = MustangEngine.builder()
+        final MustangEngine localEngine = MustangEngine.builder()
                 .mapper(mapperMock)
                 .build();
-        engine.add("test", c1);
+        localEngine.add("test", c1);
 
         doThrow(JsonProcessingException.class).when(mapperMock)
                 .writeValueAsString(Mockito.any());
 
         try {
-            engine.snapshot("test");
+            localEngine.snapshot("test");
             Assert.fail("should have thrown exception");
         } catch (MustangException e) {
             assertEquals(ErrorCode.INTERNAL_ERROR, e.getErrorCode());

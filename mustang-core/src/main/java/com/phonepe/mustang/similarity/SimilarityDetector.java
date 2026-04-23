@@ -93,7 +93,7 @@ public class SimilarityDetector {
 
                         final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(buckets.values()
                                 .stream()
-                                .collect(Collectors.toList()));
+                                .toList());
 
                         return cartesianProduct.stream()
                                 .map(list -> {
@@ -101,10 +101,10 @@ public class SimilarityDetector {
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
                                     return JsonUtils.getJsonNodeFromAssignment(mapper, assignment);
                                 })
-                                .collect(Collectors.toList());
+                                .toList();
                     })
                     .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+                    .toList();
 
             return extractSimilarities(allContexts);
         }
@@ -126,7 +126,7 @@ public class SimilarityDetector {
 
                         final Set<List<Pair<String, Object>>> cartesianProduct = Sets.cartesianProduct(buckets.values()
                                 .stream()
-                                .collect(Collectors.toList()));
+                                .toList());
 
                         return cartesianProduct.stream()
                                 .map(list -> {
@@ -134,10 +134,10 @@ public class SimilarityDetector {
                                             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
                                     return JsonUtils.getJsonNodeFromAssignment(mapper, assignment);
                                 })
-                                .collect(Collectors.toList());
+                                .toList();
                     })
                     .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
+                    .toList();
 
             return extractSimilarities(allContexts);
         }
@@ -174,12 +174,12 @@ public class SimilarityDetector {
                     })
                     .filter(Optional::isPresent)
                     .map(map -> (Similarity) map.get())
-                    .collect(Collectors.toList());
+                    .toList();
 
             return SimilarityStats.builder()
                     .overallScenarios(allContexts.size())
                     .overlappingScenarios(similarities.size())
-                    .similarityScore((similarities.size() / allContexts.size()) * 100)
+                    .similarityScore((float) similarities.size() / allContexts.size() * 100)
                     .similarities(similarities)
                     .build();
         }
@@ -195,7 +195,7 @@ public class SimilarityDetector {
 
             return values.stream()
                     .map(value -> Pair.of(lhs, value))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         @Override
