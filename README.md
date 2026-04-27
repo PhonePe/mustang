@@ -1,312 +1,332 @@
 # Mustang
 
+[![CI](https://github.com/PhonePe/mustang/actions/workflows/maven.yml/badge.svg)](https://github.com/PhonePe/mustang/actions/workflows/maven.yml)
+[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_Mustang&metric=alert_status)](https://sonarcloud.io/dashboard?id=PhonePe_Mustang)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_Mustang&metric=coverage)](https://sonarcloud.io/dashboard?id=PhonePe_Mustang)
+[![Maven Central](https://img.shields.io/maven-central/v/com.phonepe/mustang-core.svg)](https://search.maven.org/artifact/com.phonepe/mustang-core)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/java-17%2B-blue.svg)](https://openjdk.org/projects/jdk/17/)
 
-Mustang solves the problem of efficiently indexing Boolean expressions (both Disjunctive Normal Form (DNF) 
-and Conjunctive Normal Form (CNF)) in a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of 
-Boolean expressions that evaluate to true for a given assignment of values to attributes. A solution to this problem 
-has applications in online advertising (where a Boolean expression represents an advertiser’s user targeting 
-requirements, and an assignment of values to attributes represents the characteristics of a user visiting an online 
-page) and in general any targeting system (where a Boolean expression represents a targeting criteria, and an 
-assignment of values to attributes represents an event).
+Mustang solves the problem of efficiently indexing Boolean expressions (both **Disjunctive Normal Form (DNF)** and **Conjunctive Normal Form (CNF)**) in a high-dimensional multi-valued attribute space. The goal is to rapidly find the set of Boolean expressions that evaluate to true for a given assignment of values to attributes.
 
-Mustang presents a novel solution based on the inverted list data structure that enables us to index arbitrarily 
-complex DNF and CNF Boolean expressions over multi-valued attributes. An interesting aspect of our solution is that, 
-by virtue of leveraging inverted lists traditionally used for ranked information retrieval, we can efficiently return 
-the top-N matching Boolean expressions. This capability enables applications such as ranked targeting systems, 
-where only the top targeting criterias that match an event are desired. For example, in online advertising there is a limit 
-on the number of advertisements that can be shown on a given page and only the “best” advertisements can be displayed.
+Applications include:
+- **Online advertising** — Boolean expressions represent advertiser targeting criteria; attribute assignments represent visiting users.
+- **General targeting systems** — Any system where rules/criteria must be matched against incoming events at scale.
 
+Mustang uses an inverted list data structure adapted from ranked information retrieval, enabling it to efficiently return the **top-N matching expressions** — a critical capability in systems with ranked advertising, notifications, or personalization.
 
+---
 
-## Add Maven Dependency
+## Modules
+
+| Module | Description |
+|---|---|
+| `mustang-models` | Domain model: `Criteria`, `Predicate`, `Detail`, `PreOperation`, scoring, ratification types |
+| `mustang-core` | Core indexing & search engine (`MustangEngine`) |
+| `mustang-dw-bundle` | Optional Dropwizard bundle for exposing a REST API over the engine |
+
+---
+
+## Maven Dependency
+
+### Core engine only
 
 ```xml
 <dependency>
   <groupId>com.phonepe</groupId>
-  <artifactId>mustang</artifactId>
-  <version>2.2.3</version>
+  <artifactId>mustang-core</artifactId>
+  <version>3.0.1</version>
 </dependency>
 ```
 
+### With Dropwizard REST bundle
+
+```xml
+<dependency>
+  <groupId>com.phonepe</groupId>
+  <artifactId>mustang-dw-bundle</artifactId>
+  <version>3.0.1</version>
+</dependency>
+```
+
+---
+
 ## Overview
 
-Mustang allows indexing Boolean Expressions in high-dimensional multi-valued attribute space.
+### Criteria forms
 
-	`Criteria` represents the boolean expressions in one of the two normalized forms.
+`Criteria` represents a Boolean expression in one of two normalized forms:
 
-- DNF : Disjunctive Normal Form, which is a disjunction of conjunctions
+- **DNF** (Disjunctive Normal Form) — disjunction of conjunctions
+  `(A ∈ {a1,a2} ∧ B ∉ {b1,b2}) ∨ (A ∈ {a1,a3} ∧ D ∉ {d1})`
 
-	`(A ∈ {a1, a2} ∧ B ∉ {b1, b2} ∧ C ∈ {c1}) ∨ (A ∈ {a1, a3} ∧ D ∉ {d1})`
+- **CNF** (Conjunctive Normal Form) — conjunction of disjunctions
+  `(A ∈ {a1,a2} ∨ B ∉ {b1,b2}) ∧ (A ∈ {a1,a3} ∨ D ∉ {d1})`
 
-- CNF : Conjunctive Normal Form, which is a conjunction of disjunctions
+### Compositions and predicates
 
-	`(A ∈ {a1, a2} ∨ B ∉ {b1, b2} ∨ C ∈ {c1}) ∧ (A ∈ {a1, a3} ∨ D ∉ {d1})`
+`Composition` is a set of `Predicate`s:
+- `Conjunction (∧)` — satisfied only when **all** constituent predicates evaluate to `true`
+- `Disjunction (∨)` — satisfied when **any** constituent predicate evaluates to `true`
 
+`Predicate` is a conditional:
+- `IncludedPredicate` — inclusion (∈)
+- `ExcludedPredicate` — exclusion (∉)
 
-`Composition` is a set of `Predicate`(s). Depending upon how the constituent results are considered, it could be either :
+### Detail types
 
-- `Conjunction(∧)` is satisfied only when all constituent predicates evaluate to true.
-- `Disjunction(∨)` is satisfied when any of the constituent predicates evaluate to true.
+`Detail` carries the caveat that a predicate enforces:
 
+| `Detail` | `Caveat` |
+|---|---|
+| `EqualityDetail` | `EQUALITY` |
+| `RegexDetail` | `REGEX` |
+| `RangeDetail` | `RANGE` (gt, gte, lt, lte, between — open & closed) |
+| `VersioningDetail` | `VERSIONING` |
+| `SubSetDetail` | `SUBSET` |
+| `SuperSetDetail` | `SUPERSET` |
+| `EqualSetDetail` | `EQUALSET` |
+| `ExistenceDetail` | `EXISTENCE` (attribute must be present) |
+| `NonExistenceDetail` | `NON_EXISTENCE` (attribute must be absent) |
 
+### Caveat support across data types
 
-`Predicate` is a conditional and has the `Detail` that needs to be satisfied.
+| `Caveat` | Data Types |
+|---|---|
+| `EQUALITY` | String, Number, Boolean |
+| `SUBSET` | Collections (List, Set) |
+| `SUPERSET` | Collections (List, Set) |
+| `EQUALSET` | Collections (List, Set) |
+| `REGEX` | String |
+| `RANGE` | Number |
+| `VERSIONING` | String |
+| `EXISTENCE` | Any |
+| `NON_EXISTENCE` | Any |
 
-- `INCLUDED` to indicate inclusion.
-- `EXCLUDED` to indicate exclusion.
+### PreOperations
 
-Further, Mustang allows for logical grouping of `Criteria`(s) when indexing through identification by a name.
-`Criteria` of any form can be indexed into an index-group. And searches are always directed to a specific index-group.
+`PreOperation`s allow lightweight transformations on attribute values before evaluation:
 
+| PreOperation | Description |
+|---|---|
+| `SubStringPreOperation` | Extract substring by index range |
+| `ModuloPreOperation` | Compute `value % rhs` |
+| `DivisionPreOperation` | Compute `value / rhs` |
+| `MultiplicationPreOperation` | Compute `value * rhs` |
+| `AdditionPreOperation` | Compute `value + rhs` |
+| `SubtractionPreOperation` | Compute `value - rhs` |
+| `LengthPreOperation` | Returns string/collection length |
+| `SizePreOperation` | Returns collection size |
+| `BinaryConversionPreOperation` | Convert number to binary string |
+| `DateTimePreOperation` | Extract date/time component |
 
-`Detail` holds the information about the `Caveat` that needs to be satisfied. `Detail` can be predominantly of three types :
+---
 
-- `EqualityDetail` to enforce `EQUALITY` caveat.
-- `RegexDetail` to enforce `REGEX` caveat.
-- `RangeDetail` to enforce `RANGE` caveat. Supports all flavors - greater_than, greater_than_equals, less_than, less_than_equals and between (both open & closed).
-- `VersioningDetail` to enforce easier version checks.
+## Usage
 
+### Initialize the engine
 
-Below table summarizes `Caveat` support across data types -
-
-| `Caveat `    | Data Types Supported      |
-| :--------   | :------------------------ |
-| `EQUALITY`   | String, Number, Boolean   |
-| `REGEX`      | String                    |
-| `RANGE`      | Number                    |
-| `VERSIONING` | String                    |
-
-
-
-### Usage
-
-#### Initializing Mustang Engine
-
-``` java
+```java
 ObjectMapper mapper = new ObjectMapper();
 MustangEngine engine = MustangEngine.builder().mapper(mapper).build();
 ```
 
+### Define a DNF criteria
 
-#### Defining DNF criteria
-
-``` java
+```java
 Criteria dnf = DNFCriteria.builder()
-                .id("C1") // id we would get back should this criteria match a given assignment
-                .conjunction(Conjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.a")
-                                .detail(EqualityDetail.builder()
-                                        .values(Sets.newHashSet("A1", "A2", "A3"))
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(RangeDetail.builder() // example for greater_than_equals
-                                        .lowerBound(3)
-                                        .includeLowerBound(true)
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.x")
-                                .detail(RangeDetail.builder() // example for less_than
-                                        .upperBound(3)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
+    .id("C1")
+    .conjunction(Conjunction.builder()
+        .predicate(IncludedPredicate.builder()
+            .lhs("$.a")
+            // Optional: transform the attribute value before matching
+            .preOperation(SubStringPreOperation.builder().beginIndex(1).endIndex(2).build())
+            .detail(EqualityDetail.builder()
+                .values(Sets.newHashSet("A1", "A2", "A3"))
+                .build())
+            .build())
+        .predicate(IncludedPredicate.builder()
+            .lhs("$.n")
+            .detail(RangeDetail.builder()
+                .lowerBound(3)
+                .includeLowerBound(true) // n >= 3
+                .build())
+            .build())
+        .predicate(IncludedPredicate.builder()
+            .lhs("$.x")
+            .preOperation(ModuloPreOperation.builder().rhs(4).build())
+            .detail(RangeDetail.builder()
+                .upperBound(3) // (x % 4) < 3
+                .build())
+            .build())
+        .build())
+    .build();
 ```
 
-#### Defining CNF criteria
+### Define a CNF criteria
 
-``` java
+```java
 Criteria cnf = CNFCriteria.builder()
-                .id("C2") // id we would get back should this criteria match a given assignment
-                .disjunction(Disjunction.builder()
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.a")
-                                .detail(EqualityDetail.builder()
-                                        .values(Sets.newHashSet("A1", "A2"))
-                                        .build())
-                                .build())
-                        .predicate(ExcludedPredicate.builder()
-                                .lhs("$.b")
-                                .detail(RegexDetail.builder()
-                                        .regex("B.?")
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.n")
-                                .detail(EqualityDetail.builder()
-                                        .values(Sets
-                                                .newHashSet(0.000000000000001, 0.000000000000002, 0.000000000000003))
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.x")
-                                .detail(RangeDetail.builder() // Example for lesser_than_equals
-                                        .upperBound(7)
-                                        .includeUpperBound(true)
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.p")
-                                .detail(EqualityDetail.builder()
-                                        .values(Sets.newHashSet(true))
-                                        .build())
-                                .build())
-                        .predicate(IncludedPredicate.builder()
-                                .lhs("$.v")
-                                .detail(VersioningDetail.builder()
-                                        .check(CheckType.ABOVE)
-                                        .baseVersion("1.2.3.4-alpha") // good coverage across formats
-                                        .build())
-                                .build())
-                        .build())
-                .build();
+    .id("C2")
+    .disjunction(Disjunction.builder()
+        .predicate(IncludedPredicate.builder()
+            .lhs("$.a")
+            .detail(EqualityDetail.builder()
+                .values(Sets.newHashSet("A1", "A2"))
+                .build())
+            .build())
+        .predicate(ExcludedPredicate.builder()
+            .lhs("$.b")
+            .detail(RegexDetail.builder()
+                .regex("B.?")
+                .build())
+            .build())
+        .predicate(IncludedPredicate.builder()
+            .lhs("$.v")
+            .detail(VersioningDetail.builder()
+                .check(CheckType.ABOVE)
+                .baseVersion("1.2.3.4-alpha")
+                .build())
+            .build())
+        .build())
+    .build();
 ```
 
-#### Indexing criteria
-
-Index a single criteria
+### Index criteria
 
 ```java
-engine.add("index_name", criteria)
+// Single
+engine.add("my_index", criteria);
+
+// Bulk
+engine.add("my_index", Arrays.asList(criteria1, criteria2, criteria3));
 ```
 
-OR 
-
-Multiple criteria(s) at once.
+### Search
 
 ```java
-engine.add("index_name", Arrays.asList(criteria1, criteria2, ...));
-```
-
-#### Searching criteria matching an assignment
-
-An assignment is a set of attribute name and value pairs. Json is a very good example of multiple-level K-V pairs.
-
-Example : `JsonNode event = { "a" : "A1", "b" : "B3", "n" : 5, "p" : true }`
-
-First we need to build the context -
-
-```java
+// Build the evaluation context from a JSON event
+JsonNode event = mapper.readTree("{\"a\":\"A1\",\"b\":\"B3\",\"n\":5,\"p\":true}");
 EvaluationContext context = EvaluationContext.builder().node(event).build();
+
+// Search (with scoring/ranking)
+Set<String> results = engine.search("my_index", context);
+
+// Search (skip scoring for raw speed)
+Set<String> results = engine.search("my_index", context, false);
 ```
 
-And search it in the required index - 
-
-``` java
-Set<String> searchResults = engine.search("index_name",context);
-```
-
-which returns a set of id(s) of all matching criteria(s) in an ordered manner (More on this in the topN section).
-
-At times, an ordered list is not required, in which case, we can skip the scoring part as below.
-
-``` java
-Set<String> searchResults = engine.search("index_name",context, false);
-```
-
-
-#### Searching TOP N criteria matching an assignment
-
-We would need to supply the weights for each of the `predicates` to arrive at a notion of scores for any `Criteria`.
-These are then leveraged to sort rank the top N criteria.
-
-Score of a criteria - `E` reflects its relevance wrt to an assignment - `S`.
-
-If E is a conjunction of ∈ and ∉ predicates, the score of E is defined as
-
-Score<sub>conj</sub>(E,S) = \sum _{(A,v) \in IN(E) \cap S} w_{E}(A,v) * w_{S}(A,v)
-
-where 
-- IN (E ) is the set of all attribute name and value pairs in the ∈ predicates of E (we ignore scoring ∉ predicates)
-- w<sub>E</sub> (A, v) is the weight of the pair (A, v) in E 
-- w<sub>S</sub> (A, v) is the weight of the pair (A, v) in S
-
-Scores of different `Criteria` are defined as below :
-
-- Score of a `DNFCriteria` is defined as the maximum of the scores of the conjunctions.
-- Score of a `CNFCriteria` is defined as sum of the scores of the disjunctions.
-
-
-#### Updating an already indexed Criteria
-
-Update the already indexed criteria.
+### Update and delete
 
 ```java
-engine.update("index_name", criteria)
+engine.update("my_index", updatedCriteria);  // upsert semantics
+engine.delete("my_index", criteria);
 ```
 
-PS :
-- `update` is NOT limited to only already indexed `criteria`. If `criteria` is not already indexed, behavior will be akin to `add`.
-- Successive `add` operations to index a given `criteria` (identified by `criteriaId`) are not allowed.
-- For changes in any Criteria thats already indexed to reflect in the index, `update` is the way to go.
-- Post the `update` operation, for all practical purposes, only the newer version of `criteria` will be considered for searches.
-
-
-#### Deleting an already indexed Criteria
-
-Delete an already indexed criteria.
+### Scan (evaluate a list in-memory)
 
 ```java
-engine.delete("index_name", criteria)
+List<Criteria> matching = engine.scan(criteriaList, context);
 ```
 
-PS :
-- `delete` is limited to only already indexed `criteria`.
-- Post the `delete` operation, for all practical purposes, deleted `criteria` will not be considered for searches.
-
-
-#### Support for scanning
-
-Mustang provides support for scanning a list of `Criteria` against a `context` and arriving at the satisfying ones.
+### Evaluate a single criteria
 
 ```java
-List<Criteria> matchingCriterias = engine.scan(criterias, context);
+boolean result = engine.evaluate(criteria, context);
 ```
 
-#### Support for evaluating a specific criteria
-
-A specific `Criteria` can also be evaluated against a given `context` to pull out the result.
+### Index replacement (atomic swap)
 
 ```java
-boolean result = evaluate(criteria, context);
+// Build a fresh index under a temp name, then atomically replace
+engine.add("my_index_new", allCriteria);
+engine.replace("my_index", "my_index_new");
 ```
 
-#### Index Replacement
-
-At times we may need to update/delete a bunch of `Criteria`s. Also, we may not know which all `Criteria`s have already been indexed that needs deletion. In such cases, it is recommended to go for building a new index ground-up and replace it with the existing required index.  So, one can build up a temporary index and replace this temporary index with the existing / old index. Index replacement is an atomic operation. Creation of a temporary index would need extra head room in the heap but wouldn't hold onto the extra memory post replacement.
+### Ratification (anomaly detection)
 
 ```java
-replace(oldIndex, newIndex);
+engine.ratify("my_index");  // run in background
+
+// Poll for results
+RatificationResult result = engine.getRatificationResult("my_index");
 ```
 
-
-#### Index Ratification
-
-Ratification is a predictable way of identifying anomalies in search results for a given index. Its a very detailed process that looks out for discrepancies between the search results and the scan results for all possible `Query` combinations. As the size of the index grows, needless to say, this will take more time and hence should be used judiciously and sparingly. Suggested way is to invoke ratification when changes done onto an index (such as `add`,`update`,`delete`,`replace`) are SUSPECT.
+### Similarity detection
 
 ```java
-engine.ratify(indexName); // This triggers the ratification process in the background
-RatificationResult result = engine.getRatificationResult(indexName); // Check back the results after a while
+SimilarityStats stats = engine.checkSimilarity("my_index", candidateCriteria);
 ```
 
-
-#### Debuggability Support : Export/Import Index Group
-
-
-To aid in debugging, there is an export & import functionality provided on the index group.
+### Export / Import (for debugging)
 
 ```java
-String indexGroup = remoteMustangEngine.exportIndexGroup("index_name");
-
-localMustangEngine.importIndexGroup(indexGroup);
-
-// Try out searches on this index group now.
-Set<String> searchResults = localMustangEngine.search("index_name",context);
-
+String exported = engine.exportIndexGroup("my_index");
+engine.importIndexGroup(exported);
+Set<String> results = engine.search("my_index", context);
 ```
 
+### Top-N ranked search
 
+Supply weights on predicates and the engine scores criteria based on overlap with the assignment:
+
+```java
+// Score_conj(E, S) = Σ w_E(A,v) * w_S(A,v)  for (A,v) ∈ IN(E) ∩ S
+// DNFCriteria score = max over conjunctions
+// CNFCriteria score = sum over disjunctions
+```
+
+---
+
+## Dropwizard Bundle
+
+`mustang-dw-bundle` exposes read-only REST endpoints over a `MustangEngine` instance:
+
+```java
+// In your Application class
+bootstrap.addBundle(new MustangBundle<>(config -> config.getMustangConfig()));
+```
+
+Endpoints include `/mustang/search`, `/mustang/scan`, `/mustang/debug`, and `/mustang/ratify`.
+
+---
+
+## Backward Compatibility
+
+`3.x` is fully backward-compatible with `2.x`. Necessary transformations are applied transparently. All users on `2.x` are encouraged to upgrade.
+
+---
+
+---
+
+## Documentation
+
+Full documentation is available at the [project docs site](https://phonepe.github.io/mustang/).
+
+To build the docs locally:
+
+```bash
+cd docs
+pip install -r requirements.txt
+zensical build --clean
+# Output is in docs/site/
+```
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Code of Conduct
+
+See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## License
+
+Distributed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
+
+## Academic Reference
+
+The core indexing algorithm is based on:  
+**"Indexing Boolean Expressions"** — Proceedings of VLDB 2009. See [`reference/vldb09-indexing.pdf`](reference/vldb09-indexing.pdf).
