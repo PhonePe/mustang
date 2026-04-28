@@ -124,7 +124,7 @@
 
         <!-- Sonar / JaCoCo -->
         <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
-        <sonar.projectKey>PhonePe_Mustang</sonar.projectKey>
+        <sonar.projectKey>PhonePe_mustang</sonar.projectKey>
         <sonar.organization>phonepe</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.sources>src/main</sonar.sources>

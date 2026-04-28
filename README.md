@@ -35,7 +35,7 @@ Mustang uses an inverted list data structure adapted from ranked information ret
 <dependency>
   <groupId>com.phonepe</groupId>
   <artifactId>mustang-core</artifactId>
-  <version>3.0.1</version>
+  <version>${mustang.version}</version>
 </dependency>
 ```
 
@@ -45,9 +45,11 @@ Mustang uses an inverted list data structure adapted from ranked information ret
 <dependency>
   <groupId>com.phonepe</groupId>
   <artifactId>mustang-dw-bundle</artifactId>
-  <version>3.0.1</version>
+  <version>${mustang.version}</version>
 </dependency>
 ```
+
+> **Note:** Find the latest version on [Maven Central](https://search.maven.org/artifact/com.phonepe/mustang).
 
 ---
 

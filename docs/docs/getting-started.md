@@ -19,7 +19,7 @@ This guide takes you from zero to a running index and search in about 5 minutes.
     <dependency>
       <groupId>com.phonepe</groupId>
       <artifactId>mustang-core</artifactId>
-      <version>3.0.1</version>
+      <version>${mustang.version}</version>
     </dependency>
     ```
 
@@ -29,11 +29,13 @@ This guide takes you from zero to a running index and search in about 5 minutes.
     <dependency>
       <groupId>com.phonepe</groupId>
       <artifactId>mustang-dw-bundle</artifactId>
-      <version>3.0.1</version>
+      <version>${mustang.version}</version>
     </dependency>
     ```
 
     The DW bundle transitively includes `mustang-core`.
+
+> **Note:** Find the latest version on [Maven Central](https://search.maven.org/artifact/com.phonepe/mustang).
 
 ---
 
