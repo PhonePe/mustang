@@ -1,8 +1,8 @@
 # Mustang
 
 [![CI](https://github.com/PhonePe/mustang/actions/workflows/maven.yml/badge.svg)](https://github.com/PhonePe/mustang/actions/workflows/maven.yml)
-[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_Mustang&metric=alert_status)](https://sonarcloud.io/dashboard?id=PhonePe_Mustang)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_Mustang&metric=coverage)](https://sonarcloud.io/dashboard?id=PhonePe_Mustang)
+[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_mustang&metric=alert_status)](https://sonarcloud.io/dashboard?id=PhonePe_mustang)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=PhonePe_mustang&metric=coverage)](https://sonarcloud.io/dashboard?id=PhonePe_mustang)
 [![Maven Central](https://img.shields.io/maven-central/v/com.phonepe/mustang-core.svg)](https://search.maven.org/artifact/com.phonepe/mustang-core)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/java-17%2B-blue.svg)](https://openjdk.org/projects/jdk/17/)
