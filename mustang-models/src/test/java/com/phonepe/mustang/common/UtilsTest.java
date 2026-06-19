@@ -155,6 +155,25 @@ public class UtilsTest {
     }
 
     @Test
+    public void testHasIntersectionTrue() {
+        List<Object> lhs = Arrays.asList("A", "B");
+        Set<Object> rhs = new HashSet<>(Arrays.asList("B", "C"));
+        Assert.assertTrue(Utils.hasIntersection(lhs, rhs));
+    }
+
+    @Test
+    public void testHasIntersectionFalse() {
+        List<Object> lhs = Arrays.asList("A", "B");
+        Set<Object> rhs = new HashSet<>(Arrays.asList("C", "D"));
+        Assert.assertFalse(Utils.hasIntersection(lhs, rhs));
+    }
+
+    @Test
+    public void testHasIntersectionNonCollection() {
+        Assert.assertFalse(Utils.hasIntersection("A", new HashSet<>(Arrays.asList("A"))));
+    }
+
+    @Test
     public void testGetNodeValue() {
         Map<String, Object> data = new HashMap<>();
         data.put("key", "value");

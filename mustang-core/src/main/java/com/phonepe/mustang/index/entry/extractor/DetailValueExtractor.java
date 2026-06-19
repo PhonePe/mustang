@@ -26,6 +26,7 @@ import com.phonepe.mustang.detail.impl.SubSetDetail;
 import com.phonepe.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.mustang.detail.impl.IntersectionDetail;
 import com.phonepe.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.mustang.detail.impl.RangeDetail;
 import com.phonepe.mustang.detail.impl.RegexDetail;
@@ -60,6 +61,11 @@ public final class DetailValueExtractor implements DetailVisitor<Set<Object>> {
 
     @Override
     public Set<Object> visit(SuperSetDetail detail) {
+        return Collections.singleton(detail.getValues());
+    }
+
+    @Override
+    public Set<Object> visit(IntersectionDetail detail) {
         return Collections.singleton(detail.getValues());
     }
 

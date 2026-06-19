@@ -88,6 +88,7 @@ Mustang uses an inverted list data structure adapted from ranked information ret
 | `SubSetDetail` | `SUBSET` |
 | `SuperSetDetail` | `SUPERSET` |
 | `EqualSetDetail` | `EQUALSET` |
+| `IntersectionDetail` | `INTERSECTION` |
 | `ExistenceDetail` | `EXISTENCE` (attribute must be present) |
 | `NonExistenceDetail` | `NON_EXISTENCE` (attribute must be absent) |
 
@@ -99,6 +100,7 @@ Mustang uses an inverted list data structure adapted from ranked information ret
 | `SUBSET` | Collections (List, Set) |
 | `SUPERSET` | Collections (List, Set) |
 | `EQUALSET` | Collections (List, Set) |
+| `INTERSECTION` | Collections (List, Set) |
 | `REGEX` | String |
 | `RANGE` | Number |
 | `VERSIONING` | String |

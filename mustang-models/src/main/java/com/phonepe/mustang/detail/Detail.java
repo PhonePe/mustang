@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.phonepe.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.mustang.detail.impl.IntersectionDetail;
 import com.phonepe.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.mustang.detail.impl.RangeDetail;
 import com.phonepe.mustang.detail.impl.RegexDetail;
@@ -43,6 +44,7 @@ import lombok.Data;
         @JsonSubTypes.Type(name = Caveat.SUBSET_TEXT, value = SubSetDetail.class),
         @JsonSubTypes.Type(name = Caveat.EQUALSET_TEXT, value = EqualSetDetail.class),
         @JsonSubTypes.Type(name = Caveat.SUPERSET_TEXT, value = SuperSetDetail.class),
+        @JsonSubTypes.Type(name = Caveat.INTERSECTION_TEXT, value = IntersectionDetail.class),
         @JsonSubTypes.Type(name = Caveat.REGEX_TEXT, value = RegexDetail.class),
         @JsonSubTypes.Type(name = Caveat.RANGE_TEXT, value = RangeDetail.class),
         @JsonSubTypes.Type(name = Caveat.VERSIONING_TEXT, value = VersioningDetail.class) })

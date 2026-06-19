@@ -72,6 +72,11 @@ public final class CaveatEnforcer implements Caveat.Visitor<Boolean> {
     }
 
     @Override
+    public Boolean visitIntersection() {
+        return Utils.hasIntersection(lhsValue, key.getValue());
+    }
+
+    @Override
     public Boolean visitRegexMatch() {
         if (Objects.nonNull(lhsValue) && String.class.isAssignableFrom(lhsValue.getClass())) {
             return lhsValue.toString()

@@ -42,6 +42,7 @@ import com.phonepe.mustang.detail.DetailVisitor;
 import com.phonepe.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.mustang.detail.impl.IntersectionDetail;
 import com.phonepe.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.mustang.detail.impl.RangeDetail;
 import com.phonepe.mustang.detail.impl.RegexDetail;
@@ -234,6 +235,11 @@ public class SimilarityDetector {
 
         @Override
         public Set<Object> visit(SuperSetDetail detail) {
+            return detail.getValues();
+        }
+
+        @Override
+        public Set<Object> visit(IntersectionDetail detail) {
             return detail.getValues();
         }
 

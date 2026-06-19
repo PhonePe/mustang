@@ -15,7 +15,7 @@ Traditional approaches evaluate each rule against every incoming event — an O(
 | **DNF & CNF** | Index arbitrary conjunctions and disjunctions over multi-valued attributes |
 | **Sub-linear search** | Inverted-list merge; complexity proportional to matching entries, not total index size |
 | **Top-N ranked results** | Built-in scoring returns the highest-relevance matches first |
-| **Rich predicate types** | Equality, Range, Regex, Versioning, Subset/Superset/EqualSet, Existence |
+| **Rich predicate types** | Equality, Range, Regex, Versioning, Subset/Superset/EqualSet/Intersection, Existence |
 | **PreOperations** | Transform attribute values (modulo, substring, date extraction, …) before matching |
 | **UNF (Unrestricted Normal Form)** | Compose arbitrary nested criteria trees beyond pure DNF/CNF |
 | **Live mutations** | Add, update, delete, and atomically replace entire index groups |
