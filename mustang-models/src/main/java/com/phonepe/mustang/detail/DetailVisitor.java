@@ -19,6 +19,7 @@ package com.phonepe.mustang.detail;
 import com.phonepe.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.mustang.detail.impl.IntersectionDetail;
 import com.phonepe.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.mustang.detail.impl.RangeDetail;
 import com.phonepe.mustang.detail.impl.RegexDetail;
@@ -39,6 +40,8 @@ public interface DetailVisitor<T> {
     T visit(EqualSetDetail detail);
 
     T visit(SuperSetDetail detail);
+
+    T visit(IntersectionDetail detail);
 
     T visit(RegexDetail detail);
 

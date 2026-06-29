@@ -56,6 +56,7 @@ import com.phonepe.mustang.detail.impl.CheckType;
 import com.phonepe.mustang.detail.impl.EqualSetDetail;
 import com.phonepe.mustang.detail.impl.EqualityDetail;
 import com.phonepe.mustang.detail.impl.ExistenceDetail;
+import com.phonepe.mustang.detail.impl.IntersectionDetail;
 import com.phonepe.mustang.detail.impl.NonExistenceDetail;
 import com.phonepe.mustang.detail.impl.RangeDetail;
 import com.phonepe.mustang.detail.impl.RegexDetail;
@@ -6512,6 +6513,183 @@ public class SearchTest {
                 RequestContext.builder()
                         .node(mapper.readValue(testQuery, JsonNode.class))
                         .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFPositiveIntersectionMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = DNFCriteria.builder()
+                .id("C2")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("A4", "A5"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", Lists.newArrayList("A2", "A3"));
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFNoIntersectionMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", Lists.newArrayList("A8", "A9"));
+
+        engine.add("test", c1);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        assertThat(searchResults, is(empty()));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFIntersectionWithNonCollectionQuery() throws Exception {
+        // When the query value is not a collection, intersection never matches.
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", "A1");
+
+        engine.add("test", c1);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        assertThat(searchResults, is(empty()));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testCNFPositiveIntersectionMatch() throws Exception {
+        Criteria c1 = CNFCriteria.builder()
+                .id("C1")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("A1", "A2"))
+                                        .build())
+                                .build())
+                        .build())
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("B1", "B2"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Criteria c2 = CNFCriteria.builder()
+                .id("C2")
+                .disjunction(Disjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.b")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet("B8", "B9"))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", Lists.newArrayList("A2", "A3"));
+        testQuery.put("b", Lists.newArrayList("B2", "B3"));
+
+        engine.add("test", c1);
+        engine.add("test", c2);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
+        assertThat(searchResults, hasSize(1));
+        assertThat(searchResults, contains("C1"));
+
+        engine.ratify("test");
+        final RatificationResult ratificationResult = engine.getRatificationResult("test");
+        assertThat(ratificationResult.getStatus(), is(true));
+        assertThat(ratificationResult.getAnamolyDetails(), is(empty()));
+    }
+
+    @Test
+    public void testDNFIntegerIntersectionMatch() throws Exception {
+        Criteria c1 = DNFCriteria.builder()
+                .id("C1")
+                .conjunction(Conjunction.builder()
+                        .predicate(IncludedPredicate.builder()
+                                .lhs("$.a")
+                                .detail(IntersectionDetail.builder()
+                                        .values(Sets.newHashSet(1, 2, 3))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        Map<String, Object> testQuery = Maps.newHashMap();
+        testQuery.put("a", Lists.newArrayList(3, 4, 5));
+
+        engine.add("test", c1);
+        final Set<String> searchResults = engine.search("test", RequestContext.builder()
+                .node(mapper.valueToTree(testQuery))
+                .build());
         assertThat(searchResults, hasSize(1));
         assertThat(searchResults, contains("C1"));
 

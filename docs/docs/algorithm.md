@@ -235,7 +235,7 @@ Where `IN(E)` = all keys from `∈` predicates of `E` (exclusions are not scored
 
 Mustang extends the core VLDB algorithm with:
 
-- **Multi-caveat predicates**: Beyond `∈`/`∉` equality, Mustang supports `RANGE`, `REGEX`, `VERSIONING`, `SUBSET`, `SUPERSET`, `EQUALSET`, `EXISTENCE`, `NON_EXISTENCE` — all evaluated by `CaveatEnforcer` after the posting-list merge identifies candidates.
+- **Multi-caveat predicates**: Beyond `∈`/`∉` equality, Mustang supports `RANGE`, `REGEX`, `VERSIONING`, `SUBSET`, `SUPERSET`, `EQUALSET`, `INTERSECTION`, `EXISTENCE`, `NON_EXISTENCE` — all evaluated by `CaveatEnforcer` after the posting-list merge identifies candidates.
 - **PreOperations**: Value transformation before predicate evaluation — e.g., `x % 4`, `substring(x, 1, 3)`, `dateExtract(x, YEAR)`.
 - **UNFCriteria**: Unrestricted Normal Form — arbitrary nesting of criteria trees, evaluated recursively without indexing (useful for low-cardinality rule sets or complex compositions).
 - **Ratification**: A background process that cross-checks the inverted index against a brute-force scan across a sample of possible assignments, detecting any indexing anomalies.

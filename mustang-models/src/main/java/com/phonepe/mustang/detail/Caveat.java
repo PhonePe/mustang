@@ -66,6 +66,12 @@ public enum Caveat {
             return visitor.visitSuperSet();
         }
     },
+    INTERSECTION(Caveat.INTERSECTION_TEXT) {
+        @Override
+        public <T> T visit(Visitor<T> visitor) {
+            return visitor.visitIntersection();
+        }
+    },
     REGEX(Caveat.REGEX_TEXT) {
         @Override
         public <T> T visit(Visitor<T> visitor) {
@@ -95,6 +101,7 @@ public enum Caveat {
     public static final String SUBSET_TEXT = "SUBSET";
     public static final String EQUALSET_TEXT = "EQUALSET";
     public static final String SUPERSET_TEXT = "SUPERSET";
+    public static final String INTERSECTION_TEXT = "INTERSECTION";
     public static final String REGEX_TEXT = "REGEX";
     public static final String RANGE_TEXT = "RANGE";
     public static final String VERSIONING_TEXT = "VERSIONING";
@@ -116,6 +123,8 @@ public enum Caveat {
         T visitEqualSet();
 
         T visitSuperSet();
+
+        T visitIntersection();
 
         T visitRegexMatch();
 

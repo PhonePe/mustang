@@ -206,6 +206,29 @@ EqualSetDetail.builder()
 
 ---
 
+### `IntersectionDetail` — non-empty intersection check
+
+Tests whether the attribute collection and the detail's value set share **at least one common element** — i.e., their intersection is non-empty. Returns `true` if any element matches, `false` otherwise.
+
+```java
+IntersectionDetail.builder()
+    .values(Sets.newHashSet("ADMIN", "EDITOR"))
+    .build()
+```
+
+**Example — user must hold at least one privileged role:**
+
+```java
+IncludedPredicate.builder()
+    .lhs("$.roles")
+    .detail(IntersectionDetail.builder()
+        .values(Sets.newHashSet("ADMIN", "EDITOR"))
+        .build())
+    .build()
+```
+
+---
+
 ### `ExistenceDetail` — attribute must be present
 
 Tests that the attribute path exists (is non-null) in the event.
@@ -246,6 +269,7 @@ NonExistenceDetail.builder().build()
 | `SUBSET` | — | — | — | ✓ |
 | `SUPERSET` | — | — | — | ✓ |
 | `EQUALSET` | — | — | — | ✓ |
+| `INTERSECTION` | — | — | — | ✓ |
 | `EXISTENCE` | ✓ | ✓ | ✓ | ✓ |
 | `NON_EXISTENCE` | ✓ | ✓ | ✓ | ✓ |
 

@@ -109,6 +109,14 @@ public class Utils {
         return false;
     }
 
+    public static boolean hasIntersection(Object lhsValue, Object rhsValue) {
+        if (isCollection(lhsValue)) {
+            return ((Collection<?>) lhsValue).stream()
+                    .anyMatch(((Set<?>) rhsValue)::contains);
+        }
+        return false;
+    }
+
     public static Object getNodeValue(final JsonNode node, final String path) {
         return getNodeValue(JsonPath.parse(node.toString(), Utils.JSONPATH_CONFIGURATION), JsonPath.compile(path), null);
     }
