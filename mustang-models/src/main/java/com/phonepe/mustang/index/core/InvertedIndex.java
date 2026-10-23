@@ -18,6 +18,7 @@ package com.phonepe.mustang.index.core;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -25,11 +26,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 import com.phonepe.mustang.criteria.CriteriaForm;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
@@ -40,6 +47,33 @@ public abstract class InvertedIndex<T> {
     private final Map<Integer, Map<Key, TreeMap<Integer, T>>> table = Maps.newConcurrentMap();
     private final Map<String, PriorityQueue<Integer>> idCache = Maps.newConcurrentMap();
     private final Map<Integer, TreeSet<Integer>> linkages = Maps.newConcurrentMap();
+    /**
+     * Derived, per conjunction/disjunction size lookups over {@link #table}. Never serialised; rebuilt lazily
+     * whenever the posting-list map for a size is replaced by the indexers.
+     */
+    @JsonIgnore
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private final transient Map<Integer, EqualityKeyLookup> equalityKeyLookups = Maps.newConcurrentMap();
+
+    /**
+     * Returns the equality key lookup for the given size, rebuilding it if the posting-list map has been replaced
+     * since it was last built.
+     *
+     * @param size         conjunction (DNF) or disjunction (CNF) size, i.e. the key of {@link #table}
+     * @param postingLists the current posting-list map for that size
+     */
+    public EqualityKeyLookup getEqualityKeyLookup(final int size, final Map<Key, ?> postingLists) {
+        final EqualityKeyLookup existing = equalityKeyLookups.get(size);
+        if (Objects.nonNull(existing) && existing.getSource() == postingLists) {
+            return existing;
+        }
+        final EqualityKeyLookup rebuilt = EqualityKeyLookup.of(postingLists);
+        equalityKeyLookups.put(size, rebuilt);
+        return rebuilt;
+    }
 
     public Integer getInternalIdFromCache(final String externalId) {
         return idCache.computeIfAbsent(externalId, x -> {
