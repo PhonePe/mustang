@@ -32,13 +32,13 @@ import lombok.Getter;
 import lombok.Value;
 
 /**
- * Read-only lookup over the keys of one posting-list map (one entry of {@link InvertedIndex#getTable()}).
+ * Read-only lookup over the keys of one posting-list map (one entry of {@code InvertedIndex#getTable()}).
  *
  * <p>
  * {@link Caveat#EQUALITY} keys whose value has well defined equality semantics (strings, booleans and standard
  * numbers) are bucketed by {@code (path, preOperations)} and then by a normalised value, so that the keys
  * matching a request can be found with a hash lookup instead of evaluating every key. All other keys (other caveats,
- * or equality keys with any other value type) are kept in {@link #getScanKeys()} and must be evaluated one by one,
+ * or equality keys with any other value type) are kept in {@code getScanKeys()} and must be evaluated one by one,
  * exactly as before.
  * </p>
  *
@@ -49,7 +49,7 @@ import lombok.Value;
  *
  * <p>
  * The lookup is a pure function of the source map. The source map is never mutated by the indexers (they always
- * install a new map instance), so a lookup stays valid as long as {@link #getSource()} is the current map.
+ * install a new map instance), so a lookup stays valid as long as {@code getSource()} is the current map.
  * </p>
  */
 @Getter
