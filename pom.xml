@@ -93,10 +93,10 @@
         <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
         <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
-        <sonatype.central.publishing.maven.plugin.version>0.5.0</sonatype.central.publishing.maven.plugin.version>
+        <sonatype.central.publishing.maven.plugin.version>0.12.0</sonatype.central.publishing.maven.plugin.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-        <maven.sonar.plugin.version>3.9.1.2184</maven.sonar.plugin.version>
+        <maven.sonar.plugin.version>5.7.0.6970</maven.sonar.plugin.version>
         <maven.surefire.plugin.version>3.2.5</maven.surefire.plugin.version>
         <central.publishing.plugin.version>0.5.0</central.publishing.plugin.version>
         <aspectj-maven-plugin.version>1.13.1</aspectj-maven-plugin.version>
@@ -123,7 +123,7 @@
         <junit.version>4.13.2</junit.version>
 
         <!-- Sonar / JaCoCo -->
-        <jacoco.maven.plugin.version>0.8.7</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.13</jacoco.maven.plugin.version>
         <sonar.projectKey>PhonePe_mustang</sonar.projectKey>
         <sonar.organization>phonepe</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -132,7 +132,9 @@
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${maven.multiModuleProjectDirectory}/mustang-coverage/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
         <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
         <sonar.issue.ignore.multicriteria.e1.ruleKey>java:S3958</sonar.issue.ignore.multicriteria.e1.ruleKey>
@@ -322,6 +324,11 @@
                 <version>${maven.surefire.plugin.version}</version>
             </plugin>
             <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>${maven.sonar.plugin.version}</version>
+            </plugin>
+            <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>
                 <version>${sonatype.central.publishing.maven.plugin.version}</version>
@@ -369,6 +376,12 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>coverage</id>
+            <modules>
+                <module>mustang-coverage</module>
+            </modules>
+        </profile>
         <profile>
             <id>release</id>
             <activation>
