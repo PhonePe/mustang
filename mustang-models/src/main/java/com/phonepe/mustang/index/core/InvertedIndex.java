@@ -48,7 +48,7 @@ public abstract class InvertedIndex<T> {
     private final Map<String, PriorityQueue<Integer>> idCache = Maps.newConcurrentMap();
     private final Map<Integer, TreeSet<Integer>> linkages = Maps.newConcurrentMap();
     /**
-     * Derived, per conjunction/disjunction size lookups over {@link #table}. Never serialised; rebuilt lazily
+     * Derived, per conjunction/disjunction size lookups over {@code table}. Never serialised; rebuilt lazily
      * whenever the posting-list map for a size is replaced by the indexers.
      */
     @JsonIgnore
@@ -62,7 +62,7 @@ public abstract class InvertedIndex<T> {
      * Returns the equality key lookup for the given size, rebuilding it if the posting-list map has been replaced
      * since it was last built.
      *
-     * @param size         conjunction (DNF) or disjunction (CNF) size, i.e. the key of {@link #table}
+     * @param size         conjunction (DNF) or disjunction (CNF) size, i.e. the key of {@code table}
      * @param postingLists the current posting-list map for that size
      */
     public EqualityKeyLookup getEqualityKeyLookup(final int size, final Map<Key, ?> postingLists) {
