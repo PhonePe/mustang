@@ -46,6 +46,8 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
     @NotNull
     private final Query query;
     private final boolean score;
+    @Builder.Default
+    private final boolean equalityKeyLookupEnabled = true;
     private final Map<String, Object> pathValues = Maps.newHashMap();
 
     public Map<String, Double> handle() {
@@ -73,6 +75,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .allCriterias(indexGroup.getAllCriterias())
                         .pathValues(pathValues)
                         .score(score)
+                        .equalityKeyLookupEnabled(equalityKeyLookupEnabled)
                         .build()
                         .getMatches())
                 .build();
@@ -87,6 +90,7 @@ public class CriteriaSearchHandler implements CriteriaForm.Visitor<Matches> {
                         .allCriterias(indexGroup.getAllCriterias())
                         .pathValues(pathValues)
                         .score(score)
+                        .equalityKeyLookupEnabled(equalityKeyLookupEnabled)
                         .build()
                         .getMatches())
                 .build();

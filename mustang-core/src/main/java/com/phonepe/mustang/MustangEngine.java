@@ -53,6 +53,12 @@ public class MustangEngine {
     private ObjectMapper mapper;
     @Builder.Default
     private RankingStrategy rankingStrategy = RankingStrategy.EXPLICIT_WEIGHTS;
+    /**
+     * Resolve EQUALITY keys during search via a hash lookup instead of evaluating every key. Search results are
+     * identical either way; this only changes how matching keys are found. Enabled by default.
+     */
+    @Builder.Default
+    private boolean equalityKeyLookupEnabled = true;
     private final IndexingFacade indexingFacde = IndexingFacade.builder()
             .build();
     private final SearchFacade searchFacade = SearchFacade.builder()
@@ -107,12 +113,12 @@ public class MustangEngine {
 
     public Set<String> search(final String indexName, final RequestContext context, final int topN) {
         final Query query = QueryBuilder.buildQuery(context);
-        return searchFacade.search(indexName, query, topN, true);
+        return searchFacade.search(indexName, query, topN, true, equalityKeyLookupEnabled);
     }
 
     public Set<String> search(final String indexName, final RequestContext context, final boolean score) {
         final Query query = QueryBuilder.buildQuery(context);
-        return searchFacade.search(indexName, query, -1, score);
+        return searchFacade.search(indexName, query, -1, score, equalityKeyLookupEnabled);
     }
 
     public Set<String> scan(final String indexName, final RequestContext context) {
