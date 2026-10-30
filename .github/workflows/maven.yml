@@ -20,16 +20,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
-    # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
-    - name: Update dependency graph
-      uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+      - name: Install reactor artifacts locally
+        run: mvn -B install -DskipTests --file pom.xml
+
+      # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      #
+      # advanced-security/maven-dependency-submission-action does not support multi-module
+      # reactors: pointed at the aggregator pom (packaging=pom, no dependencies of its own, only
+      # <modules>), depgraph-maven-plugin produces a graph node with no dependency array, and the
+      # action's own JS crashes on `undefined.forEach()`. Running it once per real module - each of
+      # which is a genuine single-module project from the plugin's point of view - is the
+      # documented limitation's actual workaround.
+      - name: Update dependency graph (mustang-models)
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+        with:
+          directory: mustang-models
+
+      - name: Update dependency graph (mustang-core)
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+        with:
+          directory: mustang-core
+
+      - name: Update dependency graph (mustang-dw-bundle)
+        uses: advanced-security/maven-dependency-submission-action@571e99aab1055c2e71a1e2309b9691de18d6b7d6
+        with:
+          directory: mustang-dw-bundle
