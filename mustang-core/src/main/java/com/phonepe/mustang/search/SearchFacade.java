@@ -39,10 +39,19 @@ public class SearchFacade {
     private final IndexingFacade indexingFacade;
 
     public Set<String> search(final String indexName, final Query query, final int topN, final boolean score) {
+        return search(indexName, query, topN, score, true);
+    }
+
+    public Set<String> search(final String indexName,
+            final Query query,
+            final int topN,
+            final boolean score,
+            final boolean equalityKeyLookupEnabled) {
         final Map<String, Double> result = CriteriaSearchHandler.builder()
                 .indexGroup(indexingFacade.getIndexGroup(indexName))
                 .query(query)
                 .score(score)
+                .equalityKeyLookupEnabled(equalityKeyLookupEnabled)
                 .build()
                 .handle();
         if (!score) {

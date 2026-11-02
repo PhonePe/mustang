@@ -22,11 +22,11 @@ import com.phonepe.mustang.index.core.DisjunctionPostingEntry;
 import com.phonepe.mustang.index.core.Key;
 import com.phonepe.mustang.index.core.impl.CNFInvertedIndex;
 import com.phonepe.mustang.predicate.PredicateType;
-import com.phonepe.mustang.preoperation.ChainOperator;
 import com.phonepe.mustang.search.Query;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -35,7 +35,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -60,6 +59,8 @@ public class CNFMatcher {
     private final Map<String, Criteria> allCriterias;
     private final Map<String, Object> pathValues;
     private final boolean score;
+    @Builder.Default
+    private final boolean equalityKeyLookupEnabled = true;
 
     private static DisjunctionPostingEntry getDisjunctionPostingEntry(
             final TreeMap<Integer, DisjunctionPostingEntry> map,
@@ -164,17 +165,14 @@ public class CNFMatcher {
             final Map<Integer, Map<Key, TreeMap<Integer, DisjunctionPostingEntry>>> table,
             final int k) {
         final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map = table.getOrDefault(k, Collections.emptyMap());
-        return getMatchingKeys(map).collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
+        return getMatchingKeys(k, map).stream()
+                .collect(Collectors.toMap(x -> x, x -> MutablePair.of(0, map.get(x))))
                 .entrySet()
                 .toArray(Entry[]::new);
     }
 
-    private Stream<Key> getMatchingKeys(final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
-        return map.keySet()
-                .stream()
-                .filter(key -> key.getCaveat()
-                        .visit(new CaveatEnforcer(key,
-                                ChainOperator.operate(key.getPreOps(), pathValues.get(key.getName())))));
+    private List<Key> getMatchingKeys(final int k, final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
+        return MatchingKeyResolver.resolve(invertedIndex, k, map, pathValues, equalityKeyLookupEnabled);
     }
 
     private void initializeCurrentEntriesCNF(

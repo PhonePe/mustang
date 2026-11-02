@@ -58,6 +58,9 @@ public class MustangSearchBenchmark {
         @Param({ "10", "100", "1000", "10000" })
         private int indexSize;
 
+        @Param({ "true", "false" })
+        private boolean equalityKeyLookupEnabled;
+
         private final ObjectMapper mapper = new ObjectMapper();
         private MustangEngine engine;
         private RequestContext requestContext;
@@ -68,6 +71,7 @@ public class MustangSearchBenchmark {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             engine = MustangEngine.builder()
                     .mapper(mapper)
+                    .equalityKeyLookupEnabled(equalityKeyLookupEnabled)
                     .build();
 
             for (int i = 0; i < indexSize; i++) {
