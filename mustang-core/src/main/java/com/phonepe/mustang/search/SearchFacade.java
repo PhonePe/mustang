@@ -39,22 +39,27 @@ public class SearchFacade {
     private final IndexingFacade indexingFacade;
 
     public Set<String> search(final String indexName, final Query query, final int topN, final boolean score) {
-        final Map<String, Double> result = CriteriaSearchHandler.builder()
-                .indexGroup(indexingFacade.getIndexGroup(indexName))
-                .query(query)
-                .score(score)
-                .build()
-                .handle();
-        if (!score) {
-            return result.keySet();
-        }
+        // The whole read — fetching the IndexGroup and traversing its inverted
+        // index — must stay inside the read lock: add/update/delete/replace
+        // mutate those nested, non-thread-safe collections in place.
+        return indexingFacade.readSecurely(indexName, () -> {
+            final Map<String, Double> result = CriteriaSearchHandler.builder()
+                    .indexGroup(indexingFacade.getIndexGroup(indexName))
+                    .query(query)
+                    .score(score)
+                    .build()
+                    .handle();
+            if (!score) {
+                return result.keySet();
+            }
 
-        return result.entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(topN == -1 ? result.size() : topN)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+            return result.entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .limit(topN == -1 ? result.size() : topN)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+        });
     }
 
 }
