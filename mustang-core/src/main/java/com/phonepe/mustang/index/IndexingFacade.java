@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.phonepe.mustang.common.SecureExecution;
 import com.phonepe.mustang.criteria.Criteria;
 import com.phonepe.mustang.exception.ErrorCode;
 import com.phonepe.mustang.exception.MustangException;
@@ -40,11 +41,25 @@ import lombok.Data;
 @Builder
 public class IndexingFacade {
     private final Map<String, IndexGroup> indexMap = Maps.newConcurrentMap();
-    private final Map<String, ReentrantReadWriteLock.WriteLock> indexLocks = Maps.newConcurrentMap();
+    private final Map<String, ReentrantReadWriteLock> indexLocks = Maps.newConcurrentMap();
+
+    /**
+     * Runs {@code block} while holding {@code index}'s read lock, so it is serialized
+     * against concurrent {@code add}/{@code update}/{@code delete}/{@code replace} on
+     * the same index but not against other concurrent reads. Callers that read an
+     * {@link IndexGroup}'s internals beyond a single field access (search, scan,
+     * ratify, similarity checks) must go through this rather than calling
+     * {@link #getIndexGroup(String)} directly, since add/delete mutate shared,
+     * non-thread-safe collections (e.g. the inverted index's nested {@code TreeMap}s)
+     * in place.
+     */
+    public <T> T readSecurely(final String index, final SecureExecution<T> block) {
+        return executeSecurely(getLock(index).readLock(), block);
+    }
 
     public void add(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
-        executeSecurely(getLock(index), () -> {
+        executeSecurely(getLock(index).writeLock(), () -> {
             if (indexGroup.getAllCriterias()
                     .containsKey(criteria.getId())) {
                 throw MustangException.builder()
@@ -64,7 +79,7 @@ public class IndexingFacade {
 
     public void add(final String index, final List<Criteria> criterias) {
         final IndexGroup indexGroup = get(index);
-        executeSecurely(getLock(index), () -> {
+        executeSecurely(getLock(index).writeLock(), () -> {
             criterias.forEach(criteria -> {
                 if (indexGroup.getAllCriterias()
                         .containsKey(criteria.getId())) {
@@ -85,7 +100,7 @@ public class IndexingFacade {
 
     public void update(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
-        executeSecurely(getLock(index), () -> {
+        executeSecurely(getLock(index).writeLock(), () -> {
             criteria.accept(CriteriaIndexBuilder.builder()
                     .indexGroup(indexGroup)
                     .operation(IndexOperation.UPDATE)
@@ -98,7 +113,7 @@ public class IndexingFacade {
 
     public void delete(final String index, final Criteria criteria) {
         final IndexGroup indexGroup = get(index);
-        executeSecurely(getLock(index), () -> {
+        executeSecurely(getLock(index).writeLock(), () -> {
             if (indexGroup.getAllCriterias()
                     .containsKey(criteria.getId())) {
                 criteria.accept(CriteriaIndexBuilder.builder()
@@ -116,7 +131,7 @@ public class IndexingFacade {
     }
 
     public void replace(final String oldIndex, final String newIndex) {
-        executeSecurely(getLock(oldIndex), () -> {
+        executeSecurely(getLock(oldIndex).writeLock(), () -> {
             if (indexMap.containsKey(newIndex)) {
                 if (indexMap.containsKey(oldIndex)) {
                     indexMap.replace(oldIndex, getIndexGroup(oldIndex), getIndexGroup(newIndex));
@@ -133,7 +148,7 @@ public class IndexingFacade {
     }
 
     public String exportIndexGroup(final String index, final ObjectMapper mapper) {
-        return executeSecurely(getLock(index), () -> {
+        return executeSecurely(getLock(index).writeLock(), () -> {
             try {
                 return mapper.writeValueAsString(getIndexGroup(index).getAllCriterias()
                         .values());
@@ -147,7 +162,7 @@ public class IndexingFacade {
     }
 
     public String snapshot(final String index, final ObjectMapper mapper) {
-        return executeSecurely(getLock(index), () -> {
+        return executeSecurely(getLock(index).writeLock(), () -> {
             try {
                 return mapper.writeValueAsString(getIndexGroup(index));
             } catch (JsonProcessingException e) {
@@ -166,7 +181,7 @@ public class IndexingFacade {
                     .errorCode(ErrorCode.INDEX_GROUP_EXISTS)
                     .build();
         }
-        executeSecurely(getLock(indexName), () -> {
+        executeSecurely(getLock(indexName).writeLock(), () -> {
             try {
                 final List<Criteria> criterias = mapper.readValue(groupDetails, new TypeReference<List<Criteria>>() {
                 });
@@ -198,8 +213,8 @@ public class IndexingFacade {
                         .build());
     }
 
-    private ReentrantReadWriteLock.WriteLock getLock(final String index) {
-        return indexLocks.computeIfAbsent(index, x -> new ReentrantReadWriteLock(true).writeLock());
+    private ReentrantReadWriteLock getLock(final String index) {
+        return indexLocks.computeIfAbsent(index, x -> new ReentrantReadWriteLock(true));
     }
 
 }

@@ -93,12 +93,12 @@ public class MustangEngine {
     }
 
     public SimilarityStats checkSimilarity(final String indexName, Criteria criteria) {
-        return SimilarityDetector.builder()
+        return indexingFacde.readSecurely(indexName, () -> SimilarityDetector.builder()
                 .mapper(mapper)
                 .indexGroup(indexingFacde.getIndexGroup(indexName))
                 .criteria(criteria)
                 .build()
-                .checkSimilarity();
+                .checkSimilarity());
     }
 
     public Set<String> search(final String indexName, final RequestContext context) {
@@ -116,11 +116,11 @@ public class MustangEngine {
     }
 
     public Set<String> scan(final String indexName, final RequestContext context) {
-        return Scanner.builder()
+        return indexingFacde.readSecurely(indexName, () -> Scanner.builder()
                 .indexGroup(indexingFacde.getIndexGroup(indexName))
                 .context(context)
                 .build()
-                .scan();
+                .scan());
     }
 
     public List<Criteria> scan(final List<Criteria> criterias, final RequestContext context) {
@@ -153,12 +153,18 @@ public class MustangEngine {
     }
 
     public void ratify(final String indexName, final boolean fullFledged) {
-        processor.process(RatificationRequest.builder()
-                .mapper(mapper)
-                .indexGroup(indexingFacde.getIndexGroup(indexName))
-                .fullFledged(fullFledged)
-                .requestedAt(System.currentTimeMillis())
-                .build());
+        // AsyncProcessor dispatches via Guava's (synchronous) EventBus, so the
+        // ratification handler's read of the IndexGroup runs on this thread,
+        // inside this read lock, before process() returns.
+        indexingFacde.readSecurely(indexName, () -> {
+            processor.process(RatificationRequest.builder()
+                    .mapper(mapper)
+                    .indexGroup(indexingFacde.getIndexGroup(indexName))
+                    .fullFledged(fullFledged)
+                    .requestedAt(System.currentTimeMillis())
+                    .build());
+            return null;
+        });
     }
 
     public RatificationResult getRatificationResult(final String indexName) {

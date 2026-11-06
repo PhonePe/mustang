@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.Lock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.Configuration;
@@ -56,7 +56,13 @@ public class Utils {
         return weight;
     }
 
-    public static <T> T executeSecurely(final ReentrantReadWriteLock.WriteLock lock, SecureExecution<T> block) {
+    /**
+     * Runs {@code block} while holding {@code lock}. Takes the {@link Lock} interface
+     * (rather than {@code ReentrantReadWriteLock.WriteLock} specifically) so the same
+     * helper serializes both write-side mutations and read-side lookups against an
+     * index's {@code ReentrantReadWriteLock} — see {@code IndexingFacade}.
+     */
+    public static <T> T executeSecurely(final Lock lock, SecureExecution<T> block) {
         try {
             lock.lock();
             return block.execute();
