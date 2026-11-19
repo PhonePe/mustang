@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
         <jmh.version>1.37</jmh.version>
-        <mustang.version>3.0.0-SNAPSHOT</mustang.version>
+        <mustang.version>3.0.2-SNAPSHOT</mustang.version>
         <uberjar.name>benchmarks</uberjar.name>
     </properties>
 
