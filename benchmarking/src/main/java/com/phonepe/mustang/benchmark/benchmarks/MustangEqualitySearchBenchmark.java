@@ -53,7 +53,8 @@ import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import lombok.Getter;
 
 /**
- * Search latency for indexes dominated by EQUALITY keys, with and without the equality key lookup.
+ * Search latency for indexes dominated by EQUALITY keys. Run against the previous release (mustang.version) for a
+ * baseline without the equality key lookup.
  *
  * <ul>
  * <li>{@code DISTINCT_VALUES}: every criteria matches one distinct value on a single path (e.g. one geo-fence id per
@@ -75,9 +76,6 @@ public class MustangEqualitySearchBenchmark {
         @Param({ "DISTINCT_VALUES", "VALUE_LISTS" })
         private String shape;
 
-        @Param({ "true", "false" })
-        private boolean equalityKeyLookupEnabled;
-
         private final ObjectMapper mapper = new ObjectMapper();
         private MustangEngine engine;
         private RequestContext[] requests;
@@ -87,7 +85,6 @@ public class MustangEqualitySearchBenchmark {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             engine = MustangEngine.builder()
                     .mapper(mapper)
-                    .equalityKeyLookupEnabled(equalityKeyLookupEnabled)
                     .build();
             final Random random = new Random(7);
             final List<Criteria> criterias = new ArrayList<>(indexSize);

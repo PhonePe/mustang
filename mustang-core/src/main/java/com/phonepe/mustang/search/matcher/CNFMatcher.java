@@ -59,8 +59,6 @@ public class CNFMatcher {
     private final Map<String, Criteria> allCriterias;
     private final Map<String, Object> pathValues;
     private final boolean score;
-    @Builder.Default
-    private final boolean equalityKeyLookupEnabled = true;
 
     private static DisjunctionPostingEntry getDisjunctionPostingEntry(
             final TreeMap<Integer, DisjunctionPostingEntry> map,
@@ -172,7 +170,7 @@ public class CNFMatcher {
     }
 
     private List<Key> getMatchingKeys(final int k, final Map<Key, TreeMap<Integer, DisjunctionPostingEntry>> map) {
-        return MatchingKeyResolver.resolve(invertedIndex, k, map, pathValues, equalityKeyLookupEnabled);
+        return MatchingKeyResolver.resolve(invertedIndex, k, map, pathValues);
     }
 
     private void initializeCurrentEntriesCNF(

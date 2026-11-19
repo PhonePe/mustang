@@ -56,7 +56,7 @@ public abstract class InvertedIndex<T> {
     @Setter(AccessLevel.NONE)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private final transient Map<Integer, EqualityKeyLookup> equalityKeyLookups = Maps.newConcurrentMap();
+    private final Map<Integer, EqualityKeyLookup> equalityKeyLookups = Maps.newConcurrentMap();
 
     /**
      * Returns the equality key lookup for the given size, rebuilding it if the posting-list map has been replaced
@@ -67,12 +67,15 @@ public abstract class InvertedIndex<T> {
      */
     public EqualityKeyLookup getEqualityKeyLookup(final int size, final Map<Key, ?> postingLists) {
         final EqualityKeyLookup existing = equalityKeyLookups.get(size);
-        if (Objects.nonNull(existing) && existing.getSource() == postingLists) {
+        if (isBuiltFrom(existing, postingLists)) {
             return existing;
         }
-        final EqualityKeyLookup rebuilt = EqualityKeyLookup.of(postingLists);
-        equalityKeyLookups.put(size, rebuilt);
-        return rebuilt;
+        return equalityKeyLookups.compute(size,
+                (k, current) -> isBuiltFrom(current, postingLists) ? current : EqualityKeyLookup.of(postingLists));
+    }
+
+    private static boolean isBuiltFrom(final EqualityKeyLookup lookup, final Map<Key, ?> postingLists) {
+        return Objects.nonNull(lookup) && lookup.getSource() == postingLists;
     }
 
     public Integer getInternalIdFromCache(final String externalId) {

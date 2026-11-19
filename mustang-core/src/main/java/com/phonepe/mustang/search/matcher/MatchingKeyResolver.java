@@ -31,36 +31,30 @@ import lombok.experimental.UtilityClass;
  * Finds the keys of a posting-list map that are satisfied by the current request.
  *
  * <p>
- * With the equality lookup enabled, {@code EQUALITY} keys are resolved through a hash lookup per
- * {@code (path, preOperations)} group, and only the remaining keys are evaluated one by one. With it disabled, every
- * key is evaluated one by one (the original behaviour). Both modes return the same set of keys.
+ * {@code EQUALITY} keys are resolved through a hash lookup per {@code (path, preOperations)} group; only the remaining
+ * keys are evaluated one by one.
  * </p>
  */
 @UtilityClass
 class MatchingKeyResolver {
 
+    /** Test only: evaluate every key one by one, to check the lookup returns the same keys as a full scan. */
+    static volatile boolean scanAllKeys = false;
+
     static List<Key> resolve(final InvertedIndex<?> invertedIndex,
             final int size,
             final Map<Key, ?> postingLists,
-            final Map<String, Object> pathValues,
-            final boolean equalityKeyLookupEnabled) {
-        if (!equalityKeyLookupEnabled) {
+            final Map<String, Object> pathValues) {
+        if (scanAllKeys) {
             return scan(postingLists.keySet(), pathValues);
         }
         final EqualityKeyLookup lookup = invertedIndex.getEqualityKeyLookup(size, postingLists);
         final List<Key> matchingKeys = scan(lookup.getScanKeys(), pathValues);
         lookup.getEqualityGroups()
                 .forEach((group, buckets) -> {
-                    final Object lhsValue = ChainOperator.operate(group.getPreOps(), pathValues.get(group.getName()));
-                    final Object normalised = EqualityKeyLookup.normaliseRequestValue(lhsValue);
-                    if (normalised == EqualityKeyLookup.NO_MATCH) {
-                        return;
-                    }
-                    if (normalised == EqualityKeyLookup.FALLBACK) {
-                        buckets.values()
-                                .forEach(keys -> keys.stream()
-                                        .filter(key -> satisfies(key, lhsValue))
-                                        .forEach(matchingKeys::add));
+                    final Object normalised = EqualityKeyLookup.normaliseRequestValue(
+                            ChainOperator.operate(group.getPreOps(), pathValues.get(group.getName())));
+                    if (Objects.isNull(normalised)) {
                         return;
                     }
                     final List<Key> keys = buckets.get(normalised);

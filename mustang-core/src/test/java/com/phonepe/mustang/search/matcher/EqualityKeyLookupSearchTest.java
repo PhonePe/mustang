@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.phonepe.mustang.search;
+package com.phonepe.mustang.search.matcher;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,7 +51,6 @@ import com.phonepe.mustang.predicate.impl.IncludedPredicate;
 import com.phonepe.mustang.preoperation.impl.AdditionPreOperation;
 import com.phonepe.mustang.preoperation.impl.ModuloPreOperation;
 import com.phonepe.mustang.preoperation.impl.SizePreOperation;
-import com.phonepe.mustang.ratify.RatificationResult;
 
 /**
  * Verifies that resolving EQUALITY keys through the hash lookup returns exactly the same search results as evaluating
@@ -60,19 +60,19 @@ public class EqualityKeyLookupSearchTest {
 
     private static final String INDEX = "test";
     private final ObjectMapper mapper = new ObjectMapper();
-    private MustangEngine lookupEngine;
-    private MustangEngine scanEngine;
+    private MustangEngine engine;
 
     @Before
     public void setUp() {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        lookupEngine = MustangEngine.builder()
+        engine = MustangEngine.builder()
                 .mapper(mapper)
                 .build();
-        scanEngine = MustangEngine.builder()
-                .mapper(mapper)
-                .equalityKeyLookupEnabled(false)
-                .build();
+    }
+
+    @After
+    public void tearDown() {
+        MatchingKeyResolver.scanAllKeys = false;
     }
 
     @Test
@@ -111,6 +111,17 @@ public class EqualityKeyLookupSearchTest {
 
         assertResults(request("ids", Arrays.asList("X", "Y")), "X");
         assertResults(request("ids", Arrays.asList("Y", "X")), "Y");
+    }
+
+    @Test
+    public void testEmptyListRequestValueMatchesNothing() {
+        // A full scan fails on an empty list (it compares the first element); the lookup simply finds no key.
+        add(dnf("X", included("$.ids", "X")));
+
+        final RequestContext context = RequestContext.builder()
+                .node(mapper.valueToTree(request("ids", new ArrayList<>())))
+                .build();
+        assertThat(engine.search(INDEX, context), is(empty()));
     }
 
     @Test
@@ -238,16 +249,14 @@ public class EqualityKeyLookupSearchTest {
         assertResults(request("fenceId", "FE1"), "FENCE_OFFER");
 
         final Criteria v2 = dnf("FENCE_OFFER", included("$.fenceId", "FE2"));
-        lookupEngine.update(INDEX, v2);
-        scanEngine.update(INDEX, v2);
+        engine.update(INDEX, v2);
         assertResults(request("fenceId", "FE1"));
         assertResults(request("fenceId", "FE2"), "FENCE_OFFER");
 
         add(dnf("NEW_OFFER", included("$.fenceId", "FE3")));
         assertResults(request("fenceId", "FE3"), "NEW_OFFER");
 
-        lookupEngine.delete(INDEX, v2);
-        scanEngine.delete(INDEX, v2);
+        engine.delete(INDEX, v2);
         assertResults(request("fenceId", "FE2"));
     }
 
@@ -257,8 +266,7 @@ public class EqualityKeyLookupSearchTest {
         for (int i = 0; i < 1000; i++) {
             criterias.add(dnf("OFFER_" + i, included("$.fenceId", "FE" + i)));
         }
-        lookupEngine.add(INDEX, criterias);
-        scanEngine.add(INDEX, criterias);
+        engine.add(INDEX, criterias);
         assertResults(request("fenceId", "FE432"), "OFFER_432");
         assertResults(request("fenceId", "FE1000"));
     }
@@ -319,8 +327,7 @@ public class EqualityKeyLookupSearchTest {
     }
 
     private void add(final Criteria criteria) {
-        lookupEngine.add(INDEX, criteria);
-        scanEngine.add(INDEX, criteria);
+        engine.add(INDEX, criteria);
     }
 
     private static Criteria dnf(final String id, final Predicate... predicates) {
@@ -356,8 +363,10 @@ public class EqualityKeyLookupSearchTest {
         final RequestContext context = RequestContext.builder()
                 .node(mapper.valueToTree(request))
                 .build();
-        final Set<String> lookupResults = lookupEngine.search(INDEX, context);
-        final Set<String> scanResults = scanEngine.search(INDEX, context);
+        final Set<String> lookupResults = engine.search(INDEX, context);
+        MatchingKeyResolver.scanAllKeys = true;
+        final Set<String> scanResults = engine.search(INDEX, context);
+        MatchingKeyResolver.scanAllKeys = false;
         assertThat("Mismatch for request " + request, lookupResults, is(scanResults));
         return lookupResults;
     }
@@ -369,12 +378,5 @@ public class EqualityKeyLookupSearchTest {
         } else {
             assertThat(results, containsInAnyOrder(expected));
         }
-    }
-
-    private void assertRatified() {
-        lookupEngine.ratify(INDEX);
-        final RatificationResult result = lookupEngine.getRatificationResult(INDEX);
-        assertThat(result.getStatus(), is(true));
-        assertThat(result.getAnamolyDetails(), is(empty()));
     }
 }

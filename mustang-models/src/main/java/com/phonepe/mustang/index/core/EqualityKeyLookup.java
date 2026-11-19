@@ -18,7 +18,6 @@ package com.phonepe.mustang.index.core;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,8 @@ import lombok.Value;
  *
  * <p>
  * Normalisation mirrors {@code Utils.compare}: numbers are compared by {@code doubleValue()}, booleans only match
- * booleans, strings only match strings, and a collection request value is compared using its first element only.
+ * booleans, strings only match strings, and a list request value is compared using its first element only. A request
+ * value that cannot match any hashed key (missing, empty list, non-list collection, other types) matches nothing.
  * </p>
  *
  * <p>
@@ -54,15 +54,6 @@ import lombok.Value;
  */
 @Getter
 public final class EqualityKeyLookup {
-
-    /** Marker returned by {@link #normaliseRequestValue(Object)} when no hashed key can match. */
-    public static final Object NO_MATCH = new Object();
-
-    /**
-     * Marker returned by {@link #normaliseRequestValue(Object)} when the value cannot be normalised safely, and the
-     * keys of the group must be evaluated with the regular caveat check.
-     */
-    public static final Object FALLBACK = new Object();
 
     private final Map<Key, ?> source;
     private final Map<KeyGroup, Map<Object, List<Key>>> equalityGroups;
@@ -102,8 +93,8 @@ public final class EqualityKeyLookup {
         if (value instanceof String || value instanceof Boolean) {
             return value;
         }
-        if (isStandardNumber(value)) {
-            return normaliseNumber((Number) value);
+        if (value instanceof Number number && isStandardNumber(number)) {
+            return normaliseNumber(number);
         }
         return null;
     }
@@ -111,32 +102,21 @@ public final class EqualityKeyLookup {
     /**
      * Normalises a (pre-operated) request value the same way {@code Utils.compare} would compare it.
      *
-     * @return the hash value to look up, {@link #NO_MATCH} if no hashed key can match, or {@link #FALLBACK} if the
-     *         value has to be checked with the regular caveat evaluation.
+     * @return the hash value to look up, or {@code null} if no hashed key can match.
      */
     public static Object normaliseRequestValue(final Object lhsValue) {
-        if (Objects.isNull(lhsValue)) {
-            return NO_MATCH;
-        }
         Object value = lhsValue;
-        if (value instanceof Collection) {
-            if (!(value instanceof List) || ((List<?>) value).isEmpty()) {
-                return FALLBACK;
-            }
-            value = ((List<?>) value).get(0);
-            if (Objects.isNull(value)) {
-                return FALLBACK;
-            }
+        if (value instanceof List<?> list) {
+            value = list.isEmpty() ? null : list.get(0);
         }
         if (value instanceof String || value instanceof Boolean) {
             return value;
         }
-        if (value instanceof Number) {
-            final Object normalised = normaliseNumber((Number) value);
-            return Objects.isNull(normalised) ? NO_MATCH : normalised;
+        if (value instanceof Number number) {
+            return normaliseNumber(number);
         }
         // Hashed keys are strings, booleans or numbers; none of them equal any other type.
-        return NO_MATCH;
+        return null;
     }
 
     private static Object normaliseNumber(final Number number) {
@@ -147,7 +127,7 @@ public final class EqualityKeyLookup {
         return value == 0.0d ? 0.0d : value; // fold -0.0 into 0.0, as == does
     }
 
-    private static boolean isStandardNumber(final Object value) {
+    private static boolean isStandardNumber(final Number value) {
         return value instanceof Integer || value instanceof Long || value instanceof Double
                 || value instanceof Float || value instanceof Short || value instanceof Byte
                 || value instanceof BigDecimal || value instanceof BigInteger;
